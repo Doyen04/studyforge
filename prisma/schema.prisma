@@ -1,87 +1,87 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+    provider = "prisma-client"
+    output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+    provider = "sqlite"
 }
 
 model Document {
-  id        String     @id @default(cuid())
-  filename  String
-  fileType  String
-  rawText   String
-  wordCount Int
-  createdAt DateTime   @default(now())
-  studySets StudySet[]
+    id        String     @id @default(cuid())
+    filename  String
+    fileType  String
+    rawText   String
+    wordCount Int
+    createdAt DateTime   @default(now())
+    studySets StudySet[]
 }
 
 model StudySet {
-  id              String           @id @default(cuid())
-  documentId      String
-  document        Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
-  title           String
-  createdAt       DateTime         @default(now())
-  flashcards      Flashcard[]
-  mcqQuestions    McqQuestion[]
-  fillInBlanks    FillInBlank[]
-  theoryQuestions TheoryQuestion[]
-  quizzes         Quiz[]
+    id              String           @id @default(cuid())
+    documentId      String
+    document        Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+    title           String
+    createdAt       DateTime         @default(now())
+    flashcards      Flashcard[]
+    mcqQuestions    McqQuestion[]
+    fillInBlanks    FillInBlank[]
+    theoryQuestions TheoryQuestion[]
+    quizzes         Quiz[]
 }
 
 model Flashcard {
-  id         String   @id @default(cuid())
-  studySetId String
-  studySet   StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-  front      String
-  back       String
+    id         String   @id @default(cuid())
+    studySetId String
+    studySet   StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    front      String
+    back       String
 }
 
 model McqQuestion {
-  id           String   @id @default(cuid())
-  studySetId   String
-  studySet     StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-  question     String
-  options      String
-  correctIndex Int
-  explanation  String
+    id           String   @id @default(cuid())
+    studySetId   String
+    studySet     StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    question     String
+    options      String
+    correctIndex Int
+    explanation  String
 }
 
 model FillInBlank {
-  id                String   @id @default(cuid())
-  studySetId        String
-  studySet          StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-  sentence          String
-  answer            String
-  acceptableAnswers String
+    id                String   @id @default(cuid())
+    studySetId        String
+    studySet          StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    sentence          String
+    answer            String
+    acceptableAnswers String
 }
 
 model TheoryQuestion {
-  id              String   @id @default(cuid())
-  studySetId      String
-  studySet        StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-  question        String
-  referenceAnswer String
-  keyPoints       String
+    id              String   @id @default(cuid())
+    studySetId      String
+    studySet        StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    question        String
+    referenceAnswer String
+    keyPoints       String
 }
 
 model Quiz {
-  id           String        @id @default(cuid())
-  studySetId   String
-  studySet     StudySet      @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-  title        String
-  questionRefs String
-  createdAt    DateTime      @default(now())
-  attempts     QuizAttempt[]
+    id           String        @id @default(cuid())
+    studySetId   String
+    studySet     StudySet      @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    title        String
+    questionRefs String
+    createdAt    DateTime      @default(now())
+    attempts     QuizAttempt[]
 }
 
 model QuizAttempt {
-  id          String    @id @default(cuid())
-  quizId      String
-  quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  score       Float
-  answers     String
-  startedAt   DateTime  @default(now())
-  completedAt DateTime?
+    id          String    @id @default(cuid())
+    quizId      String
+    quiz        Quiz      @relation(fields: [quizId], references: [id], onDelete: Cascade)
+    score       Float
+    answers     String
+    startedAt   DateTime  @default(now())
+    completedAt DateTime?
 }
