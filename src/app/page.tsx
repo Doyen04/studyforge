@@ -18,14 +18,32 @@ export default function Home() {
                                     Upload course material, generate active-recall practice, and review theory answers with an LLM-backed rubric.
                                 </p>
                             </div>
-                            <div className="flex flex-wrap gap-3">
-                                <Link href="#upload" className="rounded-full bg-focus px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95">
-                                    Start with a file
-                                </Link>
-                                <Link href="/study-sets/demo" className="rounded-full border border-rule bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus">
-                                    View a study set
-                                </Link>
-                            </div>
+                                <div className="flex flex-wrap gap-3">
+                                    <Link
+                                        href="/upload"
+                                        className="rounded-full bg-focus px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                                    >
+                                        Start with a file
+                                    </Link>
+                                    <Link
+                                        href="/study-sets"
+                                        className="rounded-full border border-rule bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus"
+                                    >
+                                        Study sets
+                                    </Link>
+                                    <Link
+                                        href="/quizzes"
+                                        className="rounded-full border border-rule bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus"
+                                    >
+                                        Quizzes
+                                    </Link>
+                                    <Link
+                                        href="/study-sets/demo"
+                                        className="rounded-full border border-rule bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus"
+                                    >
+                                        Demo set
+                                    </Link>
+                                </div>
                         </div>
                         <div className="grid gap-3 rounded-3xl border border-rule bg-paper p-4 text-sm text-ink/75">
                             <div className="rounded-2xl bg-white p-4">
