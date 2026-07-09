@@ -21,7 +21,7 @@ export async function parseDocument(buffer: Buffer, originalFilename: string): P
     }
 
     const ast = await OfficeParser.parseOffice(buffer, { fileType });
-    const text = ast.toText().trim();
+    const text = await ast.to('text').then(r => r.value.trim());
     const wordCount = text.length ? text.split(/\s+/).length : 0;
 
     if (wordCount < 30) {
