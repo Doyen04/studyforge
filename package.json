@@ -1,5 +1,5 @@
 {
-  "name": "my-app",
+  "name": "studyforge",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -18,13 +18,15 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.3.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.10",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.10",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4.3.2",
+    "tsx": "^4.23.0",
+    "typescript": "^5.9.3"
   }
 }
