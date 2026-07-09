@@ -11,6 +11,21 @@ interface GenerateRequestBody {
     counts: { flashcards: number; mcq: number; fillInBlank: number; theory: number };
 }
 
+async function generatePerChunk<T>(
+    chunks: string[],
+    counts: number[],
+    generator: (chunk: string, count: number) => Promise<T[]>,
+) {
+    const results = await Promise.all(
+        chunks.map((chunk, index) => {
+            const count = counts[index] ?? 0;
+            return count > 0 ? generator(chunk, count) : Promise.resolve([] as T[]);
+        }),
+    );
+
+    return results.flat();
+}
+
 export async function POST(request: NextRequest) {
     const { documentId, counts } = (await request.json()) as GenerateRequestBody;
 
@@ -26,10 +41,10 @@ export async function POST(request: NextRequest) {
     const theoryCounts = distributeCount(counts.theory, chunks);
 
     const [flashcardResults, mcqResults, fillInBlankResults, theoryResults] = await Promise.all([
-        Promise.all(chunks.map((chunk, index) => (flashcardCounts[index] > 0 ? generateFlashcards(chunk, flashcardCounts[index]) : []))),
-        Promise.all(chunks.map((chunk, index) => (mcqCounts[index] > 0 ? generateMcqQuestions(chunk, mcqCounts[index]) : []))),
-        Promise.all(chunks.map((chunk, index) => (fillInBlankCounts[index] > 0 ? generateFillInBlanks(chunk, fillInBlankCounts[index]) : []))),
-        Promise.all(chunks.map((chunk, index) => (theoryCounts[index] > 0 ? generateTheoryQuestions(chunk, theoryCounts[index]) : []))),
+        generatePerChunk(chunks, flashcardCounts, generateFlashcards),
+        generatePerChunk(chunks, mcqCounts, generateMcqQuestions),
+        generatePerChunk(chunks, fillInBlankCounts, generateFillInBlanks),
+        generatePerChunk(chunks, theoryCounts, generateTheoryQuestions),
     ]);
 
     const studySet = await prisma.studySet.create({
