@@ -1,4 +1,4 @@
-import { OfficeParser } from "officeparser";
+import OfficeParser  from "officeparser";
 
 const EXTENSION_TO_FILETYPE: Record<string, string> = {
     ".docx": "docx",
@@ -19,8 +19,9 @@ export async function parseDocument(buffer: Buffer, originalFilename: string): P
     if (!fileType) {
         throw new Error(`Unsupported file type: ${ext}. Upload a .docx, .pptx, or .pdf file.`);
     }
-
+    console.log('ast', OfficeParser, '[logging]');
     const ast = await OfficeParser.parseOffice(buffer, { fileType });
+    console.log(ast, '[logging]');
     const text = await ast.to('text').then(r => r.value.trim());
     const wordCount = text.length ? text.split(/\s+/).length : 0;
 

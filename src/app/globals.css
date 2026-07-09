@@ -1,13 +1,17 @@
 @import "tailwindcss";
 
-@theme inline {
+@theme {
     --color-ink: #1b1f1d;
+    --color-ink-muted: #5b615e;
     --color-paper: #f5f6f3;
+    --color-paper-hover: #ecede9;
     --color-card: #ffffff;
     --color-rule: #d8dad3;
     --color-focus: #3b5ba9;
+    --color-focus-hover: #2e4a87;
     --color-mastered: #2f8f6e;
     --color-review: #b8862e;
+    --color-error: #b23a3a;
     --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     --font-data: var(--font-plex-mono), ui-monospace, monospace;
@@ -24,6 +28,11 @@ body {
         linear-gradient(180deg, #f8f9f6 0%, #f5f6f3 100%);
     color: var(--color-ink);
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
 }
 
 a {

@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ documentId: document.id, wordCount, fileType });
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Failed to parse file.";
+        const message = "Failed to parse file.";
+        console.error(message, error);
         return NextResponse.json({ error: message }, { status: 422 });
     }
 }

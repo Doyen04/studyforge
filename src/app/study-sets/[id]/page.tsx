@@ -1,9 +1,23 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
+import { CreateQuizPanel } from "@/components/CreateQuizPanel";
 
 interface StudySetPageProps {
     params: Promise<{ id: string }>;
+}
+
+function Section({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
+    return (
+        <section className="rounded-lg border border-rule bg-card p-5 md:p-6">
+            <div className="flex items-end justify-between gap-4">
+                <h2 className="font-sans text-lg font-semibold text-ink">{title}</h2>
+                <span className="font-data text-sm text-ink-muted">{count}</span>
+            </div>
+            <div className="mt-4 space-y-3">{children}</div>
+        </section>
+    );
 }
 
 export default async function StudySetPage({ params }: StudySetPageProps) {
@@ -17,6 +31,7 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
             mcqQuestions: true,
             fillInBlanks: true,
             theoryQuestions: true,
+            quizzes: { orderBy: { createdAt: "desc" } },
         },
     });
 
@@ -25,66 +40,79 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
     }
 
     return (
-        <main className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-                <section className="rounded-4xl border border-rule bg-card p-8 shadow-[0_16px_40px_rgba(27,31,29,0.06)]">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-focus">Study set</p>
-                    <h1 className="mt-3 font-display text-4xl text-ink">{studySet.title}</h1>
-                    <p className="mt-4 max-w-2xl text-sm leading-6 text-ink/70">
-                        Source file: {studySet.document.filename} • {studySet.document.wordCount} words • created {studySet.createdAt.toLocaleDateString()}
+        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+                <header className="flex items-center justify-between border-b border-rule pb-4">
+                    <Link href="/study-sets" className="text-sm font-semibold text-focus hover:text-focus-hover">
+                        ← All study sets
+                    </Link>
+                    {studySet.quizzes[0] ? (
+                        <Link href={`/quizzes/${studySet.quizzes[0].id}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
+                            Take this quiz
+                        </Link>
+                    ) : (
+                        <span className="text-sm text-ink-muted">No quiz yet</span>
+                    )}
+                </header>
+
+                <section className="rounded-lg border border-rule bg-card p-6 md:p-8">
+                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Study set</p>
+                    <h1 className="mt-3 font-sans text-2xl font-semibold text-ink md:text-3xl">{studySet.title}</h1>
+                    <p className="mt-3 text-sm leading-6 text-ink-muted">
+                        {studySet.document.filename} · {studySet.document.wordCount} words · created {studySet.createdAt.toLocaleDateString()}
                     </p>
                 </section>
 
                 <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <article className="rounded-3xl border border-rule bg-card p-6">
-                        <h2 className="text-lg font-semibold text-ink">Flashcards</h2>
-                        <p className="mt-2 text-sm leading-6 text-ink/70">{studySet.flashcards.length} cards ready for flip-based review.</p>
-                    </article>
-                    <article className="rounded-3xl border border-rule bg-card p-6">
-                        <h2 className="text-lg font-semibold text-ink">MCQ</h2>
-                        <p className="mt-2 text-sm leading-6 text-ink/70">{studySet.mcqQuestions.length} multiple-choice questions with explanations.</p>
-                    </article>
-                    <article className="rounded-3xl border border-rule bg-card p-6">
-                        <h2 className="text-lg font-semibold text-ink">Fill in the blank</h2>
-                        <p className="mt-2 text-sm leading-6 text-ink/70">{studySet.fillInBlanks.length} recall prompts with accepted answers.</p>
-                    </article>
-                    <article className="rounded-3xl border border-rule bg-card p-6">
-                        <h2 className="text-lg font-semibold text-ink">Theory</h2>
-                        <p className="mt-2 text-sm leading-6 text-ink/70">{studySet.theoryQuestions.length} rubric-based responses with key points.</p>
-                    </article>
+                    <div className="rounded-lg border border-rule bg-card p-5">
+                        <div className="text-sm font-semibold text-ink">Flashcards</div>
+                        <div className="mt-2 font-data text-2xl text-ink">{studySet.flashcards.length}</div>
+                    </div>
+                    <div className="rounded-lg border border-rule bg-card p-5">
+                        <div className="text-sm font-semibold text-ink">MCQ</div>
+                        <div className="mt-2 font-data text-2xl text-ink">{studySet.mcqQuestions.length}</div>
+                    </div>
+                    <div className="rounded-lg border border-rule bg-card p-5">
+                        <div className="text-sm font-semibold text-ink">Fill-in-blank</div>
+                        <div className="mt-2 font-data text-2xl text-ink">{studySet.fillInBlanks.length}</div>
+                    </div>
+                    <div className="rounded-lg border border-rule bg-card p-5">
+                        <div className="text-sm font-semibold text-ink">Theory</div>
+                        <div className="mt-2 font-data text-2xl text-ink">{studySet.theoryQuestions.length}</div>
+                    </div>
                 </section>
 
-                <section className="grid gap-6 lg:grid-cols-2">
-                    <div className="rounded-4xl border border-rule bg-card p-6">
-                        <h2 className="font-display text-2xl text-ink">Flashcards</h2>
-                        <div className="mt-4 space-y-3">
-                            {studySet.flashcards.map((flashcard) => (
-                                <details key={flashcard.id} className="rounded-3xl border border-rule bg-paper p-4">
-                                    <summary className="cursor-pointer font-semibold text-ink">{flashcard.front}</summary>
-                                    <p className="mt-3 text-sm leading-6 text-ink/75">{flashcard.back}</p>
+                <div className="grid gap-4 lg:grid-cols-2">
+                    <Section title="Flashcards" count={studySet.flashcards.length}>
+                        {studySet.flashcards.length === 0 ? (
+                            <p className="text-sm text-ink-muted">No flashcards in this set yet.</p>
+                        ) : (
+                            studySet.flashcards.map((card) => (
+                                <details key={card.id} className="rounded-md border border-rule bg-paper p-4">
+                                    <summary className="cursor-pointer font-semibold text-ink">{card.front}</summary>
+                                    <p className="mt-3 text-sm leading-6 text-ink-muted">{card.back}</p>
                                 </details>
-                            ))}
-                        </div>
-                    </div>
+                            ))
+                        )}
+                    </Section>
 
-                    <div className="rounded-4xl border border-rule bg-card p-6">
-                        <h2 className="font-display text-2xl text-ink">Question bank</h2>
-                        <div className="mt-4 space-y-4">
+                    <Section title="Question bank" count={studySet.mcqQuestions.length + studySet.fillInBlanks.length + studySet.theoryQuestions.length}>
+                        <div className="space-y-4">
                             <div>
                                 <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-focus">MCQ</h3>
                                 <div className="mt-3 space-y-3">
                                     {studySet.mcqQuestions.map((question) => {
                                         const options = parseJsonArray<string>(question.options);
                                         return (
-                                            <details key={question.id} className="rounded-3xl border border-rule bg-paper p-4">
+                                            <details key={question.id} className="rounded-md border border-rule bg-paper p-4">
                                                 <summary className="cursor-pointer font-semibold text-ink">{question.question}</summary>
-                                                <ol className="mt-3 space-y-2 text-sm leading-6 text-ink/75">
+                                                <ol className="mt-3 space-y-2 text-sm leading-6 text-ink-muted">
                                                     {options.map((option, index) => (
                                                         <li key={`${question.id}-${index}`}>{index + 1}. {option}</li>
                                                     ))}
                                                 </ol>
-                                                <p className="mt-3 text-sm text-mastered">Correct option: {question.correctIndex + 1}</p>
-                                                <p className="mt-1 text-sm leading-6 text-ink/70">{question.explanation}</p>
+                                                <p className="mt-3 text-sm font-semibold text-mastered">Correct option: {question.correctIndex + 1}</p>
+                                                <p className="mt-1 text-sm leading-6 text-ink-muted">{question.explanation}</p>
                                             </details>
                                         );
                                     })}
@@ -92,15 +120,15 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
                             </div>
 
                             <div>
-                                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-focus">Fill in the blank</h3>
+                                <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-focus">Fill-in-blank</h3>
                                 <div className="mt-3 space-y-3">
                                     {studySet.fillInBlanks.map((question) => {
                                         const accepted = parseJsonArray<string>(question.acceptableAnswers);
                                         return (
-                                            <details key={question.id} className="rounded-3xl border border-rule bg-paper p-4">
+                                            <details key={question.id} className="rounded-md border border-rule bg-paper p-4">
                                                 <summary className="cursor-pointer font-semibold text-ink">{question.sentence}</summary>
-                                                <p className="mt-3 text-sm text-mastered">Answer: {question.answer}</p>
-                                                <p className="mt-1 text-sm leading-6 text-ink/70">
+                                                <p className="mt-3 text-sm font-semibold text-mastered">Answer: {question.answer}</p>
+                                                <p className="mt-1 text-sm leading-6 text-ink-muted">
                                                     Acceptable answers: {accepted.length > 0 ? accepted.join(", ") : "None"}
                                                 </p>
                                             </details>
@@ -115,10 +143,10 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
                                     {studySet.theoryQuestions.map((question) => {
                                         const keyPoints = parseJsonArray<string>(question.keyPoints);
                                         return (
-                                            <details key={question.id} className="rounded-3xl border border-rule bg-paper p-4">
+                                            <details key={question.id} className="rounded-md border border-rule bg-paper p-4">
                                                 <summary className="cursor-pointer font-semibold text-ink">{question.question}</summary>
-                                                <p className="mt-3 text-sm leading-6 text-ink/75">{question.referenceAnswer}</p>
-                                                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-ink/70">
+                                                <p className="mt-3 text-sm leading-6 text-ink-muted">{question.referenceAnswer}</p>
+                                                <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-ink-muted">
                                                     {keyPoints.map((keyPoint, index) => (
                                                         <li key={`${question.id}-kp-${index}`}>{keyPoint}</li>
                                                     ))}
@@ -129,8 +157,10 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </Section>
+                </div>
+
+                <CreateQuizPanel studySetId={studySet.id} studySetTitle={studySet.title} />
             </div>
         </main>
     );
