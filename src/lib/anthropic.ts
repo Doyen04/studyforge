@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-export const GENERATION_MODEL = "gemini-1.5-flash";
+export const GENERATION_MODEL = "gemini-2.5-flash";
 
 interface StructuredCallOptions {
     system: string;
