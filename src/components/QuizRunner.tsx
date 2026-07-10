@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -9,14 +9,47 @@ type Question =
     | { type: "fillInBlank"; id: string; sentence: string }
     | { type: "theory"; id: string; question: string };
 
-export function QuizRunner({ quizId, studySetId, studySetTitle, questions }: { quizId: string; studySetId: string; studySetTitle: string; questions: Question[] }) {
+export function QuizRunner({
+    quizId,
+    studySetId,
+    studySetTitle,
+    questions,
+}: {
+    quizId: string;
+    studySetId: string;
+    studySetTitle: string;
+    questions: Question[];
+}) {
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const currentQuestion = questions[currentIndex];
     const isLastQuestion = currentIndex === questions.length - 1;
-    const progress = useMemo(() => (questions.length === 0 ? 0 : ((currentIndex + 1) / questions.length) * 100), [currentIndex, questions.length]);
+
+    // Calculate progress as fraction of answered questions
+    const progress = useMemo(() => {
+        if (questions.length === 0) return 0;
+        return ((currentIndex + 1) / questions.length) * 100;
+    }, [currentIndex, questions.length]);
+
+    // Track words dynamically for theory questions
+    const currentAnswerText = answers[currentQuestion?.id] ?? "";
+    const theoryWordCount = useMemo(() => {
+        if (!currentAnswerText.trim()) return 0;
+        return currentAnswerText.trim().split(/\s+/).length;
+    }, [currentAnswerText]);
+
+    // Auto-focus on inputs on question change
+    useEffect(() => {
+        const firstOption = document.querySelector<HTMLInputElement>('input[type="radio"]');
+        if (firstOption) {
+            firstOption.focus();
+        } else {
+            const textInput = document.querySelector<HTMLInputElement | HTMLTextAreaElement>('input[type="text"], textarea');
+            textInput?.focus();
+        }
+    }, [currentIndex]);
 
     async function submitQuiz() {
         setIsSubmitting(true);
@@ -40,17 +73,22 @@ export function QuizRunner({ quizId, studySetId, studySetTitle, questions }: { q
             }
 
             router.push(`/quizzes/${quizId}/results/${json.attemptId}`);
-        } finally {
+        } catch (error) {
+            alert(error instanceof Error ? error.message : "Submission failed.");
             setIsSubmitting(false);
         }
     }
 
     if (!currentQuestion) {
-        return null;
+        return (
+            <div className="rounded-lg border border-rule bg-card p-6 text-center text-sm text-ink-muted">
+                No questions found in this quiz.
+            </div>
+        );
     }
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
+        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
                     <Link href={`/study-sets/${studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
@@ -59,57 +97,104 @@ export function QuizRunner({ quizId, studySetId, studySetTitle, questions }: { q
                     <span className="font-data text-sm text-ink-muted">{currentIndex + 1} / {questions.length}</span>
                 </header>
 
-                <section className="rounded-lg border border-rule bg-card p-6 md:p-8">
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Quiz</p>
-                    <h1 className="mt-3 font-sans text-2xl font-semibold text-ink md:text-3xl">Active recall</h1>
-                    <div className="mt-5 h-2 rounded-full bg-paper">
-                        <div className="h-2 rounded-full bg-focus" style={{ width: `${progress}%` }} />
+                {/* Progress Card */}
+                <section className="rounded-lg border border-rule bg-card p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">Taking Quiz</p>
+                    <div className="mt-4 flex items-center justify-between gap-4">
+                        <h1 className="font-sans text-lg font-bold text-ink">Active Recall Practice</h1>
+                        <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% Completed</span>
+                    </div>
+                    <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-rule w-full">
+                        <div
+                            className="h-full rounded-full bg-focus transition-[width] duration-300 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
                     </div>
                 </section>
 
-                <section className="rounded-lg border border-rule bg-card p-6 md:p-8">
-                    <div className="font-data text-sm text-ink-muted">Question {currentIndex + 1} / {questions.length}</div>
-                    <h2 className="mt-3 text-xl font-semibold text-ink">
-                        {currentQuestion.type === "mcq" ? currentQuestion.question : currentQuestion.type === "fillInBlank" ? currentQuestion.sentence : currentQuestion.question}
+                {/* Question Area */}
+                <section className="rounded-lg border border-rule bg-card p-6 md:p-8 space-y-6">
+                    <div className="flex items-center justify-between border-b border-rule/50 pb-3">
+                        <span className="font-data text-xs text-ink-muted">Question {currentIndex + 1} of {questions.length}</span>
+                        <span className="rounded-full bg-focus/10 px-2 py-0.5 font-sans text-xs font-semibold text-focus capitalize">
+                            {currentQuestion.type === "mcq" ? "Multiple Choice" : currentQuestion.type === "fillInBlank" ? "Fill in the Blank" : "Theory Review"}
+                        </span>
+                    </div>
+
+                    <h2 className="text-lg font-bold leading-8 text-ink">
+                        {currentQuestion.type === "mcq"
+                            ? currentQuestion.question
+                            : currentQuestion.type === "fillInBlank"
+                            ? currentQuestion.sentence
+                            : currentQuestion.question}
                     </h2>
 
-                    {currentQuestion.type === "mcq" ? (
-                        <div className="mt-4 space-y-2">
-                            {currentQuestion.options.map((option, optionIndex) => (
-                                <label key={`${currentQuestion.id}-${optionIndex}`} className="flex cursor-pointer items-center gap-3 rounded-md border border-rule bg-paper px-4 py-3 text-sm text-ink">
-                                    <input
-                                        type="radio"
-                                        name={currentQuestion.id}
-                                        checked={answers[currentQuestion.id] === String(optionIndex)}
-                                        onChange={() => setAnswers((current) => ({ ...current, [currentQuestion.id]: String(optionIndex) }))}
-                                    />
-                                    <span>{optionIndex + 1}. {option}</span>
-                                </label>
-                            ))}
+                    {/* Inputs */}
+                    {currentQuestion.type === "mcq" && (
+                        <div
+                            role="radiogroup"
+                            aria-label="Multiple choice options"
+                            className="space-y-2"
+                        >
+                            {currentQuestion.options.map((option, idx) => {
+                                const isChecked = answers[currentQuestion.id] === String(idx);
+                                return (
+                                    <label
+                                        key={idx}
+                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all focus-within:ring-2 focus-within:ring-focus ${
+                                            isChecked
+                                                ? "border-focus bg-focus/5 font-semibold text-ink"
+                                                : "border-rule bg-card hover:bg-paper-hover text-ink"
+                                        }`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name={currentQuestion.id}
+                                            checked={isChecked}
+                                            onChange={() => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: String(idx) }))}
+                                            className="h-4 w-4 accent-focus focus:outline-none"
+                                        />
+                                        <span>
+                                            <span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>
+                                            {option}
+                                        </span>
+                                    </label>
+                                );
+                            })}
                         </div>
-                    ) : currentQuestion.type === "fillInBlank" ? (
-                        <input
-                            type="text"
-                            value={answers[currentQuestion.id] ?? ""}
-                            onChange={(event) => setAnswers((current) => ({ ...current, [currentQuestion.id]: event.target.value }))}
-                            placeholder="Type your answer"
-                            className="mt-4 block w-full rounded-md border border-rule bg-paper px-4 py-3 text-sm text-ink"
-                        />
-                    ) : (
-                        <>
+                    )}
+
+                    {currentQuestion.type === "fillInBlank" && (
+                        <div className="space-y-2">
+                            <input
+                                type="text"
+                                value={answers[currentQuestion.id] ?? ""}
+                                onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
+                                placeholder="Type answer here"
+                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-focus focus:ring-1 focus:ring-focus"
+                            />
+                        </div>
+                    )}
+
+                    {currentQuestion.type === "theory" && (
+                        <div className="space-y-2">
                             <textarea
                                 rows={5}
                                 value={answers[currentQuestion.id] ?? ""}
-                                onChange={(event) => setAnswers((current) => ({ ...current, [currentQuestion.id]: event.target.value }))}
-                                placeholder="Write 2–5 sentences"
-                                className="mt-4 block w-full rounded-md border border-rule bg-paper px-4 py-3 text-sm text-ink"
+                                onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
+                                placeholder="Write your explanation here (2–5 sentences recommended)..."
+                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-focus focus:ring-1 focus:ring-focus"
                             />
-                            <p className="mt-2 text-sm text-ink-muted">2–5 sentences recommended.</p>
-                        </>
+                            <div className="flex items-center justify-between text-xs text-ink-muted">
+                                <span>{theoryWordCount} words</span>
+                                <span>2–5 sentences recommended</span>
+                            </div>
+                        </div>
                     )}
                 </section>
 
-                <div className="sticky bottom-0 border-t border-rule bg-paper/95 px-4 py-4 backdrop-blur md:static md:border-t-0 md:bg-transparent md:px-0 md:py-0">
+                {/* Sticky Action Footer */}
+                <div className="sticky bottom-0 border-t border-rule bg-paper/95 px-4 py-4 backdrop-blur-xs flex justify-between gap-4 -mx-4 md:static md:border-t-0 md:bg-transparent md:px-0 md:py-0">
                     <button
                         type="button"
                         onClick={() => {
@@ -120,9 +205,13 @@ export function QuizRunner({ quizId, studySetId, studySetTitle, questions }: { q
                             }
                         }}
                         disabled={isSubmitting}
-                        className="w-full rounded-md bg-focus px-4 py-3 text-sm font-semibold text-white transition hover:bg-focus-hover disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full cursor-pointer rounded-md bg-focus hover:bg-focus-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                        {isSubmitting ? "Submitting…" : isLastQuestion ? "Submit answers" : "Next question"}
+                        {isSubmitting
+                            ? "Submitting responses…"
+                            : isLastQuestion
+                            ? "Submit answers"
+                            : "Next question"}
                     </button>
                 </div>
             </div>

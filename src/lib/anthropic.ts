@@ -1,8 +1,6 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI } from "@google/genai";
 
-const anthropic = new Anthropic();
-
-export const GENERATION_MODEL = "claude-sonnet-5";
+export const GENERATION_MODEL = "gemini-1.5-flash";
 
 interface StructuredCallOptions {
     system: string;
@@ -17,33 +15,30 @@ export async function generateStructured<T>({
     schema,
     maxTokens = 4096,
 }: StructuredCallOptions): Promise<T> {
-    const response = await anthropic.messages.create({
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+        throw new Error("Missing GEMINI_API_KEY environment variable. Please add it to your .env file.");
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
+    const response = await ai.models.generateContent({
         model: GENERATION_MODEL,
-        max_tokens: maxTokens,
-        system,
-        messages: [{ role: "user", content: user }],
-        output_config: {
-            format: {
-                type: "json_schema",
-                schema,
-            },
+        contents: user,
+        config: {
+            systemInstruction: system,
+            responseMimeType: "application/json",
+            responseSchema: schema,
+            maxOutputTokens: maxTokens,
         },
     });
 
-    if (response.stop_reason === "refusal") {
-        throw new Error("Claude declined to generate content for this request.");
+    const text = response.text;
+    if (!text) {
+        throw new Error("Gemini SDK did not return a text response.");
     }
 
-    if (response.stop_reason === "max_tokens") {
-        throw new Error("Response was cut off before completion.");
-    }
-
-    const textBlock = response.content.find(
-        (block): block is { type: "text"; text: string } => block.type === "text"
-    );
-    if (!textBlock) {
-        throw new Error("Claude did not return a text response.");
-    }
-
-    return JSON.parse(textBlock.text) as T;
+    return JSON.parse(text) as T;
 }
+
+

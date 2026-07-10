@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     const fillInBlankCounts = distributeCount(counts.fillInBlank, chunks);
     const theoryCounts = distributeCount(counts.theory, chunks);
 
+    //optimise the ai and this too
     const [flashcardResults, mcqResults, fillInBlankResults, theoryResults] = await Promise.all([
         generatePerChunk(chunks, flashcardCounts, generateFlashcards),
         generatePerChunk(chunks, mcqCounts, generateMcqQuestions),

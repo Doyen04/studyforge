@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { UploadWorkflow } from "@/components/UploadWorkflow";
 
 function formatCount(value: number) {
     return new Intl.NumberFormat("en-US").format(value);
@@ -13,87 +14,63 @@ export default async function HomePage() {
     });
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
-            <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+        <main className="min-h-screen px-4 py-6 sm:px-6 md:py-10 lg:px-8">
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href="/" className="font-display text-2xl text-ink md:text-3xl">
+                    <Link href="/" className="font-display text-2xl text-ink font-semibold">
                         StudyForge
                     </Link>
-                    <nav className="hidden items-center gap-3 text-sm text-ink-muted md:flex">
+                    <nav className="flex items-center gap-4 text-sm font-semibold text-ink-muted">
                         <Link href="/study-sets" className="transition hover:text-focus">
-                            Study sets
-                        </Link>
-                        <Link href="/upload" className="transition hover:text-focus">
-                            Upload
+                            All study sets
                         </Link>
                     </nav>
                 </header>
 
-                <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-                    <div className="rounded-lg border border-rule bg-card p-6 md:p-8">
-                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Upload</p>
-                        <h1 className="mt-3 max-w-xl font-display text-4xl leading-tight text-ink md:text-5xl">
-                            Turn one file into flashcards, quizzes, and graded theory practice.
-                        </h1>
-                        <p className="mt-4 max-w-2xl text-base leading-7 text-ink-muted">
-                            Start with a slide deck, document, or PDF. StudyForge extracts the text, generates practice, and keeps the review surfaces calm and focused.
-                        </p>
-                        <div className="mt-6 flex flex-wrap gap-3 text-sm">
-                            <Link href="/upload" className="rounded-md bg-focus px-4 py-2.5 font-semibold text-white transition hover:bg-focus-hover">
-                                Upload a file
-                            </Link>
-                            <Link href="/study-sets" className="rounded-md border border-rule bg-white px-4 py-2.5 font-semibold text-ink transition hover:border-focus hover:text-focus">
-                                Browse study sets
-                            </Link>
-                        </div>
-                    </div>
-
-                    <div className="rounded-lg border border-rule bg-card p-6 md:p-8">
-                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">What’s inside</p>
-                        <div className="mt-4 space-y-3 text-sm leading-6 text-ink-muted">
-                            <p>Flashcards for recall speed.</p>
-                            <p>MCQ, fill-in-the-blank, and theory review from the same source document.</p>
-                            <p>Results that show matched and missed key points instead of just a raw score.</p>
-                        </div>
-                        <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
-                            <div className="rounded-md border border-rule bg-paper p-4">
-                                <div className="text-ink-muted">Recent sets</div>
-                                <div className="mt-2 font-data text-2xl text-ink">{formatCount(recentStudySets.length)}</div>
-                            </div>
-                            <div className="rounded-md border border-rule bg-paper p-4">
-                                <div className="text-ink-muted">Practice items</div>
-                                <div className="mt-2 font-data text-2xl text-ink">
-                                    {formatCount(recentStudySets.reduce((total, set) => total + set.flashcards.length + set.mcqQuestions.length + set.fillInBlanks.length + set.theoryQuestions.length, 0))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                {/* Upload Section — Single column look */}
+                <section className="mx-auto w-full max-w-2xl">
+                    <UploadWorkflow />
                 </section>
 
-                <section className="space-y-4">
-                    <div className="flex items-end justify-between gap-4">
-                        <div>
-                            <h2 className="font-sans text-xl font-semibold text-ink md:text-2xl">Recent study sets</h2>
-                            <p className="mt-1 text-sm text-ink-muted">Newest first, pulled from the database.</p>
-                        </div>
-                        <Link href="/study-sets" className="text-sm font-semibold text-focus hover:text-focus-hover">
-                            View all
-                        </Link>
+                {/* Recent Study Sets List */}
+                <section className="space-y-6">
+                    <div>
+                        <h2 className="font-sans text-xl font-bold text-ink md:text-2xl">Recent study sets</h2>
+                        <p className="mt-1 text-sm text-ink-muted">Your recently generated practice sets.</p>
                     </div>
 
                     {recentStudySets.length === 0 ? (
-                        <div className="rounded-lg border border-dashed border-rule bg-card p-6 text-sm text-ink-muted">
+                        <div className="rounded-lg border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
                             Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
                         </div>
                     ) : (
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {recentStudySets.map((set) => (
-                                <Link key={set.id} href={`/study-sets/${set.id}`} className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-focus">Study set</p>
-                                    <h3 className="mt-3 font-sans text-base font-semibold text-ink">{set.title}</h3>
-                                    <p className="mt-2 text-sm leading-6 text-ink-muted">
-                                        {set.document.filename} · {set.flashcards.length} flashcards · {set.mcqQuestions.length} MCQ · {set.fillInBlanks.length} fill-in · {set.theoryQuestions.length} theory
-                                    </p>
+                                <Link
+                                    key={set.id}
+                                    href={`/study-sets/${set.id}`}
+                                    className="group rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover hover:border-focus flex flex-col justify-between"
+                                >
+                                    <div>
+                                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">
+                                            Study Set
+                                        </p>
+                                        <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-focus transition-colors">
+                                            {set.title}
+                                        </h3>
+                                    </div>
+                                    <div className="mt-4 border-t border-rule/50 pt-3 text-xs text-ink-muted space-y-1">
+                                        <p className="truncate font-semibold">{set.document.filename}</p>
+                                        <div className="flex flex-wrap gap-x-2 gap-y-1 font-data text-[11px]">
+                                            <span>{set.flashcards.length} cards</span>
+                                            <span>·</span>
+                                            <span>{set.mcqQuestions.length} MCQ</span>
+                                            <span>·</span>
+                                            <span>{set.fillInBlanks.length} fill</span>
+                                            <span>·</span>
+                                            <span>{set.theoryQuestions.length} theory</span>
+                                        </div>
+                                    </div>
                                 </Link>
                             ))}
                         </div>
@@ -103,3 +80,4 @@ export default async function HomePage() {
         </main>
     );
 }
+

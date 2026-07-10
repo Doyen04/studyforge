@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import Link from "next/link";
+import { GradedMargin } from "@/components/GradedMargin";
 
 interface QuizResultsPageProps {
     params: Promise<{ id: string; attemptId: string }>;
@@ -11,7 +12,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
     const { id, attemptId } = await params;
 
     const [quiz, attempt] = await Promise.all([
-        prisma.quiz.findUnique({ where: { id }, include: { studySet: true } }),
+        prisma.quiz.findUnique({ where: { id }, include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true } } } }),
         prisma.quizAttempt.findUnique({ where: { id: attemptId }, include: { quiz: true } }),
     ]);
 
@@ -34,56 +35,169 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
     }>(attempt.answers);
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
+        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
                     <Link href={`/study-sets/${quiz.studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
-                        ← {quiz.studySet.title}
+                        ← Back to study set
                     </Link>
-                    <Link href={`/quizzes/${quiz.id}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
+                    <Link href={`/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-white px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus">
                         Retake quiz
                     </Link>
                 </header>
 
-                <section className="rounded-lg border border-rule bg-card p-6 md:p-8 text-center">
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Quiz results</p>
-                    <h1 className="mt-3 font-sans text-2xl font-semibold text-ink md:text-3xl">{quiz.title}</h1>
-                    <div className="mt-6 font-data text-5xl text-ink md:text-6xl">{attempt.score}%</div>
-                    <div className="mx-auto mt-4 h-px w-24 bg-focus" />
-                    <p className="mt-4 text-sm text-ink-muted">Attempt {attemptId} completed {attempt.completedAt ? attempt.completedAt.toLocaleDateString() : "recently"}.</p>
+                {/* Score card */}
+                <section className="rounded-lg border border-rule bg-card p-6 md:p-8 text-center space-y-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">Quiz Results</p>
+                    <h1 className="font-sans text-xl font-bold text-ink">{quiz.title}</h1>
+                    <div className="mt-2 font-data text-6xl font-semibold text-ink">{attempt.score}%</div>
+                    <div className="mx-auto h-0.5 w-24 bg-focus" />
+                    <p className="text-xs text-ink-muted">
+                        Completed on {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString() : "recently"}.
+                    </p>
                 </section>
 
+                {/* Answers list */}
                 <section className="space-y-4">
-                    {answers.map((answer, index) => (
-                        <article key={answer.id} className="rounded-lg border border-rule bg-card p-5 md:p-6">
-                            <div className="flex items-center justify-between gap-4">
-                                <div className="font-data text-sm text-ink-muted">Q{index + 1}</div>
-                                <div className="text-sm font-semibold text-ink">{answer.type}</div>
-                            </div>
-                            {answer.feedback ? <p className="mt-4 rounded-md bg-paper p-4 text-sm leading-6 text-ink-muted">{answer.feedback}</p> : null}
-                            {answer.correctAnswer ? <p className="mt-4 text-sm font-semibold text-mastered">Correct answer: {answer.correctAnswer}</p> : null}
-                            {answer.matchedKeyPoints?.length ? (
-                                <div className="mt-4 flex gap-3">
-                                    <div className="h-full w-1 rounded-full bg-mastered" />
-                                    <ul className="space-y-2 text-sm leading-6 text-ink-muted">
-                                        {answer.matchedKeyPoints.map((point, pointIndex) => (
-                                            <li key={`${answer.id}-matched-${pointIndex}`}>✓ {point}</li>
-                                        ))}
-                                    </ul>
+                    {answers.map((answer, index) => {
+                        const isTheory = answer.type === "theory";
+                        const isCorrect = answer.isCorrect;
+
+                        // Fetch additional data from static questions for MCQ & Fill in the Blank
+                        let mcqQuestionText = "";
+                        let mcqOptions: string[] = [];
+                        let fillInBlankText = "";
+
+                        if (answer.type === "mcq") {
+                            const found = quiz.studySet.mcqQuestions.find((q) => q.id === answer.id);
+                            if (found) {
+                                mcqQuestionText = found.question;
+                                mcqOptions = parseJsonArray<string>(found.options);
+                            }
+                        } else if (answer.type === "fillInBlank") {
+                            const found = quiz.studySet.fillInBlanks.find((q) => q.id === answer.id);
+                            if (found) {
+                                fillInBlankText = found.sentence;
+                            }
+                        }
+
+                        return (
+                            <article key={answer.id} className="rounded-lg border border-rule bg-card p-5 md:p-6 space-y-4">
+                                <div className="flex items-center justify-between border-b border-rule/50 pb-2">
+                                    <span className="font-data text-xs text-ink-muted">Question {index + 1}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="rounded-full bg-paper px-2 py-0.5 font-sans text-[10px] font-semibold text-ink-muted uppercase tracking-wider">
+                                            {answer.type}
+                                        </span>
+                                        {!isTheory && (
+                                            <span
+                                                className={`rounded-full px-2.5 py-0.5 font-sans text-xs font-semibold flex items-center gap-1 ${
+                                                    isCorrect
+                                                        ? "bg-mastered/10 text-mastered"
+                                                        : "bg-error/10 text-error"
+                                                }`}
+                                            >
+                                                <span>{isCorrect ? "✓" : "✗"}</span>
+                                                <span>{isCorrect ? "Correct" : "Incorrect"}</span>
+                                            </span>
+                                        )}
+                                        {isTheory && (
+                                            <span className="font-data text-xs font-semibold text-ink">
+                                                {answer.score}% matched
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            ) : null}
-                            {answer.missedKeyPoints?.length ? (
-                                <div className="mt-4 flex gap-3">
-                                    <div className="h-full w-1 rounded-full bg-rule" />
-                                    <ul className="space-y-2 text-sm leading-6 text-ink-muted">
-                                        {answer.missedKeyPoints.map((point, pointIndex) => (
-                                            <li key={`${answer.id}-missed-${pointIndex}`}>– {point}</li>
-                                        ))}
-                                    </ul>
+
+                                {/* Question body */}
+                                <div className="space-y-3">
+                                    <h2 className="text-base font-bold text-ink leading-7">
+                                        {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : "Theory Question"}
+                                    </h2>
+
+                                    {/* MCQ breakdown */}
+                                    {answer.type === "mcq" && (
+                                        <div className="space-y-2">
+                                            {mcqOptions.map((option, idx) => {
+                                                const isUserChoice = String(idx) === answer.userAnswer;
+                                                const isRight = idx === answer.correctIndex;
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        className={`rounded-md border p-3 text-sm flex items-center justify-between ${
+                                                            isRight
+                                                                ? "border-mastered bg-mastered/10 text-ink font-semibold"
+                                                                : isUserChoice
+                                                                ? "border-error bg-error/10 text-ink"
+                                                                : "border-rule bg-paper text-ink-muted"
+                                                        }`}
+                                                    >
+                                                        <span>{idx + 1}. {option}</span>
+                                                        {isRight && <span className="text-xs text-mastered font-bold font-sans uppercase">Correct answer</span>}
+                                                        {isUserChoice && !isRight && <span className="text-xs text-error font-bold font-sans uppercase">Your selection</span>}
+                                                    </div>
+                                                );
+                                            })}
+                                            {answer.explanation && (
+                                                <div className="mt-3 text-xs leading-5 text-ink-muted bg-paper p-3 rounded border border-rule">
+                                                    <span className="font-semibold text-focus block mb-1">Explanation</span>
+                                                    {answer.explanation}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Fill in the blank breakdown */}
+                                    {answer.type === "fillInBlank" && (
+                                        <div className="space-y-3">
+                                            <div className="text-sm font-semibold">
+                                                Your answer: <span className={isCorrect ? "text-mastered font-bold" : "text-error font-bold"}>{answer.userAnswer || "(None)"}</span>
+                                            </div>
+                                            {!isCorrect && answer.correctAnswer && (
+                                                <div className="text-sm">
+                                                    Expected answer: <span className="text-mastered font-bold">{answer.correctAnswer}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Theory breakdown */}
+                                    {isTheory && (
+                                        <div className="space-y-4">
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-semibold uppercase tracking-wider text-focus">Your response</p>
+                                                <p className="text-sm leading-6 text-ink-muted bg-paper p-3 rounded-md border border-rule italic">
+                                                    &ldquo;{answer.userAnswer || "(None)"}&rdquo;
+                                                </p>
+                                            </div>
+
+                                            {answer.feedback && (
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-semibold uppercase tracking-wider text-focus">Grading Feedback</p>
+                                                    <p className="text-sm leading-6 text-ink">{answer.feedback}</p>
+                                                </div>
+                                            )}
+
+                                            <div className="space-y-2 pt-2">
+                                                <p className="text-xs font-semibold uppercase tracking-wider text-focus">Rubric Matching</p>
+                                                <GradedMargin
+                                                    matchedKeyPoints={answer.matchedKeyPoints || []}
+                                                    missedKeyPoints={answer.missedKeyPoints || []}
+                                                />
+                                            </div>
+
+                                            {answer.correctAnswer && (
+                                                <details className="text-xs border border-rule bg-paper p-3 rounded">
+                                                    <summary className="font-semibold text-focus cursor-pointer">View Model Reference Answer</summary>
+                                                    <p className="mt-2 text-sm text-ink-muted leading-6 font-sans">{answer.correctAnswer}</p>
+                                                </details>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
-                            ) : null}
-                        </article>
-                    ))}
+                            </article>
+                        );
+                    })}
                 </section>
             </div>
         </main>
