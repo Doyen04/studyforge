@@ -1,6 +1,8 @@
 import OfficeParser  from "officeparser";
 
-const EXTENSION_TO_FILETYPE: Record<string, string> = {
+type SupportedFileType = "docx" | "pptx" | "pdf";
+
+const EXTENSION_TO_FILETYPE: Record<string, SupportedFileType> = {
     ".docx": "docx",
     ".pptx": "pptx",
     ".pdf": "pdf",
