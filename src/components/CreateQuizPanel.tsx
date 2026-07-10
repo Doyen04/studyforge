@@ -47,7 +47,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
                 throw new Error(json.error || "Could not create quiz.");
             }
 
-            router.push(`/quizzes/${json.quiz.id}`);
+            router.push(`/dashboard/quizzes/${json.quiz.id}`);
         } catch (submitError) {
             setError(submitError instanceof Error ? submitError.message : "Could not create quiz.");
         } finally {

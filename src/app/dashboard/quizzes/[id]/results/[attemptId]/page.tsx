@@ -38,10 +38,10 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href={`/study-sets/${quiz.studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
+                    <Link href={`/dashboard/study-sets/${quiz.studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
                         ← Back to study set
                     </Link>
-                    <Link href={`/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-white px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus">
+                    <Link href={`/dashboard/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-white px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus">
                         Retake quiz
                     </Link>
                 </header>

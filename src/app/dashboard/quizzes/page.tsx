@@ -10,7 +10,7 @@ export default async function QuizzesIndex() {
                 <h1 className="text-3xl font-display text-ink">Quizzes</h1>
                 <div className="mt-6 grid gap-4">
                     {quizzes.map((q) => (
-                        <Link key={q.id} href={`/quizzes/${q.id}`} className="block rounded-3xl border border-rule bg-card p-4">
+                        <Link key={q.id} href={`/dashboard/quizzes/${q.id}`} className="block rounded-3xl border border-rule bg-card p-4">
                             <div className="font-semibold">{q.title}</div>
                             <div className="text-sm text-ink/70">From set: {q.studySet.title}</div>
                         </Link>

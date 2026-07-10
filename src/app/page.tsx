@@ -1,83 +1,66 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
-import { UploadWorkflow } from "@/components/UploadWorkflow";
+// import { ArrowRight } from "lucide-react"; // Wait, is lucide-react installed? I'll check or not use it. Let's just use a plain arrow '→' to be safe.
 
-function formatCount(value: number) {
-    return new Intl.NumberFormat("en-US").format(value);
-}
-
-export default async function HomePage() {
-    const recentStudySets = await prisma.studySet.findMany({
-        include: { document: true, flashcards: true, mcqQuestions: true, fillInBlanks: true, theoryQuestions: true },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-    });
-
+export default function LandingPage() {
     return (
-        <main className="min-h-screen px-4 py-6 sm:px-6 md:py-10 lg:px-8">
-            <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
-                <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href="/" className="font-display text-2xl text-ink font-semibold">
+        <main className="min-h-screen px-4 py-12 sm:px-6 md:py-24 lg:px-8 bg-paper flex flex-col items-center justify-center relative overflow-hidden">
+            {/* Background motif — card fan, quiet and non-interactive */}
+            <div aria-hidden className="pointer-events-none absolute inset-0 flex items-center justify-center -z-10 opacity-30 sm:opacity-50">
+                <div className="relative w-[300px] h-[400px]">
+                    {[-12, -4, 6, 14].map((deg, i) => (
+                        <div
+                            key={i}
+                            className="absolute left-1/2 top-1/2 h-72 w-52 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-rule bg-card/40"
+                            style={{ transform: `translate(-50%, -50%) rotate(${deg}deg)` }}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            <div className="mx-auto w-full max-w-2xl text-center space-y-10">
+                <div className="space-y-6">
+                    <p className="font-data text-sm font-semibold uppercase tracking-widest text-focus">
                         StudyForge
+                    </p>
+                    <h1 className="font-display text-4xl font-medium text-ink md:text-6xl text-balance">
+                        Turn course material into active-recall practice.
+                    </h1>
+                    <p className="font-sans text-lg text-ink-muted text-balance mx-auto max-w-lg">
+                        Upload your slide decks, documents, and PDFs. Get instantly generated flashcards, multiple-choice questions, and graded free-response practice.
+                    </p>
+                </div>
+
+                <div className="pt-4">
+                    <Link
+                        href="/dashboard"
+                        className="inline-flex items-center justify-center rounded-md bg-focus px-8 py-3.5 font-sans text-base font-semibold text-white transition hover:bg-focus-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-paper shadow-sm"
+                    >
+                        Go to Dashboard
+                        <span className="ml-2 font-data">→</span>
                     </Link>
-                    <nav className="flex items-center gap-4 text-sm font-semibold text-ink-muted">
-                        <Link href="/study-sets" className="transition hover:text-focus">
-                            All study sets
-                        </Link>
-                    </nav>
-                </header>
+                </div>
 
-                {/* Upload Section — Single column look */}
-                <section className="mx-auto w-full max-w-2xl">
-                    <UploadWorkflow />
-                </section>
-
-                {/* Recent Study Sets List */}
-                <section className="space-y-6">
-                    <div>
-                        <h2 className="font-sans text-xl font-bold text-ink md:text-2xl">Recent study sets</h2>
-                        <p className="mt-1 text-sm text-ink-muted">Your recently generated practice sets.</p>
+                <div className="pt-16 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left border-t border-rule">
+                    <div className="space-y-2">
+                        <h3 className="font-sans font-semibold text-ink">Zero Setup</h3>
+                        <p className="font-sans text-sm text-ink-muted">
+                            Drop a file and start studying in seconds. No accounts required for v1.
+                        </p>
                     </div>
-
-                    {recentStudySets.length === 0 ? (
-                        <div className="rounded-lg border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
-                            Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
-                        </div>
-                    ) : (
-                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                            {recentStudySets.map((set) => (
-                                <Link
-                                    key={set.id}
-                                    href={`/study-sets/${set.id}`}
-                                    className="group rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover hover:border-focus flex flex-col justify-between"
-                                >
-                                    <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">
-                                            Study Set
-                                        </p>
-                                        <h3 className="mt-2 font-sans text-base font-semibold text-ink group-hover:text-focus transition-colors">
-                                            {set.title}
-                                        </h3>
-                                    </div>
-                                    <div className="mt-4 border-t border-rule/50 pt-3 text-xs text-ink-muted space-y-1">
-                                        <p className="truncate font-semibold">{set.document.filename}</p>
-                                        <div className="flex flex-wrap gap-x-2 gap-y-1 font-data text-[11px]">
-                                            <span>{set.flashcards.length} cards</span>
-                                            <span>·</span>
-                                            <span>{set.mcqQuestions.length} MCQ</span>
-                                            <span>·</span>
-                                            <span>{set.fillInBlanks.length} fill</span>
-                                            <span>·</span>
-                                            <span>{set.theoryQuestions.length} theory</span>
-                                        </div>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
-                </section>
+                    <div className="space-y-2">
+                        <h3 className="font-sans font-semibold text-ink">Smart Grading</h3>
+                        <p className="font-sans text-sm text-ink-muted">
+                            Theory questions are graded by an AI that checks for key concepts, not exact wording.
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="font-sans font-semibold text-ink">Clean Focus</h3>
+                        <p className="font-sans text-sm text-ink-muted">
+                            A paper-like interface designed for two hours of focused studying, free from dashboard noise.
+                        </p>
+                    </div>
+                </div>
             </div>
         </main>
     );
 }
-

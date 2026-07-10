@@ -68,7 +68,7 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href="/" className="text-sm font-semibold text-focus hover:text-focus-hover">
+                    <Link href="/dashboard" className="text-sm font-semibold text-focus hover:text-focus-hover">
                         ← All study sets
                     </Link>
                 </header>

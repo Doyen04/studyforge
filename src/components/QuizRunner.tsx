@@ -72,7 +72,7 @@ export function QuizRunner({
                 throw new Error(json.error || "Could not submit quiz.");
             }
 
-            router.push(`/quizzes/${quizId}/results/${json.attemptId}`);
+            router.push(`/dashboard/quizzes/${quizId}/results/${json.attemptId}`);
         } catch (error) {
             alert(error instanceof Error ? error.message : "Submission failed.");
             setIsSubmitting(false);
@@ -91,7 +91,7 @@ export function QuizRunner({
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href={`/study-sets/${studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
+                    <Link href={`/dashboard/study-sets/${studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
                         ← {studySetTitle}
                     </Link>
                     <span className="font-data text-sm text-ink-muted">{currentIndex + 1} / {questions.length}</span>

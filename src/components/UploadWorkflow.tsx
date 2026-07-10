@@ -18,7 +18,7 @@ export function UploadWorkflow() {
     };
 
     const handleGenerationSuccess = (studySetId: string) => {
-        router.push(`/study-sets/${studySetId}`);
+        router.push(`/dashboard/study-sets/${studySetId}`);
     };
 
     return (
