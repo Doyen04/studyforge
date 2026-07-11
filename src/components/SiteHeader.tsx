@@ -8,7 +8,7 @@ export function SiteHeader() {
                     StudyForge
                 </Link>
                 <nav className="flex items-center gap-8 text-sm font-medium text-ink-muted">
-                    <Link href="/" className="transition-colors hover:text-accent">
+                    <Link href="/dashboard" className="transition-colors hover:text-accent">
                         Dashboard
                     </Link>
                     <Link href="/dashboard/study-sets" className="transition-colors hover:text-accent">
