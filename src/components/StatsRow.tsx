@@ -33,13 +33,11 @@ export function StatsRow({
 
     return (
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {items.map((item, i) => (
+            {items.map((item) => (
                 <motion.div
                     key={item.label}
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.3, delay: i * 0.08, ease: "easeOut" }}
+                    whileHover={{ y: -3 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     className="rounded-xl border border-rule bg-card p-5"
                 >
                     <div className="flex items-center justify-between mb-2">

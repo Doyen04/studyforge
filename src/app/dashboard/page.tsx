@@ -151,8 +151,8 @@ export default async function DashboardPage() {
                                     </div>
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                         <UploadTile />
-                                        {studySets.map((set, i) => (
-                                            <StudySetCard key={set.id} set={set} index={i} />
+                                        {studySets.map((set) => (
+                                            <StudySetCard key={set.id} set={set} />
                                         ))}
                                     </div>
                                 </section>

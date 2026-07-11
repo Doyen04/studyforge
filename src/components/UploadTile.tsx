@@ -9,11 +9,8 @@ export function UploadTile() {
     return (
         <>
             <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
                 whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
             >
                 <button
                     type="button"

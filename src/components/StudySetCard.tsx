@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
 
 interface StudySetCardProps {
     set: {
@@ -16,21 +15,14 @@ interface StudySetCardProps {
         };
         lastScore: number | null;
     };
-    index: number;
 }
 
-export function StudySetCard({ set, index }: StudySetCardProps) {
+export function StudySetCard({ set }: StudySetCardProps) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.35, delay: index * 0.05, ease: "easeOut" }}
+        <Link
+            href={`/dashboard/study-sets/${set.id}`}
+            className="group flex flex-col rounded-xl border border-rule bg-card p-5 transition-all hover:border-accent/30 hover:-translate-y-0.5"
         >
-            <Link
-                href={`/dashboard/study-sets/${set.id}`}
-                className="group flex flex-col rounded-xl border border-rule bg-card p-5 transition-all hover:border-accent/30"
-            >
                 <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="space-y-1.5 min-w-0">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/70">Study set</p>
@@ -54,6 +46,5 @@ export function StudySetCard({ set, index }: StudySetCardProps) {
                     <span>{set.itemCounts.theory}t</span>
                 </div>
             </Link>
-        </motion.div>
     );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "motion/react";
 
 export function ContinueStudyingCard({
     studySet,
@@ -16,12 +15,7 @@ export function ContinueStudyingCard({
     const scoreLabel = lastScore === null ? "Not quizzed yet" : `Last score ${lastScore}%`;
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-xl border border-rule bg-card p-6"
+        <div className="relative overflow-hidden rounded-xl border border-rule bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-accent/20"
         >
             <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-r-full" />
             <div className="flex items-center justify-between gap-4">
@@ -43,6 +37,6 @@ export function ContinueStudyingCard({
                     {lastScore === null ? "Start studying" : "Quiz again"}
                 </Link>
             </div>
-        </motion.div>
+        </div>
     );
 }
