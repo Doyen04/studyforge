@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getStudySetsIndex } from "@/lib/actions";
 
 export default async function StudySetsIndex() {
-    const sets = await prisma.studySet.findMany({ include: { document: true }, orderBy: { createdAt: "desc" } });
+    const sets = await getStudySetsIndex();
 
     return (
         <main className="min-h-screen">

@@ -1,23 +1,18 @@
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/db";
-import { parseJsonArray } from "@/lib/deserialize";
 import Link from "next/link";
+import { parseJsonArray } from "@/lib/deserialize";
+import { getQuizResults } from "@/lib/actions";
 import { GradedMargin } from "@/components/GradedMargin";
-import type { GradedAnswer } from "@/lib/types";
 
 export default async function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
     const { id, attemptId } = await params;
+    const data = await getQuizResults(id, attemptId);
 
-    const [quiz, attempt] = await Promise.all([
-        prisma.quiz.findUnique({ where: { id }, include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true } } } }),
-        prisma.quizAttempt.findUnique({ where: { id: attemptId }, include: { quiz: true } }),
-    ]);
-
-    if (!quiz || !attempt || attempt.quizId !== quiz.id) {
+    if (!data) {
         notFound();
     }
 
-    const answers = parseJsonArray<GradedAnswer>(attempt.answers);
+    const { quiz, attempt, answers } = data;
 
     return (
         <main className="min-h-screen">
@@ -45,7 +40,6 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
                         const isTheory = answer.type === "theory";
                         const isCorrect = answer.isCorrect;
 
-                        // Fetch additional data from static questions for MCQ & Fill in the Blank
                         let mcqQuestionText = "";
                         let mcqOptions: string[] = [];
                         let fillInBlankText = "";

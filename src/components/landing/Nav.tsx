@@ -39,7 +39,7 @@ export function Nav() {
                 </nav>
                 <Link
                     href="/dashboard"
-                    className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium !text-white shadow-sm transition-all hover:bg-accent-hover hover:shadow-md active:scale-[0.97]"
+                    className="rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white! shadow-sm transition-all hover:bg-accent-hover hover:shadow-md active:scale-[0.97]"
                 >
                     Get started
                 </Link>

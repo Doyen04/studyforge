@@ -1,19 +1,8 @@
 import Link from "next/link";
-import { prisma } from "@/lib/db";
+import { getQuizzesIndex } from "@/lib/actions";
 
 export default async function QuizzesIndex() {
-    const quizzes = await prisma.quiz.findMany({
-        orderBy: { createdAt: "desc" },
-        include: {
-            studySet: { select: { title: true } },
-            attempts: {
-                where: { completedAt: { not: null } },
-                orderBy: { completedAt: "desc" },
-                take: 1,
-                select: { score: true, completedAt: true },
-            },
-        },
-    });
+    const quizzes = await getQuizzesIndex();
 
     return (
         <main className="min-h-screen">
