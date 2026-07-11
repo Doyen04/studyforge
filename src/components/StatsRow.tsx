@@ -31,7 +31,7 @@ export function StatsRow({
             {items.map((item) => (
                 <div key={item.label} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-gray-400">{item.icon}</span>
+                        <span className="text-accent/60">{item.icon}</span>
                         <span className="font-data text-2xl font-semibold text-ink">{item.value}</span>
                     </div>
                     <p className="text-xs font-medium text-gray-500 tracking-wide uppercase">{item.label}</p>
