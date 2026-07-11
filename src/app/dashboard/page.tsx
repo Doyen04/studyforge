@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/db";
 import { UploadModal } from "@/components/UploadModal";
 import { StatsRow } from "@/components/StatsRow";
