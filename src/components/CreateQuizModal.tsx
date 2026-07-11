@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
+import { X } from "lucide-react";
 import { CreateQuizPanel } from "./CreateQuizPanel";
 
 export function CreateQuizModal({
@@ -39,10 +40,7 @@ export function CreateQuizModal({
                     className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                     aria-label="Close modal"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
+                    <X size={16} />
                 </button>
 
                 <div className="max-h-[85vh] overflow-y-auto">

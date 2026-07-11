@@ -106,7 +106,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                                 const val = Math.max(0, Math.min(max, parseInt(e.target.value) || 0));
                                 setCounts((prev) => ({ ...prev, [key]: val }));
                             }}
-                            className="w-full rounded-md border border-rule bg-white px-3 py-2 text-ink outline-none transition focus:border-accent disabled:opacity-50"
+                            className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50"
                         />
                     </label>
                 ))}

@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { UploadWorkflow } from "@/components/UploadWorkflow";
+import { UploadModal } from "@/components/UploadModal";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
@@ -113,22 +112,22 @@ export default async function DashboardPage() {
     const mostRecent = studySets[0] ?? null;
 
     return (
-        <main className="min-h-screen bg-white">
+        <main className="min-h-screen bg-paper">
             <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
                 {stats === null && <ErrorBanner message="Couldn't load your stats right now." />}
 
                 {studySetCount === 0 ? (
                     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4 py-12">
-                        <UploadWorkflow />
-                        <p className="text-sm text-gray-400 text-center">
+                        <UploadModal standalone onClose={() => {}} />
+                        <p className="text-sm text-ink-muted text-center">
                             Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
                         </p>
                     </section>
                 ) : (
                     <div className="space-y-8">
                         <div>
-                            <h1 className="text-2xl font-semibold text-ink tracking-tight">Dashboard</h1>
-                            <p className="text-sm text-gray-400 mt-1">Overview of your study activity.</p>
+                            <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Dashboard</h1>
+                            <p className="text-sm text-ink-muted mt-1">Overview of your study activity.</p>
                         </div>
 
                         {stats && <StatsRow stats={stats} />}

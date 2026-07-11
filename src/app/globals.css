@@ -12,6 +12,9 @@
     --color-mastered: #3a6b4d;
     --color-review: #a67c2e;
     --color-error: #8c3a3a;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
     --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     --font-data: var(--font-plex-mono), ui-monospace, monospace;

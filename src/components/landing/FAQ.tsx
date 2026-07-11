@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { Reveal } from "./Reveal";
 
 const faqs = [
@@ -31,22 +32,12 @@ const faqs = [
     },
 ];
 
-function ChevronDown({ open }: { open: boolean }) {
+function ChevronDownIcon({ open }: { open: boolean }) {
     return (
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <ChevronDown
+            size={16}
             className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-        >
-            <polyline points="6 9 12 15 18 9" />
-        </svg>
+        />
     );
 }
 
@@ -57,7 +48,7 @@ export function FAQ() {
         <section className="mx-auto max-w-3xl px-6 py-20">
             <Reveal>
                 <h2 className="text-center font-display text-3xl font-semibold text-ink">Frequently asked questions</h2>
-                <p className="mt-3 text-center text-sm text-gray-400">
+                <p className="mt-3 text-center text-sm text-ink-muted">
                     Everything you need to know about StudyForge.
                 </p>
             </Reveal>
@@ -76,7 +67,7 @@ export function FAQ() {
                             className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left text-sm font-semibold text-ink transition hover:text-accent cursor-pointer"
                         >
                             {faq.q}
-                            <ChevronDown open={openIndex === i} />
+                            <ChevronDownIcon open={openIndex === i} />
                         </button>
                         <AnimatePresence>
                             {openIndex === i && (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { parseJsonArray } from "@/lib/deserialize";
 import { gradeTheoryAnswer } from "@/lib/prompts/gradeTheoryAnswer";
 import type { SubmittedAnswer } from "@/lib/types";
 
@@ -35,7 +36,7 @@ export async function POST(
 
             if (answer.type === "fillInBlank") {
                 const question = quiz.studySet.fillInBlanks.find((item) => item.id === answer.id)!;
-                const acceptable = [question.answer, ...JSON.parse(question.acceptableAnswers)].map((value: string) => value.trim().toLowerCase());
+                const acceptable = [question.answer, ...parseJsonArray<string>(question.acceptableAnswers)].map((value: string) => value.trim().toLowerCase());
                 const isCorrect = acceptable.includes(answer.userAnswer.trim().toLowerCase());
                 return {
                     ...answer,
@@ -46,7 +47,7 @@ export async function POST(
             }
 
             const question = quiz.studySet.theoryQuestions.find((item) => item.id === answer.id)!;
-            const keyPoints = JSON.parse(question.keyPoints) as string[];
+            const keyPoints = parseJsonArray<string>(question.keyPoints);
             const result = await gradeTheoryAnswer(question.question, question.referenceAnswer, keyPoints, answer.userAnswer);
             return {
                 ...answer,

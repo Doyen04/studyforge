@@ -31,7 +31,7 @@ export function StudySetCard({ set }: StudySetCardProps) {
                     {set.lastScore !== null && (
                         <span
                             className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${
-                                set.lastScore >= 70 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                                set.lastScore >= 70 ? "bg-mastered/10 text-mastered" : "bg-review/10 text-review"
                             }`}
                         >
                             {set.lastScore}%

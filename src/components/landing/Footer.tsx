@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export function Footer() {
     return (
-        <footer className="border-t border-gray-100">
-            <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 text-sm text-gray-400">
+        <footer className="border-t border-rule">
+            <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6 text-sm text-ink-muted">
                 <span className="font-display text-base font-semibold text-ink">StudyForge</span>
                 <div className="flex items-center gap-6">
                     <Link href="/dashboard" className="transition-colors hover:text-accent">

@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { X } from "lucide-react";
 import { UploadZone } from "./UploadZone";
 import { GenerateOptionsPanel } from "./GenerateOptionsPanel";
 
-export function UploadModal({ onClose }: { onClose: () => void }) {
+export function UploadModal({ onClose, standalone }: { onClose?: () => void; standalone?: boolean }) {
     const router = useRouter();
     const [documentId, setDocumentId] = useState<string | null>(null);
 
@@ -18,20 +19,32 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
     };
 
     const handleGenerationSuccess = (studySetId: string) => {
-        onClose();
+        onClose?.();
         router.push(`/dashboard/study-sets/${studySetId}`);
     };
 
-    const handleOverlayClick = (e: React.MouseEvent) => {
-        if (e.target === e.currentTarget && !documentId) {
-            onClose();
-        }
-    };
+    if (standalone) {
+        return (
+            <div className="w-full transition-all duration-300">
+                {!documentId ? (
+                    <UploadZone onUploadSuccess={handleUploadSuccess} />
+                ) : (
+                    <GenerateOptionsPanel
+                        documentId={documentId}
+                        onGenerationSuccess={handleGenerationSuccess}
+                        onReset={handleReset}
+                    />
+                )}
+            </div>
+        );
+    }
 
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
-            onClick={handleOverlayClick}
+            onClick={(e) => {
+                if (e.target === e.currentTarget && !documentId) onClose?.();
+            }}
         >
             <div
                 className="w-full rounded-lg border border-rule bg-card shadow-xl"
@@ -44,14 +57,11 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
                     </p>
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={() => onClose?.()}
                         aria-label="Close"
                         className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
+                        <X size={16} />
                     </button>
                 </div>
 

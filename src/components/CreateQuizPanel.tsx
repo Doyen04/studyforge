@@ -96,7 +96,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle, availableCounts }: 
                                         max={max}
                                         value={counts[type.key]}
                                         onChange={(e) => setCount(type.key, e.target.value)}
-                                        className="w-full max-w-16 rounded-md border border-rule bg-white px-2 py-1 text-center text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-sm"
+                                        className="w-full max-w-16 rounded-md border border-rule bg-paper px-2 py-1 text-center text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-sm"
                                     />
                                 </label>
                             );

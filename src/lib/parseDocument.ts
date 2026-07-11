@@ -1,4 +1,5 @@
 import OfficeParser  from "officeparser";
+import { countWords } from "./utils";
 
 type SupportedFileType = "docx" | "pptx" | "pdf";
 
@@ -25,7 +26,7 @@ export async function parseDocument(buffer: Buffer, originalFilename: string): P
     const ast = await OfficeParser.parseOffice(buffer, { fileType });
     console.log(ast, '[logging]');
     const text = await ast.to('text').then(r => r.value.trim());
-    const wordCount = text.length ? text.split(/\s+/).length : 0;
+    const wordCount = countWords(text);
 
     if (wordCount < 30) {
         throw new Error(

@@ -1,9 +1,11 @@
+import { countWords } from "./utils";
+
 const WORDS_PER_CHUNK = 3000;
 const SINGLE_CHUNK_THRESHOLD = 3500;
 
 export function chunkText(text: string): string[] {
     const normalized = text.trim();
-    const wordCount = normalized ? normalized.split(/\s+/).length : 0;
+    const wordCount = countWords(normalized);
     if (wordCount <= SINGLE_CHUNK_THRESHOLD) {
         return [text];
     }

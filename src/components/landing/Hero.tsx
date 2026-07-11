@@ -40,7 +40,7 @@ export function Hero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-                    className="mx-auto mt-6 max-w-2xl text-lg text-gray-400 leading-relaxed"
+                    className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted leading-relaxed"
                 >
                     Upload your slides, documents, or PDFs. StudyForge generates flashcards, quizzes, and written
                     questions — then grades your answers so you know exactly what you have down and what needs work.
@@ -60,7 +60,7 @@ export function Hero() {
                     </Link>
                     <Link
                         href="#how-it-works"
-                        className="rounded-lg border border-gray-200 px-8 py-3 text-sm font-medium text-ink transition-colors hover:border-accent/40 hover:text-accent active:scale-[0.97]"
+                        className="rounded-lg border border-rule px-8 py-3 text-sm font-medium text-ink transition-colors hover:border-accent/40 hover:text-accent active:scale-[0.97]"
                     >
                         How it works
                     </Link>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { parseJsonArray } from "@/lib/deserialize";
 
 export async function GET(
     request: NextRequest,
@@ -16,11 +17,11 @@ export async function GET(
         return NextResponse.json({ error: "Quiz not found." }, { status: 404 });
     }
 
-    const refs = JSON.parse(quiz.questionRefs) as Array<{ type: string; id: string }>;
+    const refs = parseJsonArray<{ type: string; id: string }>(quiz.questionRefs);
     const questions = refs.map((ref) => {
         if (ref.type === "mcq") {
             const question = quiz.studySet.mcqQuestions.find((item) => item.id === ref.id)!;
-            return { type: "mcq", id: question.id, question: question.question, options: JSON.parse(question.options) };
+            return { type: "mcq", id: question.id, question: question.question, options: parseJsonArray<string>(question.options) };
         }
         if (ref.type === "fillInBlank") {
             const question = quiz.studySet.fillInBlanks.find((item) => item.id === ref.id)!;

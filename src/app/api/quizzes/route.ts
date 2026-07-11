@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { pick } from "@/lib/utils";
 import type { QuestionType } from "@/lib/types";
 
 interface CreateQuizBody {
@@ -20,9 +21,6 @@ export async function POST(request: NextRequest) {
     if (!studySet) {
         return NextResponse.json({ error: "Study set not found." }, { status: 404 });
     }
-
-    const pick = <T extends { id: string }>(pool: T[], count: number) =>
-        [...pool].sort(() => Math.random() - 0.5).slice(0, count).map((question) => question.id);
 
     const getCount = (type: string) => Math.min(counts[type] ?? 0, 10);
 

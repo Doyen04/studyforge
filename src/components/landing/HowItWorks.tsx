@@ -23,7 +23,7 @@ const steps = [
 
 export function HowItWorks() {
     return (
-        <section id="how-it-works" className="border-t border-gray-100 bg-paper">
+        <section id="how-it-works" className="border-t border-rule bg-paper">
             <div className="mx-auto max-w-7xl px-6 py-20">
                 <Reveal>
                     <h2 className="text-center font-display text-3xl font-semibold text-ink">How it works</h2>
@@ -37,13 +37,13 @@ export function HowItWorks() {
                             viewport={{ once: true, margin: "-60px" }}
                             transition={{ duration: 0.5, delay: i * 0.15, ease: "easeOut" }}
                             whileHover={{ y: -3 }}
-                            className="text-center rounded-xl bg-white p-8 border border-gray-100 shadow-sm transition-shadow hover:shadow-md"
+                            className="text-center rounded-xl bg-card p-8 border border-rule shadow-sm transition-shadow hover:shadow-md"
                         >
                             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent font-semibold text-lg">
                                 {step.number}
                             </div>
                             <h3 className="mt-5 text-base font-semibold text-ink">{step.title}</h3>
-                            <p className="mt-2 text-sm text-gray-400 leading-relaxed">{step.description}</p>
+                            <p className="mt-2 text-sm text-ink-muted leading-relaxed">{step.description}</p>
                         </motion.div>
                     ))}
                 </div>

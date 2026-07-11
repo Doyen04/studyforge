@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 const links = [
@@ -22,7 +23,7 @@ export function SiteHeader() {
     }
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-rule bg-white">
+        <header className="sticky top-0 z-50 w-full border-b border-rule bg-card">
             <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
                 <Link href="/" className="font-display text-xl font-semibold text-ink tracking-tight">
                     StudyForge
@@ -51,20 +52,7 @@ export function SiteHeader() {
                     className="md:hidden flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                     aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        {mobileOpen ? (
-                            <>
-                                <line x1="18" y1="6" x2="6" y2="18" />
-                                <line x1="6" y1="6" x2="18" y2="18" />
-                            </>
-                        ) : (
-                            <>
-                                <line x1="3" y1="6" x2="21" y2="6" />
-                                <line x1="3" y1="12" x2="21" y2="12" />
-                                <line x1="3" y1="18" x2="21" y2="18" />
-                            </>
-                        )}
-                    </svg>
+                    {mobileOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
             </div>
 

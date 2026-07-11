@@ -3,7 +3,7 @@ export default function SettingsPage() {
         <main className="min-h-screen">
             <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-8">
                 <div>
-                    <h1 className="text-2xl font-semibold text-ink tracking-tight">Settings</h1>
+                    <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Settings</h1>
                     <p className="text-sm text-ink-muted mt-1">Manage your preferences and account.</p>
                 </div>
 
