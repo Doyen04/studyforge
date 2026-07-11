@@ -3,12 +3,9 @@ import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import Link from "next/link";
 import { GradedMargin } from "@/components/GradedMargin";
+import type { GradedAnswer } from "@/lib/types";
 
-interface QuizResultsPageProps {
-    params: Promise<{ id: string; attemptId: string }>;
-}
-
-export default async function QuizResultsPage({ params }: QuizResultsPageProps) {
+export default async function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
     const { id, attemptId } = await params;
 
     const [quiz, attempt] = await Promise.all([
@@ -20,19 +17,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
         notFound();
     }
 
-    const answers = parseJsonArray<{
-        type: "mcq" | "fillInBlank" | "theory";
-        id: string;
-        userAnswer: string;
-        score: number;
-        isCorrect?: boolean;
-        correctIndex?: number;
-        explanation?: string;
-        correctAnswer?: string;
-        matchedKeyPoints?: string[];
-        missedKeyPoints?: string[];
-        feedback?: string;
-    }>(attempt.answers);
+    const answers = parseJsonArray<GradedAnswer>(attempt.answers);
 
     return (
         <main className="min-h-screen">

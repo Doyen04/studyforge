@@ -6,38 +6,7 @@ import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
 import { TheoryCard } from "./TheoryCard";
 import { CreateQuizModal } from "./CreateQuizModal";
-
-interface Flashcard {
-    id: string;
-    studySetId: string;
-    front: string;
-    back: string;
-}
-
-interface McqQuestion {
-    id: string;
-    studySetId: string;
-    question: string;
-    options: string[];
-    correctIndex: number;
-    explanation: string;
-}
-
-interface FillInBlank {
-    id: string;
-    studySetId: string;
-    sentence: string;
-    answer: string;
-    acceptableAnswers: string[];
-}
-
-interface TheoryQuestion {
-    id: string;
-    studySetId: string;
-    question: string;
-    referenceAnswer: string;
-    keyPoints: string[];
-}
+import type { FlashcardData, McqQuestionData, FillInBlankData, TheoryQuestionData } from "@/lib/types";
 
 interface StudySetViewerProps {
     studySet: {
@@ -48,10 +17,10 @@ interface StudySetViewerProps {
             wordCount: number;
         };
         createdAt: Date;
-        flashcards: Flashcard[];
-        mcqQuestions: McqQuestion[];
-        fillInBlanks: FillInBlank[];
-        theoryQuestions: TheoryQuestion[];
+        flashcards: FlashcardData[];
+        mcqQuestions: McqQuestionData[];
+        fillInBlanks: FillInBlankData[];
+        theoryQuestions: TheoryQuestionData[];
     };
 }
 

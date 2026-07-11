@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { gradeTheoryAnswer } from "@/lib/prompts/gradeTheoryAnswer";
-
-interface SubmittedAnswer {
-    type: "mcq" | "fillInBlank" | "theory";
-    id: string;
-    userAnswer: string;
-}
+import type { SubmittedAnswer } from "@/lib/types";
 
 export async function POST(
     request: NextRequest,

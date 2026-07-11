@@ -3,14 +3,13 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import type { QuestionType } from "@/lib/types";
 
-const questionTypes = [
-    { key: "mcq" as const, label: "MCQ" },
-    { key: "fillInBlank" as const, label: "Fill-in-blank" },
-    { key: "theory" as const, label: "Theory" },
+const questionTypes: { key: QuestionType; label: string }[] = [
+    { key: "mcq", label: "MCQ" },
+    { key: "fillInBlank", label: "Fill-in-blank" },
+    { key: "theory", label: "Theory" },
 ];
-
-type QuestionType = (typeof questionTypes)[number]["key"];
 
 function initialCounts(available: Record<string, number>): Record<QuestionType, number> {
     return { mcq: Math.min(5, available.mcq ?? 0), fillInBlank: Math.min(5, available.fillInBlank ?? 0), theory: Math.min(5, available.theory ?? 0) };

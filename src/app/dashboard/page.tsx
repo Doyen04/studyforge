@@ -6,37 +6,7 @@ import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
-
-type DashboardStats = {
-    studySets: number;
-    questionsGenerated: number;
-    quizzesTaken: number;
-    averageScore: number | null;
-};
-
-type StudySetSummary = {
-    id: string;
-    title: string;
-    filename: string;
-    itemCounts: {
-        flashcards: number;
-        mcq: number;
-        fillInBlank: number;
-        theory: number;
-    };
-    lastScore: number | null;
-};
-
-type RecentAttempt = {
-    id: string;
-    score: number;
-    completedAt: Date | null;
-    quiz: {
-        studySet: {
-            title: string;
-        };
-    };
-};
+import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/lib/types";
 
 function ErrorBanner({ message }: { message: string }) {
     return <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">{message}</div>;

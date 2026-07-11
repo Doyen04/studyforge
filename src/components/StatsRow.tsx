@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "motion/react";
+import type { DashboardStats } from "@/lib/types";
 
 export function StatsRow({
     stats,
 }: {
-    stats: { studySets: number; questionsGenerated: number; quizzesTaken: number; averageScore: number | null };
+    stats: DashboardStats;
 }) {
     const items = [
         {

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import { QuizRunner } from "@/components/QuizRunner";
+import type { QuizQuestion } from "@/lib/types";
 
 interface QuizPageProps {
     params: Promise<{ id: string }>;
@@ -23,8 +24,8 @@ export default async function QuizPage({ params }: QuizPageProps) {
         notFound();
     }
 
-    const refs = parseJsonArray<{ type: "mcq" | "fillInBlank" | "theory"; id: string }>(quiz.questionRefs);
-    const questions = refs
+    const refs = parseJsonArray<{ type: QuizQuestion["type"]; id: string }>(quiz.questionRefs);
+    const questions: QuizQuestion[] = refs
         .map((ref) => {
             if (ref.type === "mcq") {
                 const question = quiz.studySet.mcqQuestions.find((item) => item.id === ref.id);

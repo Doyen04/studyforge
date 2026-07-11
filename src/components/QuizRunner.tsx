@@ -2,18 +2,14 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
-type Question =
-    | { type: "mcq"; id: string; question: string; options: string[] }
-    | { type: "fillInBlank"; id: string; sentence: string }
-    | { type: "theory"; id: string; question: string };
+import type { QuizQuestion } from "@/lib/types";
 
 export function QuizRunner({
     quizId,
     questions,
 }: {
     quizId: string;
-    questions: Question[];
+    questions: QuizQuestion[];
 }) {
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);

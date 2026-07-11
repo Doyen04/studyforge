@@ -1,15 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import type { FlashcardData } from "@/lib/types";
 
-export interface Flashcard {
-    id: string;
-    studySetId: string;
-    front: string;
-    back: string;
-}
-
-export function FlashcardViewer({ cards }: { cards: Flashcard[] }) {
+export function FlashcardViewer({ cards }: { cards: FlashcardData[] }) {
     const [index, setIndex] = useState(0);
     const [flipped, setFlipped] = useState(false);
     const card = cards[index];
