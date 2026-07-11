@@ -21,7 +21,7 @@ export function RecentQuizList({
             className="space-y-3"
         >
             <h2 className="text-base font-semibold text-ink">Recent quiz results</h2>
-            <div className="divide-y divide-rule overflow-hidden rounded-xl border border-rule bg-card shadow-sm">
+            <div className="divide-y divide-rule overflow-hidden rounded-xl border border-rule bg-card">
                 {attempts.map((attempt) => (
                     <div key={attempt.id} className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm">
                         <span className="truncate font-medium text-ink">{attempt.quiz.studySet.title}</span>

@@ -172,7 +172,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
             <div className="md:hidden sticky bottom-0 border-t border-rule bg-white p-4 flex justify-center -mx-4 -mb-4">
                 <button
                     onClick={() => setShowQuizModal(true)}
-                    className="w-full rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md cursor-pointer"
+                    className="w-full rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center cursor-pointer"
                 >
                     Create a quiz →
                 </button>

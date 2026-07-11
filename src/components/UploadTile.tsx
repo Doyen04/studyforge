@@ -18,7 +18,7 @@ export function UploadTile() {
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-accent/30 bg-accent/[0.03] p-5 text-sm text-accent transition-all hover:border-accent/60 hover:bg-accent/[0.07] hover:shadow-sm min-h-[148px] group w-full cursor-pointer"
+                    className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-accent/30 bg-accent/[0.03] p-5 text-sm text-accent transition-all hover:border-accent/60 hover:bg-accent/[0.07] min-h-[148px] group w-full cursor-pointer"
                 >
                     <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-lg font-semibold text-accent group-hover:bg-accent/20 group-hover:scale-110 transition-all">+</span>
                     <span className="font-semibold">Upload material</span>

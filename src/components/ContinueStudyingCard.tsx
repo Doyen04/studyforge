@@ -21,7 +21,7 @@ export function ContinueStudyingCard({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="relative overflow-hidden rounded-xl border border-rule bg-card p-6 shadow-sm"
+            className="relative overflow-hidden rounded-xl border border-rule bg-card p-6"
         >
             <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-r-full" />
             <div className="flex items-center justify-between gap-4">
@@ -38,7 +38,7 @@ export function ContinueStudyingCard({
                 </div>
                 <Link
                     href={`/dashboard/study-sets/${studySet.id}`}
-                    className="whitespace-nowrap rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white! shadow-sm transition-all hover:bg-accent-hover hover:shadow-md"
+                    className="whitespace-nowrap rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white! transition-all hover:bg-accent-hover"
                 >
                     {lastScore === null ? "Start studying" : "Quiz again"}
                 </Link>

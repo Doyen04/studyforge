@@ -29,7 +29,7 @@ export function StudySetCard({ set, index }: StudySetCardProps) {
         >
             <Link
                 href={`/dashboard/study-sets/${set.id}`}
-                className="group flex flex-col rounded-xl border border-rule bg-card p-5 shadow-sm transition-all hover:shadow-md hover:border-accent/30"
+                className="group flex flex-col rounded-xl border border-rule bg-card p-5 transition-all hover:border-accent/30"
             >
                 <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="space-y-1.5 min-w-0">

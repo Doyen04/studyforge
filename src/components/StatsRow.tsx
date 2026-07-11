@@ -40,7 +40,7 @@ export function StatsRow({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-40px" }}
                     transition={{ duration: 0.3, delay: i * 0.08, ease: "easeOut" }}
-                    className="rounded-xl border border-rule bg-card p-5 shadow-sm"
+                    className="rounded-xl border border-rule bg-card p-5"
                 >
                     <div className="flex items-center justify-between mb-2">
                         <span className="text-accent/60">{item.icon}</span>

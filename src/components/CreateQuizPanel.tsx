@@ -85,10 +85,10 @@ export function CreateQuizPanel({ studySetId, studySetTitle, availableCounts }: 
                         {questionTypes.map((type) => {
                             const max = availableCounts[type.key] ?? 0;
                             return (
-                                <label key={type.key} className="flex items-center justify-between gap-2 rounded-md border border-rule bg-paper px-3 py-2.5 sm:py-2 text-sm text-ink min-h-[44px] sm:min-h-0">
-                                    <span className="flex items-center gap-1.5">
+                                <label key={type.key} className="flex flex-col items-center gap-1 rounded-md border border-rule bg-paper px-3 py-3 sm:py-2 text-sm text-ink">
+                                    <span className="flex items-center gap-1.5 text-ink-muted text-xs">
                                         {type.label}
-                                        <span className="font-data text-[10px] text-ink-muted">/{max}</span>
+                                        <span className="font-data">/{max}</span>
                                     </span>
                                     <input
                                         type="number"
@@ -96,7 +96,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle, availableCounts }: 
                                         max={max}
                                         value={counts[type.key]}
                                         onChange={(e) => setCount(type.key, e.target.value)}
-                                        className="w-16 sm:w-14 rounded-md border border-rule bg-white px-2 py-1.5 sm:py-1 text-right text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-xs"
+                                        className="w-full max-w-16 rounded-md border border-rule bg-white px-2 py-1 text-center text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-sm"
                                     />
                                 </label>
                             );
