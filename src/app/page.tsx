@@ -46,33 +46,29 @@ function StudySetCard({ set }: { set: StudySetSummary }) {
     return (
         <Link
             href={`/dashboard/study-sets/${set.id}`}
-            className="flex flex-col justify-between rounded-lg border border-rule bg-card p-4 transition hover:bg-paper-hover"
+            className="group flex flex-col rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-gray-200"
         >
-            <div className="space-y-2">
-                <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-base font-semibold text-ink">{set.title}</h3>
-                    {set.lastScore !== null && (
-                        <span
-                            className={`rounded-md px-2 py-0.5 text-xs font-medium ${
-                                set.lastScore >= 70 ? "bg-mastered/10 text-mastered" : "bg-review/10 text-review"
-                            }`}
-                        >
-                            {set.lastScore}%
-                        </span>
-                    )}
+            <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="space-y-1.5 min-w-0">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/70">Study set</p>
+                    <h3 className="text-[15px] font-semibold text-ink truncate group-hover:text-accent transition-colors">{set.title}</h3>
                 </div>
-                <p className="truncate text-sm text-ink-muted">{set.filename}</p>
+                {set.lastScore !== null && (
+                    <span
+                        className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${
+                            set.lastScore >= 70 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
+                        }`}
+                    >
+                        {set.lastScore}%
+                    </span>
+                )}
             </div>
-            <div className="mt-3 border-t border-rule/70 pt-3 text-xs text-ink-muted">
-                <div className="flex flex-wrap gap-x-2 gap-y-1 font-data">
-                    <span>{set.itemCounts.flashcards} cards</span>
-                    <span>·</span>
-                    <span>{set.itemCounts.mcq} MCQ</span>
-                    <span>·</span>
-                    <span>{set.itemCounts.fillInBlank} fill</span>
-                    <span>·</span>
-                    <span>{set.itemCounts.theory} theory</span>
-                </div>
+            <p className="text-sm text-gray-400 truncate mb-4">{set.filename}</p>
+            <div className="mt-auto flex flex-wrap gap-x-3 gap-y-1 font-data text-xs text-gray-400">
+                <span>{set.itemCounts.flashcards}c</span>
+                <span>{set.itemCounts.mcq}m</span>
+                <span>{set.itemCounts.fillInBlank}f</span>
+                <span>{set.itemCounts.theory}t</span>
             </div>
         </Link>
     );
@@ -179,21 +175,26 @@ export default async function DashboardPage() {
     const mostRecent = studySets[0] ?? null;
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen bg-white">
             <SiteHeader />
 
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
                 {stats === null && <ErrorBanner message="Couldn't load your stats right now." />}
 
                 {studySetCount === 0 ? (
-                    <section className="mx-auto flex w-full max-w-2xl flex-col gap-4 py-6">
+                    <section className="mx-auto flex w-full max-w-2xl flex-col gap-4 py-12">
                         <UploadWorkflow />
-                        <p className="text-sm text-ink-muted">
+                        <p className="text-sm text-gray-400 text-center">
                             Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
                         </p>
                     </section>
                 ) : (
-                    <>
+                    <div className="space-y-8">
+                        <div>
+                            <h1 className="text-2xl font-semibold text-ink tracking-tight">Dashboard</h1>
+                            <p className="text-sm text-gray-400 mt-1">Overview of your study activity.</p>
+                        </div>
+
                         {stats && <StatsRow stats={stats} />}
 
                         {studySets.length === 0 ? (
@@ -208,11 +209,11 @@ export default async function DashboardPage() {
                                     />
                                 )}
 
-                                <section className="space-y-3">
+                                <section className="space-y-4">
                                     <div className="flex items-baseline justify-between">
-                                        <h2 className="text-lg font-semibold text-ink">Your study sets</h2>
+                                        <h2 className="text-base font-semibold text-ink">Your study sets</h2>
                                     </div>
-                                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                         <UploadTile />
                                         {studySets.map((set) => (
                                             <StudySetCard key={set.id} set={set} />
@@ -223,7 +224,7 @@ export default async function DashboardPage() {
                                 {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
                             </>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
         </main>
