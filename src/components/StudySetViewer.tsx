@@ -73,7 +73,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
             {/* Header info */}
             <section className="rounded-lg border border-rule bg-card p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">Study Set</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Study Set</p>
                     <h1 className="mt-2 font-display text-2xl font-bold text-ink md:text-3xl">{studySet.title}</h1>
                     <p className="mt-2 text-sm text-ink-muted leading-6">
                         {studySet.document.filename} · {studySet.document.wordCount} words · Created {new Date(studySet.createdAt).toLocaleDateString()}
@@ -82,7 +82,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                 {/* Desktop Create Quiz trigger */}
                 <button
                     onClick={() => setShowQuizCreator(!showQuizCreator)}
-                    className="hidden md:inline-flex cursor-pointer items-center justify-center rounded-md bg-focus hover:bg-focus-hover px-4 py-2.5 text-sm font-semibold text-white transition shrink-0"
+                    className="hidden md:inline-flex cursor-pointer items-center justify-center rounded-md bg-accent hover:bg-accent-hover px-4 py-2.5 text-sm font-semibold text-white transition shrink-0"
                 >
                     {showQuizCreator ? "Close quiz maker" : "Create a quiz →"}
                 </button>
@@ -96,7 +96,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                         onClick={() => setActiveTab(tab.key)}
                         className={`rounded-lg border p-4 text-left transition select-none flex flex-col justify-between ${
                             activeTab === tab.key
-                                ? "border-focus bg-focus/5 text-ink"
+                                ? "border-accent bg-accent/5 text-ink"
                                 : "border-rule bg-card hover:bg-paper-hover text-ink"
                         }`}
                     >
@@ -115,7 +115,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                             onClick={() => setActiveTab(tab.key)}
                             className={`py-3 text-sm font-semibold border-b-2 transition-all relative ${
                                 activeTab === tab.key
-                                    ? "border-focus text-focus"
+                                    ? "border-accent text-accent"
                                     : "border-transparent text-ink-muted hover:text-ink"
                             }`}
                         >
@@ -218,7 +218,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                             }, 100);
                         }
                     }}
-                    className="w-full cursor-pointer rounded-md bg-focus hover:bg-focus-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md"
+                    className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md"
                 >
                     {showQuizCreator ? "Hide Quiz Maker" : "Create a quiz  →"}
                 </button>

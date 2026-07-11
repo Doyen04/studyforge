@@ -67,5 +67,10 @@ export async function POST(
         data: { quizId, score: overallScore, answers: JSON.stringify(graded), completedAt: new Date() },
     });
 
+    await prisma.studySet.update({
+        where: { id: quiz.studySetId },
+        data: { lastAccessedAt: new Date() },
+    });
+
     return NextResponse.json({ attemptId: attempt.id, score: overallScore, answers: graded });
 }

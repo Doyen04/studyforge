@@ -91,7 +91,7 @@ export function QuizRunner({
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
                 <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href={`/dashboard/study-sets/${studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
+                    <Link href={`/dashboard/study-sets/${studySetId}`} className="text-sm font-semibold text-accent hover:text-accent-hover">
                         ← {studySetTitle}
                     </Link>
                     <span className="font-data text-sm text-ink-muted">{currentIndex + 1} / {questions.length}</span>
@@ -99,14 +99,14 @@ export function QuizRunner({
 
                 {/* Progress Card */}
                 <section className="rounded-lg border border-rule bg-card p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">Taking Quiz</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Taking Quiz</p>
                     <div className="mt-4 flex items-center justify-between gap-4">
                         <h1 className="font-sans text-lg font-bold text-ink">Active Recall Practice</h1>
                         <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% Completed</span>
                     </div>
                     <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-rule w-full">
                         <div
-                            className="h-full rounded-full bg-focus transition-[width] duration-300 ease-out"
+                            className="h-full rounded-full bg-accent transition-[width] duration-300 ease-out"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -116,7 +116,7 @@ export function QuizRunner({
                 <section className="rounded-lg border border-rule bg-card p-6 md:p-8 space-y-6">
                     <div className="flex items-center justify-between border-b border-rule/50 pb-3">
                         <span className="font-data text-xs text-ink-muted">Question {currentIndex + 1} of {questions.length}</span>
-                        <span className="rounded-full bg-focus/10 px-2 py-0.5 font-sans text-xs font-semibold text-focus capitalize">
+                        <span className="rounded-full bg-accent/10 px-2 py-0.5 font-sans text-xs font-semibold text-accent capitalize">
                             {currentQuestion.type === "mcq" ? "Multiple Choice" : currentQuestion.type === "fillInBlank" ? "Fill in the Blank" : "Theory Review"}
                         </span>
                     </div>
@@ -141,9 +141,9 @@ export function QuizRunner({
                                 return (
                                     <label
                                         key={idx}
-                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all focus-within:ring-2 focus-within:ring-focus ${
+                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all focus-within:ring-2 focus-within:ring-accent ${
                                             isChecked
-                                                ? "border-focus bg-focus/5 font-semibold text-ink"
+                                                ? "border-accent bg-accent/5 font-semibold text-ink"
                                                 : "border-rule bg-card hover:bg-paper-hover text-ink"
                                         }`}
                                     >
@@ -152,7 +152,7 @@ export function QuizRunner({
                                             name={currentQuestion.id}
                                             checked={isChecked}
                                             onChange={() => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: String(idx) }))}
-                                            className="h-4 w-4 accent-focus focus:outline-none"
+                                            className="h-4 w-4 accent-accent focus:outline-none"
                                         />
                                         <span>
                                             <span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>
@@ -171,7 +171,7 @@ export function QuizRunner({
                                 value={answers[currentQuestion.id] ?? ""}
                                 onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
                                 placeholder="Type answer here"
-                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-focus focus:ring-1 focus:ring-focus"
+                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                             />
                         </div>
                     )}
@@ -183,7 +183,7 @@ export function QuizRunner({
                                 value={answers[currentQuestion.id] ?? ""}
                                 onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
                                 placeholder="Write your explanation here (2–5 sentences recommended)..."
-                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-focus focus:ring-1 focus:ring-focus"
+                                className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                             />
                             <div className="flex items-center justify-between text-xs text-ink-muted">
                                 <span>{theoryWordCount} words</span>
@@ -205,7 +205,7 @@ export function QuizRunner({
                             }
                         }}
                         disabled={isSubmitting}
-                        className="w-full cursor-pointer rounded-md bg-focus hover:bg-focus-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                        className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {isSubmitting
                             ? "Submitting responses…"

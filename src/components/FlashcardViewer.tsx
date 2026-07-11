@@ -56,7 +56,7 @@ export function FlashcardViewer({ cards }: { cards: Flashcard[] }) {
                     type="button"
                     onClick={() => go(-1)}
                     disabled={index === 0}
-                    className="cursor-pointer font-semibold text-focus hover:text-focus-hover disabled:cursor-not-allowed disabled:opacity-30"
+                    className="cursor-pointer font-semibold text-accent hover:text-accent-hover disabled:cursor-not-allowed disabled:opacity-30"
                 >
                     ← Prev
                 </button>
@@ -67,7 +67,7 @@ export function FlashcardViewer({ cards }: { cards: Flashcard[] }) {
                     type="button"
                     onClick={() => go(1)}
                     disabled={index === cards.length - 1}
-                    className="cursor-pointer font-semibold text-focus hover:text-focus-hover disabled:cursor-not-allowed disabled:opacity-30"
+                    className="cursor-pointer font-semibold text-accent hover:text-accent-hover disabled:cursor-not-allowed disabled:opacity-30"
                 >
                     Next →
                 </button>

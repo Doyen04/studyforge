@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
 import { GradedMargin } from "@/components/GradedMargin";
 
 interface QuizResultsPageProps {
@@ -35,23 +36,21 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
     }>(attempt.answers);
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
-            <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-                <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href={`/dashboard/study-sets/${quiz.studySetId}`} className="text-sm font-semibold text-focus hover:text-focus-hover">
-                        ← Back to study set
-                    </Link>
-                    <Link href={`/dashboard/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-white px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-focus hover:text-focus">
+        <main className="min-h-screen">
+            <SiteHeader />
+            <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+                <div>
+                    <Link href={`/dashboard/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-card px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-accent hover:text-accent">
                         Retake quiz
                     </Link>
-                </header>
+                </div>
 
                 {/* Score card */}
                 <section className="rounded-lg border border-rule bg-card p-6 md:p-8 text-center space-y-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-focus">Quiz Results</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Quiz Results</p>
                     <h1 className="font-sans text-xl font-bold text-ink">{quiz.title}</h1>
                     <div className="mt-2 font-data text-6xl font-semibold text-ink">{attempt.score}%</div>
-                    <div className="mx-auto h-0.5 w-24 bg-focus" />
+                    <div className="mx-auto h-0.5 w-24 bg-accent" />
                     <p className="text-xs text-ink-muted">
                         Completed on {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString() : "recently"}.
                     </p>
@@ -140,7 +139,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
                                             })}
                                             {answer.explanation && (
                                                 <div className="mt-3 text-xs leading-5 text-ink-muted bg-paper p-3 rounded border border-rule">
-                                                    <span className="font-semibold text-focus block mb-1">Explanation</span>
+                                                    <span className="font-semibold text-accent block mb-1">Explanation</span>
                                                     {answer.explanation}
                                                 </div>
                                             )}
@@ -165,7 +164,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
                                     {isTheory && (
                                         <div className="space-y-4">
                                             <div className="space-y-1">
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-focus">Your response</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider text-accent">Your response</p>
                                                 <p className="text-sm leading-6 text-ink-muted bg-paper p-3 rounded-md border border-rule italic">
                                                     &ldquo;{answer.userAnswer || "(None)"}&rdquo;
                                                 </p>
@@ -173,13 +172,13 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 
                                             {answer.feedback && (
                                                 <div className="space-y-1">
-                                                    <p className="text-xs font-semibold uppercase tracking-wider text-focus">Grading Feedback</p>
+                                                    <p className="text-xs font-semibold uppercase tracking-wider text-accent">Grading Feedback</p>
                                                     <p className="text-sm leading-6 text-ink">{answer.feedback}</p>
                                                 </div>
                                             )}
 
                                             <div className="space-y-2 pt-2">
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-focus">Rubric Matching</p>
+                                                <p className="text-xs font-semibold uppercase tracking-wider text-accent">Rubric Matching</p>
                                                 <GradedMargin
                                                     matchedKeyPoints={answer.matchedKeyPoints || []}
                                                     missedKeyPoints={answer.missedKeyPoints || []}
@@ -188,7 +187,7 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 
                                             {answer.correctAnswer && (
                                                 <details className="text-xs border border-rule bg-paper p-3 rounded">
-                                                    <summary className="font-semibold text-focus cursor-pointer">View Model Reference Answer</summary>
+                                                    <summary className="font-semibold text-accent cursor-pointer">View Model Reference Answer</summary>
                                                     <p className="mt-2 text-sm text-ink-muted leading-6 font-sans">{answer.correctAnswer}</p>
                                                 </details>
                                             )}

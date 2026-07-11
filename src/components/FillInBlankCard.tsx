@@ -17,7 +17,7 @@ export function FillInBlankCard({ sentence, answer, acceptableAnswers }: FillInB
             className="group cursor-pointer rounded-lg border border-rule bg-card p-4 transition hover:bg-paper-hover select-none"
         >
             <div className="flex items-start justify-between gap-4">
-                <h3 className="font-sans text-base font-semibold text-ink group-hover:text-focus transition-colors">
+                <h3 className="font-sans text-base font-semibold text-ink group-hover:text-accent transition-colors">
                     {sentence}
                 </h3>
                 <span className="text-xs font-semibold uppercase tracking-wider text-ink-muted shrink-0 mt-0.5">
@@ -36,7 +36,7 @@ export function FillInBlankCard({ sentence, answer, acceptableAnswers }: FillInB
 
                     {acceptableAnswers.length > 0 && (
                         <div className="space-y-1">
-                            <p className="text-xs font-semibold uppercase tracking-wider text-focus">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                                 Acceptable Alternates
                             </p>
                             <p className="text-sm leading-6 text-ink-muted">{acceptableAnswers.join(", ")}</p>

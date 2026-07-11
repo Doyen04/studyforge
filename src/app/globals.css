@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-    --color-ink: #1b1f1d;
-    --color-ink-muted: #5b615e;
-    --color-paper: #f5f6f3;
-    --color-paper-hover: #ecede9;
+    --color-ink: #211c1f;
+    --color-ink-muted: #6b6266;
+    --color-paper: #f7f5f5;
+    --color-paper-hover: #efebec;
     --color-card: #ffffff;
-    --color-rule: #d8dad3;
-    --color-focus: #3b5ba9;
-    --color-focus-hover: #2e4a87;
-    --color-mastered: #2f8f6e;
-    --color-review: #b8862e;
-    --color-error: #b23a3a;
+    --color-rule: #dedadc;
+    --color-accent: #5b3a5c;
+    --color-accent-hover: #452d46;
+    --color-mastered: #3a6b4d;
+    --color-review: #a67c2e;
+    --color-error: #8c3a3a;
     --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
     --font-data: var(--font-plex-mono), ui-monospace, monospace;
@@ -24,14 +24,15 @@ html {
 body {
     min-height: 100%;
     background:
-        radial-gradient(circle at top left, rgba(59, 91, 169, 0.08), transparent 35%),
-        linear-gradient(180deg, #f8f9f6 0%, #f5f6f3 100%);
+        radial-gradient(circle at top left, rgba(91, 58, 92, 0.08), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(58, 107, 77, 0.07), transparent 30%),
+        linear-gradient(180deg, #fbf9fa 0%, #f7f5f5 100%);
     color: var(--color-ink);
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 :focus-visible {
-    outline: 2px solid var(--color-focus);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
 }
 

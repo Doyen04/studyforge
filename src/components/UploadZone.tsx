@@ -26,7 +26,7 @@ function ProgressBar({ value, indeterminate = false }: { value?: number; indeter
     return (
         <div className="h-2 overflow-hidden rounded-full bg-rule w-full">
             <div
-                className={`h-full rounded-full bg-focus ${
+                className={`h-full rounded-full bg-accent ${
                     indeterminate
                         ? "w-1/3 animate-[pulse_1.4s_ease-in-out_infinite]"
                         : "transition-[width] duration-300 ease-out"
@@ -151,8 +151,8 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 onDrop={handleDrop}
                 onClick={uploadStage === "idle" ? handleButtonClick : undefined}
                 className={`relative min-h-[220px] rounded-lg border-2 border-dashed p-6 text-center transition-all duration-200 flex flex-col items-center justify-center ${
-                    uploadStage === "idle" ? "cursor-pointer hover:border-focus" : ""
-                } ${dragActive ? "border-focus bg-paper-hover" : "border-rule bg-card"}`}
+                    uploadStage === "idle" ? "cursor-pointer hover:border-accent" : ""
+                } ${dragActive ? "border-accent bg-paper-hover" : "border-rule bg-card"}`}
             >
                 <input
                     ref={fileInputRef}

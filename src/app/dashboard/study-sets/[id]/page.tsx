@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
+import { SiteHeader } from "@/components/SiteHeader";
 import { StudySetViewer } from "@/components/StudySetViewer";
 
 interface StudySetPageProps {
@@ -25,6 +26,11 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
     if (!studySet) {
         notFound();
     }
+
+    await prisma.studySet.update({
+        where: { id },
+        data: { lastAccessedAt: new Date() },
+    });
 
     const parsedStudySet = {
         id: studySet.id,
@@ -65,14 +71,14 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
     };
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-6 lg:px-8">
-            <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-                <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href="/dashboard" className="text-sm font-semibold text-focus hover:text-focus-hover">
+        <main className="min-h-screen">
+            <SiteHeader />
+            <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
+                <div>
+                    <Link href="/dashboard/study-sets" className="text-sm font-semibold text-accent hover:text-accent-hover">
                         ← All study sets
                     </Link>
-                </header>
-
+                </div>
                 <StudySetViewer studySet={parsedStudySet} />
             </div>
         </main>

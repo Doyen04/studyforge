@@ -23,6 +23,7 @@ model StudySet {
     document        Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
     title           String
     createdAt       DateTime         @default(now())
+    lastAccessedAt  DateTime         @default(now())
     flashcards      Flashcard[]
     mcqQuestions    McqQuestion[]
     fillInBlanks    FillInBlank[]

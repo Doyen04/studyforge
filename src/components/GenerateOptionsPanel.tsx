@@ -70,7 +70,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
     return (
         <div className="rounded-lg border border-rule bg-card p-6 md:p-8 space-y-6">
             <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Configure Study Set</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Configure Study Set</p>
                 <h2 className="mt-2 font-sans text-xl font-semibold text-ink">Choose generation counts</h2>
                 <p className="mt-1 text-sm text-ink-muted">
                     Specify how many items of each type you want generated from your document.
@@ -102,7 +102,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                                 const val = Math.max(0, Math.min(max, parseInt(e.target.value) || 0));
                                 setCounts((prev) => ({ ...prev, [key]: val }));
                             }}
-                            className="w-full rounded-md border border-rule bg-white px-3 py-2 text-ink outline-none transition focus:border-focus disabled:opacity-50"
+                            className="w-full rounded-md border border-rule bg-white px-3 py-2 text-ink outline-none transition focus:border-accent disabled:opacity-50"
                         />
                     </label>
                 ))}
@@ -113,13 +113,13 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                     type="button"
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="w-full cursor-pointer rounded-md bg-focus hover:bg-focus-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isGenerating ? "Generating set…" : "Generate study set"}
                 </button>
 
                 {isGenerating ? (
-                    <p className="text-center font-sans text-sm text-focus font-medium animate-pulse">
+                    <p className="text-center font-sans text-sm text-accent font-medium animate-pulse">
                         {generatingStatuses[statusIndex]}
                     </p>
                 ) : (
@@ -128,7 +128,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                         <button
                             type="button"
                             onClick={onReset}
-                            className="cursor-pointer font-semibold text-focus hover:underline"
+                            className="cursor-pointer font-semibold text-accent hover:underline"
                         >
                             Upload another file
                         </button>

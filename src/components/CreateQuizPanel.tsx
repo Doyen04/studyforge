@@ -57,7 +57,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
 
     return (
         <form onSubmit={handleSubmit} className="rounded-lg border border-rule bg-card p-6 md:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-focus">Quiz</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Quiz</p>
             <h2 className="mt-3 font-sans text-xl font-semibold text-ink">Create a quiz</h2>
             <p className="mt-2 text-sm leading-6 text-ink-muted">Choose question types, set a count per type, and generate a quiz from this study set.</p>
 
@@ -103,7 +103,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
             <button
                 type="submit"
                 disabled={isSubmitting || types.length === 0}
-                className="mt-6 rounded-md bg-focus px-4 py-3 text-sm font-semibold text-white transition hover:bg-focus-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-6 rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
                 {isSubmitting ? "Creating…" : "Create quiz"}
             </button>
