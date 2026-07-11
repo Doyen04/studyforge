@@ -57,5 +57,5 @@ export default async function QuizPage({ params }: QuizPageProps) {
         })
         .filter((question): question is NonNullable<typeof question> => question !== null);
 
-    return <QuizRunner quizId={quiz.id} studySetId={quiz.studySetId} studySetTitle={quiz.studySet.title} questions={questions} />;
+    return <QuizRunner quizId={quiz.id} questions={questions} />;
 }

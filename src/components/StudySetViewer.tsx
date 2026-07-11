@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
 import { TheoryCard } from "./TheoryCard";
+import { CreateQuizModal } from "./CreateQuizModal";
 
 interface Flashcard {
     id: string;
@@ -59,6 +59,7 @@ type TabType = "flashcards" | "mcq" | "fillInBlank" | "theory";
 
 export function StudySetViewer({ studySet }: StudySetViewerProps) {
     const [activeTab, setActiveTab] = useState<TabType>("flashcards");
+    const [showQuizModal, setShowQuizModal] = useState(false);
 
     const tabs = [
         { key: "flashcards" as const, label: "Flashcards", count: studySet.flashcards.length },
@@ -70,20 +71,20 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
     return (
         <div className="space-y-6">
             {/* Header info */}
-            <section className="rounded-lg border border-rule bg-card p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <section className="rounded-lg border border-rule bg-card p-4 md:p-5 flex items-center justify-between gap-3">
                 <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Study Set</p>
-                    <h1 className="mt-2 font-display text-2xl font-bold text-ink md:text-3xl">{studySet.title}</h1>
-                    <p className="mt-2 text-sm text-ink-muted leading-6">
-                        {studySet.document.filename} · {studySet.document.wordCount} words · Created {new Date(studySet.createdAt).toLocaleDateString()}
+                    <h1 className="mt-0.5 font-display text-xl font-bold text-ink md:text-2xl">{studySet.title}</h1>
+                    <p className="mt-0.5 text-xs text-ink-muted">
+                        {studySet.document.filename} · {studySet.document.wordCount} words · {new Date(studySet.createdAt).toLocaleDateString()}
                     </p>
                 </div>
-                <Link
-                    href={`/dashboard/quizzes`}
-                    className="hidden md:inline-flex items-center justify-center rounded-md bg-accent hover:bg-accent-hover px-4 py-2.5 text-sm font-semibold text-white transition shrink-0"
+                <button
+                    onClick={() => setShowQuizModal(true)}
+                    className="hidden md:inline-flex items-center justify-center rounded-md bg-accent hover:bg-accent-hover px-3 py-2 text-sm font-semibold text-white transition shrink-0 cursor-pointer"
                 >
                     Create a quiz →
-                </Link>
+                </button>
             </section>
 
             {/* Quick stats grid */}
@@ -200,13 +201,21 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
             </div>
 
             <div className="md:hidden sticky bottom-0 border-t border-rule bg-white p-4 flex justify-center -mx-4 -mb-4">
-                <Link
-                    href="/dashboard/quizzes"
-                    className="w-full rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md"
+                <button
+                    onClick={() => setShowQuizModal(true)}
+                    className="w-full rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md cursor-pointer"
                 >
                     Create a quiz →
-                </Link>
+                </button>
             </div>
+
+            {showQuizModal && (
+                <CreateQuizModal
+                    studySetId={studySet.id}
+                    studySetTitle={studySet.title}
+                    onClose={() => setShowQuizModal(false)}
+                />
+            )}
         </div>
     );
 }

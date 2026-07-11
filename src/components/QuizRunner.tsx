@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 type Question =
     | { type: "mcq"; id: string; question: string; options: string[] }
@@ -11,13 +10,9 @@ type Question =
 
 export function QuizRunner({
     quizId,
-    studySetId,
-    studySetTitle,
     questions,
 }: {
     quizId: string;
-    studySetId: string;
-    studySetTitle: string;
     questions: Question[];
 }) {
     const router = useRouter();
@@ -90,12 +85,9 @@ export function QuizRunner({
     return (
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-                <header className="flex items-center justify-between border-b border-rule pb-4">
-                    <Link href={`/dashboard/study-sets/${studySetId}`} className="text-sm font-semibold text-accent hover:text-accent-hover">
-                        ← {studySetTitle}
-                    </Link>
+                <div className="flex items-center justify-end border-b border-rule pb-4">
                     <span className="font-data text-sm text-ink-muted">{currentIndex + 1} / {questions.length}</span>
-                </header>
+                </div>
 
                 {/* Progress Card */}
                 <section className="rounded-lg border border-rule bg-card p-6">
