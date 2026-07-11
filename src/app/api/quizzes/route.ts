@@ -38,3 +38,20 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ quiz });
 }
+
+export async function GET() {
+    const quizzes = await prisma.quiz.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+            studySet: { select: { title: true } },
+            attempts: {
+                where: { completedAt: { not: null } },
+                orderBy: { completedAt: "desc" },
+                take: 1,
+                select: { score: true, completedAt: true },
+            },
+        },
+    });
+
+    return NextResponse.json({ quizzes });
+}

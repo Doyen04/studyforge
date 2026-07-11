@@ -1,237 +1,125 @@
-import { prisma } from "./db";
-import { parseJsonArray } from "./deserialize";
 import type { DashboardStats, StudySetSummary, RecentAttempt, QuizQuestion, GradedAnswer } from "./types";
 
-export async function getDashboardStats(): Promise<DashboardStats> {
-    const [studySetCount, flashcardCount, mcqCount, fillInBlankCount, theoryCount, attemptAgg] = await Promise.all([
-        prisma.studySet.count(),
-        prisma.flashcard.count(),
-        prisma.mcqQuestion.count(),
-        prisma.fillInBlank.count(),
-        prisma.theoryQuestion.count(),
-        prisma.quizAttempt.aggregate({
-            where: { completedAt: { not: null } },
-            _count: { _all: true },
-            _avg: { score: true },
-        }),
-    ]);
+async function api<T>(url: string, options?: RequestInit): Promise<T> {
+    const res = await fetch(url, { ...options, next: { revalidate: 0 } });
+    if (!res.ok) {
+        throw new Error(`API error: ${res.status} ${res.statusText}`);
+    }
+    return res.json() as Promise<T>;
+}
 
-    return {
-        studySets: studySetCount,
-        questionsGenerated: flashcardCount + mcqCount + fillInBlankCount + theoryCount,
-        quizzesTaken: attemptAgg._count._all,
-        averageScore: attemptAgg._avg.score !== null ? Math.round(attemptAgg._avg.score) : null,
-    };
+type DashboardData = {
+    stats: DashboardStats | null;
+    studySets: StudySetSummary[];
+    recentAttempts: RecentAttempt[];
+};
+
+export async function getDashboardData(): Promise<DashboardData> {
+    return api<DashboardData>("/api/dashboard");
+}
+
+export async function getDashboardStats(): Promise<DashboardStats> {
+    const data = await api<DashboardData>("/api/dashboard");
+    return data.stats ?? { studySets: 0, questionsGenerated: 0, quizzesTaken: 0, averageScore: null };
 }
 
 export async function getStudySetsWithScores(): Promise<StudySetSummary[]> {
-    const rows = await prisma.studySet.findMany({
-        orderBy: { lastAccessedAt: "desc" },
-        select: {
-            id: true,
-            title: true,
-            document: { select: { filename: true } },
-            _count: {
-                select: {
-                    flashcards: true,
-                    mcqQuestions: true,
-                    fillInBlanks: true,
-                    theoryQuestions: true,
-                },
-            },
-            quizzes: {
-                select: {
-                    id: true,
-                    attempts: {
-                        where: { completedAt: { not: null } },
-                        orderBy: { completedAt: "desc" },
-                        take: 1,
-                        select: { id: true, score: true, completedAt: true, quizId: true },
-                    },
-                },
-            },
-        },
-    });
-
-    return rows.map((set) => {
-        const lastAttempt = set.quizzes
-            .flatMap((quiz) => quiz.attempts)
-            .sort((left, right) => (right.completedAt?.getTime() ?? 0) - (left.completedAt?.getTime() ?? 0))[0] ?? null;
-
-        return {
-            id: set.id,
-            title: set.title,
-            filename: set.document.filename,
-            itemCounts: {
-                flashcards: set._count.flashcards,
-                mcq: set._count.mcqQuestions,
-                fillInBlank: set._count.fillInBlanks,
-                theory: set._count.theoryQuestions,
-            },
-            lastScore: lastAttempt?.score ?? null,
-        } satisfies StudySetSummary;
-    });
+    const data = await api<DashboardData>("/api/dashboard");
+    return data.studySets;
 }
 
 export async function getRecentAttempts(): Promise<RecentAttempt[]> {
-    return prisma.quizAttempt.findMany({
-        where: { completedAt: { not: null } },
-        orderBy: { completedAt: "desc" },
-        take: 5,
-        select: {
-            id: true,
-            score: true,
-            completedAt: true,
-            quiz: {
-                select: {
-                    studySet: { select: { title: true } },
-                },
-            },
-        },
-    }) as Promise<RecentAttempt[]>;
+    const data = await api<DashboardData>("/api/dashboard");
+    return data.recentAttempts;
 }
 
-export async function getStudySetsIndex() {
-    return prisma.studySet.findMany({
-        include: { document: true },
-        orderBy: { createdAt: "desc" },
-    });
+type StudySetsIndexResponse = {
+    studySets: Array<{
+        id: string;
+        title: string;
+        document: { filename: string; wordCount: number };
+    }>;
+};
+
+export async function getStudySetsIndex(): Promise<StudySetsIndexResponse["studySets"]> {
+    const data = await api<StudySetsIndexResponse>("/api/study-sets");
+    return data.studySets;
 }
 
-export async function getStudySetDetail(id: string) {
-    const studySet = await prisma.studySet.findUnique({
-        where: { id },
-        include: {
-            document: true,
-            flashcards: true,
-            mcqQuestions: true,
-            fillInBlanks: true,
-            theoryQuestions: true,
-        },
-    });
-
-    if (!studySet) return null;
-
-    await prisma.studySet.update({
-        where: { id },
-        data: { lastAccessedAt: new Date() },
-    });
-
-    return {
-        id: studySet.id,
-        title: studySet.title,
-        createdAt: studySet.createdAt,
-        document: {
-            filename: studySet.document.filename,
-            wordCount: studySet.document.wordCount,
-        },
-        flashcards: studySet.flashcards.map((f) => ({
-            id: f.id,
-            studySetId: f.studySetId,
-            front: f.front,
-            back: f.back,
-        })),
-        mcqQuestions: studySet.mcqQuestions.map((q) => ({
-            id: q.id,
-            studySetId: q.studySetId,
-            question: q.question,
-            options: parseJsonArray<string>(q.options),
-            correctIndex: q.correctIndex,
-            explanation: q.explanation,
-        })),
-        fillInBlanks: studySet.fillInBlanks.map((f) => ({
-            id: f.id,
-            studySetId: f.studySetId,
-            sentence: f.sentence,
-            answer: f.answer,
-            acceptableAnswers: parseJsonArray<string>(f.acceptableAnswers),
-        })),
-        theoryQuestions: studySet.theoryQuestions.map((t) => ({
-            id: t.id,
-            studySetId: t.studySetId,
-            question: t.question,
-            referenceAnswer: t.referenceAnswer,
-            keyPoints: parseJsonArray<string>(t.keyPoints),
-        })),
+type StudySetDetailResponse = {
+    studySet: {
+        id: string;
+        title: string;
+        createdAt: Date;
+        document: { filename: string; wordCount: number };
+        flashcards: Array<{ id: string; studySetId: string; front: string; back: string }>;
+        mcqQuestions: Array<{ id: string; studySetId: string; question: string; options: string[]; correctIndex: number; explanation: string }>;
+        fillInBlanks: Array<{ id: string; studySetId: string; sentence: string; answer: string; acceptableAnswers: string[] }>;
+        theoryQuestions: Array<{ id: string; studySetId: string; question: string; referenceAnswer: string; keyPoints: string[] }>;
     };
+};
+
+export async function getStudySetDetail(id: string): Promise<StudySetDetailResponse["studySet"] | null> {
+    try {
+        const data = await api<StudySetDetailResponse>(`/api/study-sets/${id}`);
+        return data.studySet;
+    } catch {
+        return null;
+    }
 }
 
-export async function getQuizzesIndex() {
-    return prisma.quiz.findMany({
-        orderBy: { createdAt: "desc" },
-        include: {
-            studySet: { select: { title: true } },
-            attempts: {
-                where: { completedAt: { not: null } },
-                orderBy: { completedAt: "desc" },
-                take: 1,
-                select: { score: true, completedAt: true },
-            },
-        },
-    });
+type QuizzesIndexResponse = {
+    quizzes: Array<{
+        id: string;
+        title: string;
+        createdAt: Date;
+        studySet: { title: string };
+        attempts: Array<{ score: number; completedAt: Date | null }>;
+    }>;
+};
+
+export async function getQuizzesIndex(): Promise<QuizzesIndexResponse["quizzes"]> {
+    const data = await api<QuizzesIndexResponse>("/api/quizzes");
+    return data.quizzes;
 }
 
-export async function getQuizWithQuestions(id: string) {
-    const quiz = await prisma.quiz.findUnique({
-        where: { id },
-        include: {
-            studySet: {
-                include: { mcqQuestions: true, fillInBlanks: true, theoryQuestions: true },
-            },
-        },
-    });
+type QuizWithQuestionsResponse = {
+    quizId: string;
+    title: string;
+    questions: QuizQuestion[];
+};
 
-    if (!quiz) return null;
-
-    const refs = parseJsonArray<{ type: QuizQuestion["type"]; id: string }>(quiz.questionRefs);
-    const questions: QuizQuestion[] = refs
-        .map((ref) => {
-            if (ref.type === "mcq") {
-                const question = quiz.studySet.mcqQuestions.find((item) => item.id === ref.id);
-                if (!question) return null;
-                return {
-                    type: "mcq" as const,
-                    id: question.id,
-                    question: question.question,
-                    options: parseJsonArray<string>(question.options),
-                };
-            }
-
-            if (ref.type === "fillInBlank") {
-                const question = quiz.studySet.fillInBlanks.find((item) => item.id === ref.id);
-                if (!question) return null;
-                return {
-                    type: "fillInBlank" as const,
-                    id: question.id,
-                    sentence: question.sentence,
-                };
-            }
-
-            const question = quiz.studySet.theoryQuestions.find((item) => item.id === ref.id);
-            if (!question) return null;
-            return {
-                type: "theory" as const,
-                id: question.id,
-                question: question.question,
-            };
-        })
-        .filter((question): question is NonNullable<typeof question> => question !== null);
-
-    return { quizId: quiz.id, title: quiz.title, questions };
+export async function getQuizWithQuestions(id: string): Promise<QuizWithQuestionsResponse | null> {
+    try {
+        return await api<QuizWithQuestionsResponse>(`/api/quizzes/${id}`);
+    } catch {
+        return null;
+    }
 }
 
-export async function getQuizResults(quizId: string, attemptId: string) {
-    const [quiz, attempt] = await Promise.all([
-        prisma.quiz.findUnique({
-            where: { id: quizId },
-            include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true } } },
-        }),
-        prisma.quizAttempt.findUnique({ where: { id: attemptId }, include: { quiz: true } }),
-    ]);
+type QuizResultsResponse = {
+    quiz: {
+        id: string;
+        title: string;
+        studySet: {
+            mcqQuestions: Array<{ id: string; question: string; options: string; correctIndex: number; explanation: string }>;
+            fillInBlanks: Array<{ id: string; sentence: string; answer: string; acceptableAnswers: string }>;
+        };
+    };
+    attempt: {
+        id: string;
+        score: number;
+        answers: string;
+        completedAt: Date | null;
+        quizId: string;
+    };
+    answers: GradedAnswer[];
+};
 
-    if (!quiz || !attempt || attempt.quizId !== quiz.id) return null;
-
-    const answers = parseJsonArray<GradedAnswer>(attempt.answers);
-
-    return { quiz, attempt, answers };
+export async function getQuizResults(quizId: string, attemptId: string): Promise<QuizResultsResponse | null> {
+    try {
+        return await api<QuizResultsResponse>(`/api/quizzes/${quizId}/results/${attemptId}`);
+    } catch {
+        return null;
+    }
 }

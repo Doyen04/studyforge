@@ -1,29 +1,21 @@
-export const dynamic = "force-dynamic";
-
 import { UploadModal } from "@/components/UploadModal";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
-import { getDashboardStats, getStudySetsWithScores, getRecentAttempts } from "@/lib/actions";
+import { getDashboardData } from "@/lib/actions";
 
 function ErrorBanner({ message }: { message: string }) {
     return <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">{message}</div>;
 }
 
 export default async function DashboardPage() {
-    const [statsResult, studySetResult, attemptsResult] = await Promise.allSettled([
-        getDashboardStats(),
-        getStudySetsWithScores(),
-        getRecentAttempts(),
-    ]);
+    const data = await getDashboardData();
 
-    const stats = statsResult.status === "fulfilled" ? statsResult.value : null;
-    const studySets = studySetResult.status === "fulfilled" ? studySetResult.value : [];
-    const recentAttempts = attemptsResult.status === "fulfilled" ? attemptsResult.value : [];
+    const stats = data.stats;
+    const studySets = data.studySets;
     const studySetCount = stats?.studySets ?? studySets.length;
-
     const mostRecent = studySets[0] ?? null;
 
     return (
@@ -71,7 +63,7 @@ export default async function DashboardPage() {
                                     </div>
                                 </section>
 
-                                {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
+                                {data.recentAttempts.length > 0 && <RecentQuizList attempts={data.recentAttempts} />}
                             </>
                         )}
                     </div>
