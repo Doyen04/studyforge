@@ -1,7 +1,16 @@
+import { headers } from "next/headers";
 import type { DashboardStats, StudySetSummary, RecentAttempt, QuizQuestion, GradedAnswer } from "./types";
 
-async function api<T>(url: string, options?: RequestInit): Promise<T> {
-    const res = await fetch(url, { ...options, next: { revalidate: 0 } });
+async function getBaseUrl(): Promise<string> {
+    const h = await headers();
+    const host = h.get("host") ?? "localhost:3000";
+    const protocol = host.includes("localhost") || host.startsWith("127.") ? "http" : "https";
+    return `${protocol}://${host}`;
+}
+
+async function api<T>(path: string, options?: RequestInit): Promise<T> {
+    const baseUrl = await getBaseUrl();
+    const res = await fetch(`${baseUrl}${path}`, { ...options, next: { revalidate: 0 } });
     if (!res.ok) {
         throw new Error(`API error: ${res.status} ${res.statusText}`);
     }
