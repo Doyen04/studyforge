@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import Link from "next/link";
-import { SiteHeader } from "@/components/SiteHeader";
 import { GradedMargin } from "@/components/GradedMargin";
 
 interface QuizResultsPageProps {
@@ -37,7 +36,6 @@ export default async function QuizResultsPage({ params }: QuizResultsPageProps) 
 
     return (
         <main className="min-h-screen">
-            <SiteHeader />
             <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
                 <div>
                     <Link href={`/dashboard/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-card px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-accent hover:text-accent">

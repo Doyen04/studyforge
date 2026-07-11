@@ -2,7 +2,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
-import { SiteHeader } from "@/components/SiteHeader";
 import { StudySetViewer } from "@/components/StudySetViewer";
 
 interface StudySetPageProps {
@@ -72,7 +71,6 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
 
     return (
         <main className="min-h-screen">
-            <SiteHeader />
             <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
                 <div>
                     <Link href="/dashboard/study-sets" className="text-sm font-semibold text-accent hover:text-accent-hover">

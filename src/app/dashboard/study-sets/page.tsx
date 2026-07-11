@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { SiteHeader } from "@/components/SiteHeader";
 
 export default async function StudySetsIndex() {
     const sets = await prisma.studySet.findMany({ include: { document: true }, orderBy: { createdAt: "desc" } });
 
     return (
         <main className="min-h-screen">
-            <SiteHeader />
             <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
                 <section>
                     <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Study sets</h1>

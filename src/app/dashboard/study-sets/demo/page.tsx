@@ -1,9 +1,6 @@
-import { SiteHeader } from "@/components/SiteHeader";
-
 export default function DemoStudySetPage() {
     return (
         <main className="min-h-screen">
-            <SiteHeader />
             <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
                 <section className="rounded-4xl border border-rule bg-card p-8 shadow-[0_16px_40px_rgba(27,31,29,0.06)]">
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">Study set</p>

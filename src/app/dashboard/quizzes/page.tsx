@@ -1,13 +1,11 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { SiteHeader } from "@/components/SiteHeader";
 
 export default async function QuizzesIndex() {
     const quizzes = await prisma.quiz.findMany({ orderBy: { createdAt: "desc" }, include: { studySet: true } });
 
     return (
         <main className="min-h-screen">
-            <SiteHeader />
             <div className="mx-auto max-w-4xl px-4 py-8 space-y-6">
                 <h1 className="text-3xl font-display text-ink">Quizzes</h1>
                 <div className="grid gap-4">
