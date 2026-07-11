@@ -4,10 +4,26 @@ export function StatsRow({
     stats: { studySets: number; questionsGenerated: number; quizzesTaken: number; averageScore: number | null };
 }) {
     const items = [
-        { label: "Study sets", value: stats.studySets, icon: "📚" },
-        { label: "Questions made", value: stats.questionsGenerated >= 1000 ? `${(stats.questionsGenerated / 1000).toFixed(1)}k` : stats.questionsGenerated, icon: "✍️" },
-        { label: "Quizzes taken", value: stats.quizzesTaken, icon: "📝" },
-        { label: "Avg. score", value: stats.averageScore !== null ? `${stats.averageScore}%` : "—", icon: "🎯" },
+        {
+            label: "Study sets",
+            value: stats.studySets,
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5A2.5 2.5 0 0 1 4 19.5Z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>,
+        },
+        {
+            label: "Questions made",
+            value: stats.questionsGenerated >= 1000 ? `${(stats.questionsGenerated / 1000).toFixed(1)}k` : stats.questionsGenerated,
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>,
+        },
+        {
+            label: "Quizzes taken",
+            value: stats.quizzesTaken,
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12h6"/><path d="M9 16h6"/><path d="M9 20h6"/><path d="M4 4h16v16H4z"/><path d="M4 8h16"/></svg>,
+        },
+        {
+            label: "Avg. score",
+            value: stats.averageScore !== null ? `${stats.averageScore}%` : "—",
+            icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>,
+        },
     ];
 
     return (
@@ -15,7 +31,7 @@ export function StatsRow({
             {items.map((item) => (
                 <div key={item.label} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-lg">{item.icon}</span>
+                        <span className="text-gray-400">{item.icon}</span>
                         <span className="font-data text-2xl font-semibold text-ink">{item.value}</span>
                     </div>
                     <p className="text-xs font-medium text-gray-500 tracking-wide uppercase">{item.label}</p>
