@@ -1,16 +1,48 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { parseJsonArray } from "@/lib/deserialize";
-import { getQuizResults } from "@/lib/actions";
 import { GradedMargin } from "@/components/GradedMargin";
+import type { GradedAnswer } from "@/lib/types";
 
-export default async function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
-    const { id, attemptId } = await params;
-    const data = await getQuizResults(id, attemptId);
+export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
+    const [data, setData] = useState<{
+        quiz: any;
+        attempt: any;
+        answers: GradedAnswer[];
+    } | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    if (!data) {
-        notFound();
+    useEffect(() => {
+        params.then(({ id, attemptId }) => {
+            fetch(`/api/quizzes/${id}/results/${attemptId}`)
+                .then((res) => res.json())
+                .then((result) => {
+                    if (!result.quiz) {
+                        notFound();
+                        return;
+                    }
+                    setData(result);
+                })
+                .catch(() => {})
+                .finally(() => setLoading(false));
+        });
+    }, [params]);
+
+    if (loading) {
+        return (
+            <main className="min-h-screen">
+                <div className="mx-auto max-w-2xl px-4 py-8 space-y-6 animate-pulse">
+                    <div className="h-48 rounded-lg bg-rule" />
+                    {[1, 2].map((i) => <div key={i} className="h-64 rounded-lg bg-rule" />)}
+                </div>
+            </main>
+        );
     }
+
+    if (!data) return null;
 
     const { quiz, attempt, answers } = data;
 
@@ -36,7 +68,7 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
 
                 {/* Answers list */}
                 <section className="space-y-4">
-                    {answers.map((answer, index) => {
+                    {answers.map((answer: GradedAnswer, index: number) => {
                         const isTheory = answer.type === "theory";
                         const isCorrect = answer.isCorrect;
 
@@ -45,13 +77,13 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
                         let fillInBlankText = "";
 
                         if (answer.type === "mcq") {
-                            const found = quiz.studySet.mcqQuestions.find((q) => q.id === answer.id);
+                            const found = quiz.studySet.mcqQuestions.find((q: any) => q.id === answer.id);
                             if (found) {
                                 mcqQuestionText = found.question;
                                 mcqOptions = parseJsonArray<string>(found.options);
                             }
                         } else if (answer.type === "fillInBlank") {
-                            const found = quiz.studySet.fillInBlanks.find((q) => q.id === answer.id);
+                            const found = quiz.studySet.fillInBlanks.find((q: any) => q.id === answer.id);
                             if (found) {
                                 fillInBlankText = found.sentence;
                             }
@@ -85,13 +117,11 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
                                     </div>
                                 </div>
 
-                                {/* Question body */}
                                 <div className="space-y-3">
                                     <h2 className="text-base font-bold text-ink leading-7">
                                         {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : "Theory Question"}
                                     </h2>
 
-                                    {/* MCQ breakdown */}
                                     {answer.type === "mcq" && (
                                         <div className="space-y-2">
                                             {mcqOptions.map((option, idx) => {
@@ -123,7 +153,6 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
                                         </div>
                                     )}
 
-                                    {/* Fill in the blank breakdown */}
                                     {answer.type === "fillInBlank" && (
                                         <div className="space-y-3">
                                             <div className="text-sm font-semibold">
@@ -137,7 +166,6 @@ export default async function QuizResultsPage({ params }: { params: Promise<{ id
                                         </div>
                                     )}
 
-                                    {/* Theory breakdown */}
                                     {isTheory && (
                                         <div className="space-y-4">
                                             <div className="space-y-1">

@@ -1,22 +1,55 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { UploadModal } from "@/components/UploadModal";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
-import { getDashboardData } from "@/lib/actions";
+import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/lib/types";
 
 function ErrorBanner({ message }: { message: string }) {
     return <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">{message}</div>;
 }
 
-export default async function DashboardPage() {
-    const data = await getDashboardData();
+export default function DashboardPage() {
+    const [stats, setStats] = useState<DashboardStats | null>(null);
+    const [studySets, setStudySets] = useState<StudySetSummary[]>([]);
+    const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    const stats = data.stats;
-    const studySets = data.studySets;
+    useEffect(() => {
+        fetch("/api/dashboard")
+            .then((res) => res.json())
+            .then((data) => {
+                setStats(data.stats);
+                setStudySets(data.studySets);
+                setRecentAttempts(data.recentAttempts);
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
     const studySetCount = stats?.studySets ?? studySets.length;
     const mostRecent = studySets[0] ?? null;
+
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8 animate-pulse">
+                    <div className="h-8 w-48 rounded bg-rule" />
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-xl bg-rule" />)}
+                    </div>
+                    <div className="h-24 rounded-xl bg-rule" />
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-xl bg-rule" />)}
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-paper">
@@ -63,7 +96,7 @@ export default async function DashboardPage() {
                                     </div>
                                 </section>
 
-                                {data.recentAttempts.length > 0 && <RecentQuizList attempts={data.recentAttempts} />}
+                                {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
                             </>
                         )}
                     </div>

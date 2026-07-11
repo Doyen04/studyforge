@@ -1,8 +1,37 @@
-import Link from "next/link";
-import { getQuizzesIndex } from "@/lib/actions";
+"use client";
 
-export default async function QuizzesIndex() {
-    const quizzes = await getQuizzesIndex();
+import { useEffect, useState } from "react";
+import Link from "next/link";
+
+export default function QuizzesIndex() {
+    const [quizzes, setQuizzes] = useState<Array<{
+        id: string;
+        title: string;
+        studySet: { title: string };
+        attempts: Array<{ score: number; completedAt: string | null }>;
+    }>>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch("/api/quizzes")
+            .then((res) => res.json())
+            .then((data) => setQuizzes(data.quizzes))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return (
+            <main className="min-h-screen">
+                <div className="mx-auto max-w-5xl px-4 py-8 space-y-6 animate-pulse">
+                    <div className="h-8 w-40 rounded bg-rule" />
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-lg bg-rule" />)}
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen">
