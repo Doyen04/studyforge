@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { useToast } from "./Toaster";
 
 function CardFan() {
     const rotations = [-6, -2, 3, 7];
@@ -46,6 +47,7 @@ interface UploadZoneProps {
 }
 
 export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
+    const { toast } = useToast();
     const [dragActive, setDragActive] = useState(false);
     const [uploadStage, setUploadStage] = useState<"idle" | "uploading" | "parsing">("idle");
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -85,7 +87,9 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
     const startUpload = async (file: File) => {
         const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
         if (![".docx", ".pptx", ".pdf"].includes(ext)) {
-            setError("That's not a format StudyForge reads yet. Upload a .pptx, .docx, or .pdf.");
+            const msg = "That's not a format StudyForge reads yet. Upload a .pptx, .docx, or .pdf.";
+            setError(msg);
+            toast(msg, "error");
             setUploadStage("idle");
             return;
         }
@@ -118,7 +122,7 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                     }
                 };
 
-                xhr.onerror = () => reject(new Error("Network upload failed."));
+                xhr.onerror = () => reject(new Error("Network upload failed. Check your connection."));
                 xhr.send(formData);
             });
 
@@ -130,7 +134,9 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
 
             onUploadSuccess(response.documentId);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to parse file.");
+            const msg = err instanceof Error ? err.message : "Failed to parse file.";
+            setError(msg);
+            toast(msg, "error");
             setUploadStage("idle");
             setUploadProgress(0);
         }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "./Toaster";
 
 const defaultCounts = {
     flashcards: 15,
@@ -23,6 +24,7 @@ interface GenerateOptionsPanelProps {
 }
 
 export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset }: GenerateOptionsPanelProps) {
+    const { toast } = useToast();
     const [counts, setCounts] = useState(defaultCounts);
     const [isGenerating, setIsGenerating] = useState(false);
     const [statusIndex, setStatusIndex] = useState(0);
@@ -60,9 +62,12 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                 throw new Error(data.error || "Failed to generate study set.");
             }
 
+            toast("Study set generated successfully!", "success");
             onGenerationSuccess(data.studySet.id);
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Failed to generate study set.");
+            const msg = err instanceof Error ? err.message : "Failed to generate study set.";
+            setError(msg);
+            toast(msg, "error");
             setIsGenerating(false);
         }
     };

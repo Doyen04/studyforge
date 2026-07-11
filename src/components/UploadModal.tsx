@@ -1,19 +1,49 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { UploadZone } from "./UploadZone";
+import { GenerateOptionsPanel } from "./GenerateOptionsPanel";
+import { useToast } from "./Toaster";
 
 export function UploadModal({ onClose }: { onClose: () => void }) {
+    const router = useRouter();
+    const { toast } = useToast();
+    const [documentId, setDocumentId] = useState<string | null>(null);
+
+    const handleUploadSuccess = (docId: string) => {
+        setDocumentId(docId);
+    };
+
+    const handleReset = () => {
+        setDocumentId(null);
+    };
+
+    const handleGenerationSuccess = (studySetId: string) => {
+        onClose();
+        router.push(`/dashboard/study-sets/${studySetId}`);
+    };
+
+    const handleOverlayClick = (e: React.MouseEvent) => {
+        if (e.target === e.currentTarget && !documentId) {
+            onClose();
+        }
+    };
+
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
-            onClick={onClose}
+            onClick={handleOverlayClick}
         >
             <div
-                className="w-full max-w-md rounded-lg border border-rule bg-card p-6 shadow-xl"
+                className="w-full rounded-lg border border-rule bg-card shadow-xl"
+                style={{ maxWidth: documentId ? "28rem" : "24rem" }}
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="mb-4 flex items-center justify-between">
-                    <p className="font-sans text-base font-semibold text-ink">Upload material</p>
+                <div className="flex items-center justify-between px-6 pt-6 pb-2">
+                    <p className="font-sans text-base font-semibold text-ink">
+                        {documentId ? "Configure study set" : "Upload material"}
+                    </p>
                     <button
                         type="button"
                         onClick={onClose}
@@ -26,7 +56,18 @@ export function UploadModal({ onClose }: { onClose: () => void }) {
                         </svg>
                     </button>
                 </div>
-                <UploadZone onUploadSuccess={onClose} />
+
+                {!documentId ? (
+                    <div className="px-6 pb-6">
+                        <UploadZone onUploadSuccess={handleUploadSuccess} />
+                    </div>
+                ) : (
+                    <GenerateOptionsPanel
+                        documentId={documentId}
+                        onGenerationSuccess={handleGenerationSuccess}
+                        onReset={handleReset}
+                    />
+                )}
             </div>
         </div>
     );
