@@ -23,7 +23,7 @@ export function ContinueStudyingCard({
                         <span className={`font-medium ${scoreColor}`}>{scoreLabel}</span>
                         <span className="text-gray-300 mx-1">·</span>
                         <span className="text-gray-400">
-                            {itemCounts.flashcards}cards · {itemCounts.mcq}mcq · {itemCounts.fillInBlank}fib · {itemCounts.theory}theory
+                            {itemCounts.flashcards} cards · {itemCounts.mcq} mcq · {itemCounts.fillInBlank} fib · {itemCounts.theory} theory
                         </span>
                     </div>
                 </div>
