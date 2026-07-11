@@ -2,20 +2,57 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 
 export default async function QuizzesIndex() {
-    const quizzes = await prisma.quiz.findMany({ orderBy: { createdAt: "desc" }, include: { studySet: true } });
+    const quizzes = await prisma.quiz.findMany({
+        orderBy: { createdAt: "desc" },
+        include: {
+            studySet: { select: { title: true } },
+            attempts: {
+                where: { completedAt: { not: null } },
+                orderBy: { completedAt: "desc" },
+                take: 1,
+                select: { score: true, completedAt: true },
+            },
+        },
+    });
 
     return (
         <main className="min-h-screen">
-            <div className="mx-auto max-w-4xl px-4 py-8 space-y-6">
-                <h1 className="text-3xl font-display text-ink">Quizzes</h1>
-                <div className="grid gap-4">
-                    {quizzes.map((q) => (
-                        <Link key={q.id} href={`/dashboard/quizzes/${q.id}`} className="block rounded-3xl border border-rule bg-card p-4">
-                            <div className="font-semibold">{q.title}</div>
-                            <div className="text-sm text-ink/70">From set: {q.studySet.title}</div>
-                        </Link>
-                    ))}
-                </div>
+            <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
+                <section>
+                    <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Quizzes</h1>
+                    <p className="mt-2 text-sm text-ink-muted">Your generated quizzes and past results.</p>
+
+                    {quizzes.length === 0 ? (
+                        <div className="mt-6 rounded-lg border border-dashed border-rule bg-card p-6 text-sm text-ink-muted">
+                            No quizzes yet. Create one from a study set to test your knowledge.
+                        </div>
+                    ) : (
+                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {quizzes.map((q) => {
+                                const lastAttempt = q.attempts[0] ?? null;
+                                const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
+                                return (
+                                    <Link
+                                        key={q.id}
+                                        href={`/dashboard/quizzes/${q.id}`}
+                                        className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover"
+                                    >
+                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Quiz</p>
+                                        <h2 className="mt-3 font-sans text-base font-semibold text-ink">{q.title}</h2>
+                                        <p className="mt-2 text-sm leading-6 text-ink-muted">
+                                            {q.studySet.title}
+                                        </p>
+                                        {lastAttempt && (
+                                            <p className={`mt-3 text-xs font-semibold ${scoreColor}`}>
+                                                Last score: {lastAttempt.score}%
+                                            </p>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    )}
+                </section>
             </div>
         </main>
     );
