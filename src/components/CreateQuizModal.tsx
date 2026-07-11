@@ -26,12 +26,12 @@ export function CreateQuizModal({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
         >
-            <div className="relative w-full max-w-lg rounded-lg border border-rule bg-white shadow-xl">
+            <div className="relative w-full max-w-lg rounded-lg border border-rule bg-card shadow-xl">
                 <button
                     onClick={onClose}
                     className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
@@ -43,7 +43,7 @@ export function CreateQuizModal({
                     </svg>
                 </button>
 
-                <div className="max-h-[85vh] overflow-y-auto p-6">
+                <div className="max-h-[85vh] overflow-y-auto">
                     <CreateQuizPanel studySetId={studySetId} studySetTitle={studySetTitle} />
                 </div>
             </div>
