@@ -1058,7 +1058,8 @@ export const StudySetScalarFieldEnum = {
   id: 'id',
   documentId: 'documentId',
   title: 'title',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  lastAccessedAt: 'lastAccessedAt'
 } as const
 
 export type StudySetScalarFieldEnum = (typeof StudySetScalarFieldEnum)[keyof typeof StudySetScalarFieldEnum]

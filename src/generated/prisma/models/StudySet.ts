@@ -29,6 +29,7 @@ export type StudySetMinAggregateOutputType = {
   documentId: string | null
   title: string | null
   createdAt: Date | null
+  lastAccessedAt: Date | null
 }
 
 export type StudySetMaxAggregateOutputType = {
@@ -36,6 +37,7 @@ export type StudySetMaxAggregateOutputType = {
   documentId: string | null
   title: string | null
   createdAt: Date | null
+  lastAccessedAt: Date | null
 }
 
 export type StudySetCountAggregateOutputType = {
@@ -43,6 +45,7 @@ export type StudySetCountAggregateOutputType = {
   documentId: number
   title: number
   createdAt: number
+  lastAccessedAt: number
   _all: number
 }
 
@@ -52,6 +55,7 @@ export type StudySetMinAggregateInputType = {
   documentId?: true
   title?: true
   createdAt?: true
+  lastAccessedAt?: true
 }
 
 export type StudySetMaxAggregateInputType = {
@@ -59,6 +63,7 @@ export type StudySetMaxAggregateInputType = {
   documentId?: true
   title?: true
   createdAt?: true
+  lastAccessedAt?: true
 }
 
 export type StudySetCountAggregateInputType = {
@@ -66,6 +71,7 @@ export type StudySetCountAggregateInputType = {
   documentId?: true
   title?: true
   createdAt?: true
+  lastAccessedAt?: true
   _all?: true
 }
 
@@ -146,6 +152,7 @@ export type StudySetGroupByOutputType = {
   documentId: string
   title: string
   createdAt: Date
+  lastAccessedAt: Date
   _count: StudySetCountAggregateOutputType | null
   _min: StudySetMinAggregateOutputType | null
   _max: StudySetMaxAggregateOutputType | null
@@ -174,6 +181,7 @@ export type StudySetWhereInput = {
   documentId?: Prisma.StringFilter<"StudySet"> | string
   title?: Prisma.StringFilter<"StudySet"> | string
   createdAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
+  lastAccessedAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   flashcards?: Prisma.FlashcardListRelationFilter
   mcqQuestions?: Prisma.McqQuestionListRelationFilter
@@ -187,6 +195,7 @@ export type StudySetOrderByWithRelationInput = {
   documentId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  lastAccessedAt?: Prisma.SortOrder
   document?: Prisma.DocumentOrderByWithRelationInput
   flashcards?: Prisma.FlashcardOrderByRelationAggregateInput
   mcqQuestions?: Prisma.McqQuestionOrderByRelationAggregateInput
@@ -203,6 +212,7 @@ export type StudySetWhereUniqueInput = Prisma.AtLeast<{
   documentId?: Prisma.StringFilter<"StudySet"> | string
   title?: Prisma.StringFilter<"StudySet"> | string
   createdAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
+  lastAccessedAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   flashcards?: Prisma.FlashcardListRelationFilter
   mcqQuestions?: Prisma.McqQuestionListRelationFilter
@@ -216,6 +226,7 @@ export type StudySetOrderByWithAggregationInput = {
   documentId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  lastAccessedAt?: Prisma.SortOrder
   _count?: Prisma.StudySetCountOrderByAggregateInput
   _max?: Prisma.StudySetMaxOrderByAggregateInput
   _min?: Prisma.StudySetMinOrderByAggregateInput
@@ -229,12 +240,14 @@ export type StudySetScalarWhereWithAggregatesInput = {
   documentId?: Prisma.StringWithAggregatesFilter<"StudySet"> | string
   title?: Prisma.StringWithAggregatesFilter<"StudySet"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudySet"> | Date | string
+  lastAccessedAt?: Prisma.DateTimeWithAggregatesFilter<"StudySet"> | Date | string
 }
 
 export type StudySetCreateInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
@@ -248,6 +261,7 @@ export type StudySetUncheckedCreateInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
@@ -259,6 +273,7 @@ export type StudySetUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
@@ -272,6 +287,7 @@ export type StudySetUncheckedUpdateInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
@@ -284,12 +300,14 @@ export type StudySetCreateManyInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
 }
 
 export type StudySetUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudySetUncheckedUpdateManyInput = {
@@ -297,6 +315,7 @@ export type StudySetUncheckedUpdateManyInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type StudySetListRelationFilter = {
@@ -314,6 +333,7 @@ export type StudySetCountOrderByAggregateInput = {
   documentId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  lastAccessedAt?: Prisma.SortOrder
 }
 
 export type StudySetMaxOrderByAggregateInput = {
@@ -321,6 +341,7 @@ export type StudySetMaxOrderByAggregateInput = {
   documentId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  lastAccessedAt?: Prisma.SortOrder
 }
 
 export type StudySetMinOrderByAggregateInput = {
@@ -328,6 +349,7 @@ export type StudySetMinOrderByAggregateInput = {
   documentId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  lastAccessedAt?: Prisma.SortOrder
 }
 
 export type StudySetScalarRelationFilter = {
@@ -451,6 +473,7 @@ export type StudySetCreateWithoutDocumentInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankCreateNestedManyWithoutStudySetInput
@@ -462,6 +485,7 @@ export type StudySetUncheckedCreateWithoutDocumentInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
@@ -503,12 +527,14 @@ export type StudySetScalarWhereInput = {
   documentId?: Prisma.StringFilter<"StudySet"> | string
   title?: Prisma.StringFilter<"StudySet"> | string
   createdAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
+  lastAccessedAt?: Prisma.DateTimeFilter<"StudySet"> | Date | string
 }
 
 export type StudySetCreateWithoutFlashcardsInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankCreateNestedManyWithoutStudySetInput
@@ -521,6 +547,7 @@ export type StudySetUncheckedCreateWithoutFlashcardsInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedCreateNestedManyWithoutStudySetInput
@@ -547,6 +574,7 @@ export type StudySetUpdateWithoutFlashcardsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUpdateManyWithoutStudySetNestedInput
@@ -559,6 +587,7 @@ export type StudySetUncheckedUpdateWithoutFlashcardsInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedUpdateManyWithoutStudySetNestedInput
@@ -569,6 +598,7 @@ export type StudySetCreateWithoutMcqQuestionsInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankCreateNestedManyWithoutStudySetInput
@@ -581,6 +611,7 @@ export type StudySetUncheckedCreateWithoutMcqQuestionsInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedCreateNestedManyWithoutStudySetInput
@@ -607,6 +638,7 @@ export type StudySetUpdateWithoutMcqQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUpdateManyWithoutStudySetNestedInput
@@ -619,6 +651,7 @@ export type StudySetUncheckedUpdateWithoutMcqQuestionsInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedUpdateManyWithoutStudySetNestedInput
@@ -629,6 +662,7 @@ export type StudySetCreateWithoutFillInBlanksInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
@@ -641,6 +675,7 @@ export type StudySetUncheckedCreateWithoutFillInBlanksInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedCreateNestedManyWithoutStudySetInput
@@ -667,6 +702,7 @@ export type StudySetUpdateWithoutFillInBlanksInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
@@ -679,6 +715,7 @@ export type StudySetUncheckedUpdateWithoutFillInBlanksInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   theoryQuestions?: Prisma.TheoryQuestionUncheckedUpdateManyWithoutStudySetNestedInput
@@ -689,6 +726,7 @@ export type StudySetCreateWithoutTheoryQuestionsInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
@@ -701,6 +739,7 @@ export type StudySetUncheckedCreateWithoutTheoryQuestionsInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
@@ -727,6 +766,7 @@ export type StudySetUpdateWithoutTheoryQuestionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
@@ -739,6 +779,7 @@ export type StudySetUncheckedUpdateWithoutTheoryQuestionsInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
@@ -749,6 +790,7 @@ export type StudySetCreateWithoutQuizzesInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   document: Prisma.DocumentCreateNestedOneWithoutStudySetsInput
   flashcards?: Prisma.FlashcardCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionCreateNestedManyWithoutStudySetInput
@@ -761,6 +803,7 @@ export type StudySetUncheckedCreateWithoutQuizzesInput = {
   documentId: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
   flashcards?: Prisma.FlashcardUncheckedCreateNestedManyWithoutStudySetInput
   mcqQuestions?: Prisma.McqQuestionUncheckedCreateNestedManyWithoutStudySetInput
   fillInBlanks?: Prisma.FillInBlankUncheckedCreateNestedManyWithoutStudySetInput
@@ -787,6 +830,7 @@ export type StudySetUpdateWithoutQuizzesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudySetsNestedInput
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
@@ -799,6 +843,7 @@ export type StudySetUncheckedUpdateWithoutQuizzesInput = {
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
@@ -809,12 +854,14 @@ export type StudySetCreateManyDocumentInput = {
   id?: string
   title: string
   createdAt?: Date | string
+  lastAccessedAt?: Date | string
 }
 
 export type StudySetUpdateWithoutDocumentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUpdateManyWithoutStudySetNestedInput
@@ -826,6 +873,7 @@ export type StudySetUncheckedUpdateWithoutDocumentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   flashcards?: Prisma.FlashcardUncheckedUpdateManyWithoutStudySetNestedInput
   mcqQuestions?: Prisma.McqQuestionUncheckedUpdateManyWithoutStudySetNestedInput
   fillInBlanks?: Prisma.FillInBlankUncheckedUpdateManyWithoutStudySetNestedInput
@@ -837,6 +885,7 @@ export type StudySetUncheckedUpdateManyWithoutDocumentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastAccessedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 
@@ -911,6 +960,7 @@ export type StudySetSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   documentId?: boolean
   title?: boolean
   createdAt?: boolean
+  lastAccessedAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   flashcards?: boolean | Prisma.StudySet$flashcardsArgs<ExtArgs>
   mcqQuestions?: boolean | Prisma.StudySet$mcqQuestionsArgs<ExtArgs>
@@ -925,6 +975,7 @@ export type StudySetSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   documentId?: boolean
   title?: boolean
   createdAt?: boolean
+  lastAccessedAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studySet"]>
 
@@ -933,6 +984,7 @@ export type StudySetSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   documentId?: boolean
   title?: boolean
   createdAt?: boolean
+  lastAccessedAt?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studySet"]>
 
@@ -941,9 +993,10 @@ export type StudySetSelectScalar = {
   documentId?: boolean
   title?: boolean
   createdAt?: boolean
+  lastAccessedAt?: boolean
 }
 
-export type StudySetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "title" | "createdAt", ExtArgs["result"]["studySet"]>
+export type StudySetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "title" | "createdAt" | "lastAccessedAt", ExtArgs["result"]["studySet"]>
 export type StudySetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   flashcards?: boolean | Prisma.StudySet$flashcardsArgs<ExtArgs>
@@ -975,6 +1028,7 @@ export type $StudySetPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     documentId: string
     title: string
     createdAt: Date
+    lastAccessedAt: Date
   }, ExtArgs["result"]["studySet"]>
   composites: {}
 }
@@ -1408,6 +1462,7 @@ export interface StudySetFieldRefs {
   readonly documentId: Prisma.FieldRef<"StudySet", 'String'>
   readonly title: Prisma.FieldRef<"StudySet", 'String'>
   readonly createdAt: Prisma.FieldRef<"StudySet", 'DateTime'>
+  readonly lastAccessedAt: Prisma.FieldRef<"StudySet", 'DateTime'>
 }
     
 

@@ -23,13 +23,13 @@ export function ContinueStudyingCard({
                         <span className={`font-medium ${scoreColor}`}>{scoreLabel}</span>
                         <span className="text-gray-300 mx-1">·</span>
                         <span className="text-gray-400">
-                            {itemCounts.flashcards}c · {itemCounts.mcq}m · {itemCounts.fillInBlank}f · {itemCounts.theory}t
+                            {itemCounts.flashcards}cards · {itemCounts.mcq}mcq · {itemCounts.fillInBlank}fib · {itemCounts.theory}theory
                         </span>
                     </div>
                 </div>
                 <Link
                     href={`/dashboard/study-sets/${studySet.id}`}
-                    className="whitespace-nowrap rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-accent-hover hover:shadow-md"
+                    className="whitespace-nowrap rounded-lg bg-accent px-5 py-2.5 text-sm font-medium text-white! shadow-sm transition-all hover:bg-accent-hover hover:shadow-md"
                 >
                     {lastScore === null ? "Start studying" : "Quiz again"}
                 </Link>
