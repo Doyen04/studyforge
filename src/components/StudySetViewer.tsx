@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
 import { TheoryCard } from "./TheoryCard";
-import { CreateQuizPanel } from "./CreateQuizPanel";
 
 interface Flashcard {
     id: string;
@@ -59,7 +59,6 @@ type TabType = "flashcards" | "mcq" | "fillInBlank" | "theory";
 
 export function StudySetViewer({ studySet }: StudySetViewerProps) {
     const [activeTab, setActiveTab] = useState<TabType>("flashcards");
-    const [showQuizCreator, setShowQuizCreator] = useState(false);
 
     const tabs = [
         { key: "flashcards" as const, label: "Flashcards", count: studySet.flashcards.length },
@@ -79,13 +78,12 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                         {studySet.document.filename} · {studySet.document.wordCount} words · Created {new Date(studySet.createdAt).toLocaleDateString()}
                     </p>
                 </div>
-                {/* Desktop Create Quiz trigger */}
-                <button
-                    onClick={() => setShowQuizCreator(!showQuizCreator)}
-                    className="hidden md:inline-flex cursor-pointer items-center justify-center rounded-md bg-accent hover:bg-accent-hover px-4 py-2.5 text-sm font-semibold text-white transition shrink-0"
+                <Link
+                    href={`/dashboard/quizzes`}
+                    className="hidden md:inline-flex items-center justify-center rounded-md bg-accent hover:bg-accent-hover px-4 py-2.5 text-sm font-semibold text-white transition shrink-0"
                 >
-                    {showQuizCreator ? "Close quiz maker" : "Create a quiz →"}
-                </button>
+                    Create a quiz →
+                </Link>
             </section>
 
             {/* Quick stats grid */}
@@ -201,27 +199,13 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                 )}
             </div>
 
-            {/* Quiz Maker Panel - rendered inline if toggled on desktop, or always visible on bottom on mobile if toggled */}
-            <div className={`transition-all duration-300 ${showQuizCreator ? "block" : "hidden md:block"}`}>
-                <CreateQuizPanel studySetId={studySet.id} studySetTitle={studySet.title} />
-            </div>
-
-            {/* Mobile sticky bottom Action trigger */}
-            <div className="md:hidden sticky bottom-0 border-t border-rule bg-paper/95 p-4 backdrop-blur-xs flex justify-center -mx-4 -mb-4">
-                <button
-                    onClick={() => {
-                        setShowQuizCreator(!showQuizCreator);
-                        // scroll down to panel
-                        if (!showQuizCreator) {
-                            setTimeout(() => {
-                                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-                            }, 100);
-                        }
-                    }}
-                    className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md"
+            <div className="md:hidden sticky bottom-0 border-t border-rule bg-white p-4 flex justify-center -mx-4 -mb-4">
+                <Link
+                    href="/dashboard/quizzes"
+                    className="w-full rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition text-center shadow-md"
                 >
-                    {showQuizCreator ? "Hide Quiz Maker" : "Create a quiz  →"}
-                </button>
+                    Create a quiz →
+                </Link>
             </div>
         </div>
     );

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
@@ -71,12 +70,7 @@ export default async function StudySetPage({ params }: StudySetPageProps) {
 
     return (
         <main className="min-h-screen">
-            <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
-                <div>
-                    <Link href="/dashboard/study-sets" className="text-sm font-semibold text-accent hover:text-accent-hover">
-                        ← All study sets
-                    </Link>
-                </div>
+            <div className="mx-auto max-w-5xl px-4 py-8">
                 <StudySetViewer studySet={parsedStudySet} />
             </div>
         </main>
