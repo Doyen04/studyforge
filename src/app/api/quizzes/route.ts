@@ -6,11 +6,11 @@ interface CreateQuizBody {
     studySetId: string;
     title: string;
     types: QuestionType[];
-    countPerType: number;
+    counts: Record<string, number>;
 }
 
 export async function POST(request: NextRequest) {
-    const { studySetId, title, types, countPerType } = (await request.json()) as CreateQuizBody;
+    const { studySetId, title, types, counts } = (await request.json()) as CreateQuizBody;
 
     const studySet = await prisma.studySet.findUnique({
         where: { id: studySetId },
@@ -24,12 +24,14 @@ export async function POST(request: NextRequest) {
     const pick = <T extends { id: string }>(pool: T[], count: number) =>
         [...pool].sort(() => Math.random() - 0.5).slice(0, count).map((question) => question.id);
 
+    const getCount = (type: string) => Math.min(counts[type] ?? 0, 10);
+
     const questionRefs = [
-        ...(types.includes("mcq") ? pick(studySet.mcqQuestions, countPerType).map((id) => ({ type: "mcq", id })) : []),
+        ...(types.includes("mcq") ? pick(studySet.mcqQuestions, getCount("mcq")).map((id) => ({ type: "mcq", id })) : []),
         ...(types.includes("fillInBlank")
-            ? pick(studySet.fillInBlanks, countPerType).map((id) => ({ type: "fillInBlank", id }))
+            ? pick(studySet.fillInBlanks, getCount("fillInBlank")).map((id) => ({ type: "fillInBlank", id }))
             : []),
-        ...(types.includes("theory") ? pick(studySet.theoryQuestions, countPerType).map((id) => ({ type: "theory", id })) : []),
+        ...(types.includes("theory") ? pick(studySet.theoryQuestions, getCount("theory")).map((id) => ({ type: "theory", id })) : []),
     ];
 
     const quiz = await prisma.quiz.create({

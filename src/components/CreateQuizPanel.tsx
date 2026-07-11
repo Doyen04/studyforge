@@ -5,29 +5,34 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const questionTypes = [
-    { key: "mcq", label: "MCQ" },
-    { key: "fillInBlank", label: "Fill-in-blank" },
-    { key: "theory", label: "Theory" },
-] as const;
+    { key: "mcq" as const, label: "MCQ" },
+    { key: "fillInBlank" as const, label: "Fill-in-blank" },
+    { key: "theory" as const, label: "Theory" },
+];
 
 type QuestionType = (typeof questionTypes)[number]["key"];
+
+const defaultCounts: Record<QuestionType, number> = { mcq: 5, fillInBlank: 5, theory: 5 };
 
 export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: string; studySetTitle: string }) {
     const router = useRouter();
     const [title, setTitle] = useState(`${studySetTitle} quiz`);
-    const [countPerType, setCountPerType] = useState(5);
-    const [types, setTypes] = useState<QuestionType[]>(["mcq", "fillInBlank", "theory"]);
+    const [counts, setCounts] = useState<Record<QuestionType, number>>({ ...defaultCounts });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    function toggleType(type: QuestionType) {
-        setTypes((current) => (current.includes(type) ? current.filter((item) => item !== type) : [...current, type]));
+    function setCount(type: QuestionType, raw: string) {
+        const value = parseInt(raw, 10);
+        if (isNaN(value)) return;
+        setCounts((prev) => ({ ...prev, [type]: Math.max(1, Math.min(10, value)) }));
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setError(null);
         setIsSubmitting(true);
+
+        const types = questionTypes.filter((t) => counts[t.key] > 0).map((t) => t.key);
 
         try {
             const response = await fetch("/api/quizzes", {
@@ -37,7 +42,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
                     studySetId,
                     title,
                     types,
-                    countPerType,
+                    counts,
                 }),
             });
 
@@ -63,8 +68,8 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
 
             {error ? <div className="mt-4 rounded-md border border-error/30 bg-error/10 px-4 py-3 text-sm text-ink">{error}</div> : null}
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <label className="space-y-2 text-sm text-ink-muted sm:col-span-2">
+            <div className="mt-5 grid gap-4">
+                <label className="space-y-2 text-sm text-ink-muted">
                     <span>Quiz title</span>
                     <input
                         value={title}
@@ -72,33 +77,20 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
                         className="block w-full rounded-md border border-rule bg-paper px-3 py-2 text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                     />
                 </label>
-                <label className="space-y-2 text-sm text-ink-muted">
-                    <span>Count per type</span>
-                    <input
-                        type="number"
-                        min={1}
-                        max={10}
-                        value={countPerType}
-                        onChange={(event) => setCountPerType(Number(event.target.value))}
-                        className="block w-full rounded-md border border-rule bg-paper px-3 py-2 text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
-                    />
-                </label>
                 <div className="space-y-2 text-sm text-ink-muted">
-                    <span>Types</span>
-                    <div className="flex flex-wrap gap-2">
+                    <span>Questions per type</span>
+                    <div className="grid gap-3 sm:grid-cols-3">
                         {questionTypes.map((type) => (
-                            <label key={type.key} className={`inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm transition ${
-                                types.includes(type.key)
-                                    ? "border-accent bg-accent/5 text-accent"
-                                    : "border-rule bg-paper text-ink hover:bg-paper-hover"
-                            }`}>
+                            <label key={type.key} className="flex items-center justify-between gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink">
+                                <span>{type.label}</span>
                                 <input
-                                    type="checkbox"
-                                    checked={types.includes(type.key)}
-                                    onChange={() => toggleType(type.key)}
-                                    className="accent-accent"
+                                    type="number"
+                                    min={1}
+                                    max={10}
+                                    value={counts[type.key]}
+                                    onChange={(e) => setCount(type.key, e.target.value)}
+                                    className="w-14 rounded-md border border-rule bg-white px-2 py-1 text-right text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-xs"
                                 />
-                                {type.label}
                             </label>
                         ))}
                     </div>
@@ -107,7 +99,7 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
 
             <button
                 type="submit"
-                disabled={isSubmitting || types.length === 0}
+                disabled={isSubmitting || questionTypes.every((t) => counts[t.key] === 0)}
                 className="mt-6 w-full rounded-md bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
             >
                 {isSubmitting ? "Creating…" : "Create quiz"}

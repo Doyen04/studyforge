@@ -85,13 +85,12 @@ export function QuizRunner({
     return (
         <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
             <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-                <div className="flex items-center justify-end border-b border-rule pb-4">
-                    <span className="font-data text-sm text-ink-muted">{currentIndex + 1} / {questions.length}</span>
-                </div>
-
                 {/* Progress Card */}
                 <section className="rounded-lg border border-rule bg-card p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Taking Quiz</p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Taking Quiz</p>
+                        <span className="font-data text-xs text-ink-muted">{currentIndex + 1} / {questions.length}</span>
+                    </div>
                     <div className="mt-4 flex items-center justify-between gap-4">
                         <h1 className="font-sans text-lg font-bold text-ink">Active Recall Practice</h1>
                         <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% Completed</span>
