@@ -6,10 +6,12 @@ import { CreateQuizPanel } from "./CreateQuizPanel";
 export function CreateQuizModal({
     studySetId,
     studySetTitle,
+    availableCounts,
     onClose,
 }: {
     studySetId: string;
     studySetTitle: string;
+    availableCounts: Record<string, number>;
     onClose: () => void;
 }) {
     const handleKeyDown = useCallback(
@@ -44,7 +46,7 @@ export function CreateQuizModal({
                 </button>
 
                 <div className="max-h-[85vh] overflow-y-auto">
-                    <CreateQuizPanel studySetId={studySetId} studySetTitle={studySetTitle} />
+                    <CreateQuizPanel studySetId={studySetId} studySetTitle={studySetTitle} availableCounts={availableCounts} />
                 </div>
             </div>
         </div>

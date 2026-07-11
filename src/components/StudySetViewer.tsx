@@ -128,7 +128,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
             </div>
 
             {/* Tab content area */}
-            <div className="min-h-[300px]">
+            <div className="min-h-75">
                 {activeTab === "flashcards" && (
                     <div className="py-6">
                         {studySet.flashcards.length === 0 ? (
@@ -213,6 +213,7 @@ export function StudySetViewer({ studySet }: StudySetViewerProps) {
                 <CreateQuizModal
                     studySetId={studySet.id}
                     studySetTitle={studySet.title}
+                    availableCounts={{ mcq: studySet.mcqQuestions.length, fillInBlank: studySet.fillInBlanks.length, theory: studySet.theoryQuestions.length }}
                     onClose={() => setShowQuizModal(false)}
                 />
             )}

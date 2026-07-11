@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "motion/react";
 
 export function ContinueStudyingCard({
     studySet,
@@ -9,21 +12,27 @@ export function ContinueStudyingCard({
     itemCounts: { flashcards: number; mcq: number; fillInBlank: number; theory: number };
     lastScore: number | null;
 }) {
-    const scoreColor = lastScore === null ? "text-gray-400" : lastScore >= 70 ? "text-mastered" : "text-review";
+    const scoreColor = lastScore === null ? "text-ink-muted" : lastScore >= 70 ? "text-mastered" : "text-review";
     const scoreLabel = lastScore === null ? "Not quizzed yet" : `Last score ${lastScore}%`;
 
     return (
-        <div className="relative overflow-hidden rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+        <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="relative overflow-hidden rounded-xl border border-rule bg-card p-6 shadow-sm"
+        >
             <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-r-full" />
             <div className="flex items-center justify-between gap-4">
                 <div className="space-y-2.5">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">Continue studying</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-ink-muted">Continue studying</p>
                     <p className="font-sans text-lg font-semibold text-ink">{studySet.title}</p>
                     <div className="flex items-center gap-1.5 text-sm">
                         <span className={`font-medium ${scoreColor}`}>{scoreLabel}</span>
-                        <span className="text-gray-300 mx-1">·</span>
-                        <span className="text-gray-400">
-                            {itemCounts.flashcards} cards · {itemCounts.mcq} mcq · {itemCounts.fillInBlank} fib · {itemCounts.theory} theory
+                        <span className="text-ink-muted/30 mx-1">·</span>
+                        <span className="text-ink-muted">
+                            {itemCounts.flashcards}c · {itemCounts.mcq}m · {itemCounts.fillInBlank}f · {itemCounts.theory}t
                         </span>
                     </div>
                 </div>
@@ -34,6 +43,6 @@ export function ContinueStudyingCard({
                     {lastScore === null ? "Start studying" : "Quiz again"}
                 </Link>
             </div>
-        </div>
+        </motion.div>
     );
 }

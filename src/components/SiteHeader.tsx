@@ -10,6 +10,7 @@ export function SiteHeader() {
         { href: "/dashboard", label: "Dashboard", active: pathname === "/dashboard" },
         { href: "/dashboard/study-sets", label: "Study sets", active: pathname.startsWith("/dashboard/study-sets") },
         { href: "/dashboard/quizzes", label: "Quizzes", active: pathname.startsWith("/dashboard/quizzes") },
+        { href: "/dashboard/settings", label: "Settings", active: pathname.startsWith("/dashboard/settings") },
     ];
 
     return (

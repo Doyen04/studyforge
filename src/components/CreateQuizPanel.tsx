@@ -12,19 +12,22 @@ const questionTypes = [
 
 type QuestionType = (typeof questionTypes)[number]["key"];
 
-const defaultCounts: Record<QuestionType, number> = { mcq: 5, fillInBlank: 5, theory: 5 };
+function initialCounts(available: Record<string, number>): Record<QuestionType, number> {
+    return { mcq: Math.min(5, available.mcq ?? 0), fillInBlank: Math.min(5, available.fillInBlank ?? 0), theory: Math.min(5, available.theory ?? 0) };
+}
 
-export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: string; studySetTitle: string }) {
+export function CreateQuizPanel({ studySetId, studySetTitle, availableCounts }: { studySetId: string; studySetTitle: string; availableCounts: Record<string, number> }) {
     const router = useRouter();
     const [title, setTitle] = useState(`${studySetTitle} quiz`);
-    const [counts, setCounts] = useState<Record<QuestionType, number>>({ ...defaultCounts });
+    const [counts, setCounts] = useState<Record<QuestionType, number>>(() => initialCounts(availableCounts));
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     function setCount(type: QuestionType, raw: string) {
         const value = parseInt(raw, 10);
         if (isNaN(value)) return;
-        setCounts((prev) => ({ ...prev, [type]: Math.max(1, Math.min(10, value)) }));
+        const max = availableCounts[type] ?? 0;
+        setCounts((prev) => ({ ...prev, [type]: Math.max(0, Math.min(max, value)) }));
     }
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -80,19 +83,25 @@ export function CreateQuizPanel({ studySetId, studySetTitle }: { studySetId: str
                 <div className="space-y-2 text-sm text-ink-muted">
                     <span>Questions per type</span>
                     <div className="grid gap-3 sm:grid-cols-3">
-                        {questionTypes.map((type) => (
-                            <label key={type.key} className="flex items-center justify-between gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink">
-                                <span>{type.label}</span>
-                                <input
-                                    type="number"
-                                    min={1}
-                                    max={10}
-                                    value={counts[type.key]}
-                                    onChange={(e) => setCount(type.key, e.target.value)}
-                                    className="w-14 rounded-md border border-rule bg-white px-2 py-1 text-right text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-xs"
-                                />
-                            </label>
-                        ))}
+                        {questionTypes.map((type) => {
+                            const max = availableCounts[type.key] ?? 0;
+                            return (
+                                <label key={type.key} className="flex items-center justify-between gap-2 rounded-md border border-rule bg-paper px-3 py-2 text-sm text-ink">
+                                    <span className="flex items-center gap-1.5">
+                                        {type.label}
+                                        <span className="font-data text-[10px] text-ink-muted">/{max}</span>
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        max={max}
+                                        value={counts[type.key]}
+                                        onChange={(e) => setCount(type.key, e.target.value)}
+                                        className="w-14 rounded-md border border-rule bg-white px-2 py-1 text-right text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent font-data text-xs"
+                                    />
+                                </label>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

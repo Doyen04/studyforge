@@ -5,6 +5,7 @@ import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
+import { StudySetCard } from "@/components/StudySetCard";
 
 type DashboardStats = {
     studySets: number;
@@ -39,38 +40,6 @@ type RecentAttempt = {
 
 function ErrorBanner({ message }: { message: string }) {
     return <div className="rounded-lg border border-error/30 bg-error/10 px-4 py-3 text-sm text-error">{message}</div>;
-}
-
-function StudySetCard({ set }: { set: StudySetSummary }) {
-    return (
-        <Link
-            href={`/dashboard/study-sets/${set.id}`}
-            className="group flex flex-col rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md hover:border-gray-200"
-        >
-            <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="space-y-1.5 min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/70">Study set</p>
-                    <h3 className="text-[15px] font-semibold text-ink truncate group-hover:text-accent transition-colors">{set.title}</h3>
-                </div>
-                {set.lastScore !== null && (
-                    <span
-                        className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${
-                            set.lastScore >= 70 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"
-                        }`}
-                    >
-                        {set.lastScore}%
-                    </span>
-                )}
-            </div>
-            <p className="text-sm text-gray-400 truncate mb-4">{set.filename}</p>
-            <div className="mt-auto flex flex-wrap gap-x-3 gap-y-1 font-data text-xs text-gray-400">
-                <span>{set.itemCounts.flashcards}c</span>
-                <span>{set.itemCounts.mcq}m</span>
-                <span>{set.itemCounts.fillInBlank}f</span>
-                <span>{set.itemCounts.theory}t</span>
-            </div>
-        </Link>
-    );
 }
 
 export default async function DashboardPage() {
@@ -212,8 +181,8 @@ export default async function DashboardPage() {
                                     </div>
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                                         <UploadTile />
-                                        {studySets.map((set) => (
-                                            <StudySetCard key={set.id} set={set} />
+                                        {studySets.map((set, i) => (
+                                            <StudySetCard key={set.id} set={set} index={i} />
                                         ))}
                                     </div>
                                 </section>
