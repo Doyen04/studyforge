@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { useToast } from "./Toaster";
+import { toast } from "sonner";
 
 function CardFan() {
     const rotations = [-6, -2, 3, 7];
@@ -47,7 +47,6 @@ interface UploadZoneProps {
 }
 
 export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
-    const { toast } = useToast();
     const [dragActive, setDragActive] = useState(false);
     const [uploadStage, setUploadStage] = useState<"idle" | "uploading" | "parsing">("idle");
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -89,7 +88,7 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
         if (![".docx", ".pptx", ".pdf"].includes(ext)) {
             const msg = "That's not a format StudyForge reads yet. Upload a .pptx, .docx, or .pdf.";
             setError(msg);
-            toast(msg, "error");
+            toast.error(msg);
             setUploadStage("idle");
             return;
         }
@@ -136,7 +135,7 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
         } catch (err) {
             const msg = err instanceof Error ? err.message : "Failed to parse file.";
             setError(msg);
-            toast(msg, "error");
+            toast.error(msg);
             setUploadStage("idle");
             setUploadProgress(0);
         }

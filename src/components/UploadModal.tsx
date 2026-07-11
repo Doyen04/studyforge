@@ -4,11 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { UploadZone } from "./UploadZone";
 import { GenerateOptionsPanel } from "./GenerateOptionsPanel";
-import { useToast } from "./Toaster";
 
 export function UploadModal({ onClose }: { onClose: () => void }) {
     const router = useRouter();
-    const { toast } = useToast();
     const [documentId, setDocumentId] = useState<string | null>(null);
 
     const handleUploadSuccess = (docId: string) => {
