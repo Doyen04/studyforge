@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { QuizRunner } from "@/components/QuizRunner";
-import type { QuizPageData } from "@/lib/page-types";
+import type { QuizPageData } from "@/types/page";
 
 interface QuizPageProps {
     params: Promise<{ id: string }>;

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { parseJsonArray } from "@/lib/deserialize";
 import { GradedMargin } from "@/components/GradedMargin";
-import type { QuizResultData } from "@/lib/page-types";
+import type { QuizResultData } from "@/types/page";
+import type { GradedAnswer } from "@/lib/types";
 
 export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
     const [data, setData] = useState<QuizResultData | null>(null);

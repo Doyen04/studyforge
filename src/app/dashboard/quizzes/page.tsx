@@ -6,7 +6,7 @@ import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
-import type { QuizIndexItem } from "@/lib/page-types";
+import type { QuizIndexItem } from "@/types/page";
 
 export default function QuizzesIndex() {
     const [quizzes, setQuizzes] = useState<QuizIndexItem[]>([]);

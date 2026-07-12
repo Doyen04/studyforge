@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
-import type { DocumentItem } from "@/lib/page-types";
+import type { DocumentItem } from "@/types/page";
 
 export default function DocumentsPage() {
     const router = useRouter();
