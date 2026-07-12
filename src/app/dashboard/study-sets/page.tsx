@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function StudySetsIndex() {
     const [sets, setSets] = useState<Array<{ id: string; title: string; document: { filename: string; wordCount: number } }>>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [deleting, setDeleting] = useState<string | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -19,6 +21,21 @@ export default function StudySetsIndex() {
         }, 300);
         return () => clearTimeout(timer);
     }, [search]);
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Delete this study set and all its quizzes?")) return;
+        setDeleting(id);
+        try {
+            const res = await fetch(`/api/study-sets/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Failed to delete");
+            setSets((prev) => prev.filter((s) => s.id !== id));
+            toast.success("Study set deleted");
+        } catch {
+            toast.error("Failed to delete study set");
+        } finally {
+            setDeleting(null);
+        }
+    };
 
     return (
         <main className="min-h-screen">
@@ -52,13 +69,24 @@ export default function StudySetsIndex() {
                     ) : (
                         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                             {sets.map((set) => (
-                                <Link key={set.id} href={`/dashboard/study-sets/${set.id}`} className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover">
-                                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Study set</p>
-                                    <h2 className="mt-3 font-sans text-base font-semibold text-ink">{set.title}</h2>
-                                    <p className="mt-2 text-sm leading-6 text-ink-muted">
-                                        {set.document.filename} · {set.document.wordCount} words
-                                    </p>
-                                </Link>
+                                <div key={set.id} className="relative group rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover">
+                                    <Link href={`/dashboard/study-sets/${set.id}`} className="block">
+                                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Study set</p>
+                                        <h2 className="mt-3 font-sans text-base font-semibold text-ink">{set.title}</h2>
+                                        <p className="mt-2 text-sm leading-6 text-ink-muted">
+                                            {set.document.filename} · {set.document.wordCount} words
+                                        </p>
+                                    </Link>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDelete(set.id)}
+                                        disabled={deleting === set.id}
+                                        aria-label="Delete study set"
+                                        className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
+                                    >
+                                        <Trash2 size={14} />
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     )}

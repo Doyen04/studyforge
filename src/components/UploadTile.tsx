@@ -10,13 +10,20 @@ import { GenerateOptionsPanel } from "./GenerateOptionsPanel";
 export function UploadTile() {
     const router = useRouter();
     const [documentId, setDocumentId] = useState<string | null>(null);
+    const [showModal, setShowModal] = useState(false);
 
     const handleUploadSuccess = (docId: string) => {
         setDocumentId(docId);
+        setShowModal(true);
     };
 
     const handleReset = () => {
         setDocumentId(null);
+        setShowModal(false);
+    };
+
+    const handleClose = () => {
+        setShowModal(false);
     };
 
     const handleGenerationSuccess = (studySetId: string) => {
@@ -32,11 +39,11 @@ export function UploadTile() {
                 <UploadZone onUploadSuccess={handleUploadSuccess} />
             </motion.div>
 
-            {documentId && (
+            {showModal && documentId && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
                     onClick={(e) => {
-                        if (e.target === e.currentTarget) handleReset();
+                        if (e.target === e.currentTarget) handleClose();
                     }}
                 >
                     <motion.div
@@ -51,7 +58,7 @@ export function UploadTile() {
                                 <p className="font-sans text-base font-semibold text-ink">Configure study set</p>
                                 <button
                                     type="button"
-                                    onClick={handleReset}
+                                    onClick={handleClose}
                                     aria-label="Close"
                                     className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                                 >

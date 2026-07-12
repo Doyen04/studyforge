@@ -2,6 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseDocument } from "@/lib/parseDocument";
 
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search");
+
+    const documents = await prisma.document.findMany({
+        where: search
+            ? { filename: { contains: search, mode: "insensitive" } }
+            : {},
+        orderBy: { createdAt: "desc" },
+        include: {
+            _count: { select: { studySets: true } },
+        },
+    });
+
+    return NextResponse.json({ documents });
+}
+
 export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get("file");

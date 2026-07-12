@@ -2,6 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    const studySet = await prisma.studySet.findUnique({ where: { id } });
+    if (!studySet) {
+        return NextResponse.json({ error: "Study set not found." }, { status: 404 });
+    }
+
+    await prisma.studySet.delete({ where: { id } });
+
+    return NextResponse.json({ ok: true });
+}
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
