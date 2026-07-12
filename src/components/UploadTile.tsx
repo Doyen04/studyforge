@@ -11,6 +11,7 @@ export function UploadTile() {
     const router = useRouter();
     const [documentId, setDocumentId] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
+    const [uploadKey, setUploadKey] = useState(0);
 
     const handleUploadSuccess = (docId: string) => {
         setDocumentId(docId);
@@ -20,10 +21,12 @@ export function UploadTile() {
     const handleReset = () => {
         setDocumentId(null);
         setShowModal(false);
+        setUploadKey((k) => k + 1);
     };
 
     const handleClose = () => {
         setShowModal(false);
+        setUploadKey((k) => k + 1);
     };
 
     const handleGenerationSuccess = (studySetId: string) => {
@@ -36,7 +39,7 @@ export function UploadTile() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
             >
-                <UploadZone onUploadSuccess={handleUploadSuccess} />
+                <UploadZone key={uploadKey} onUploadSuccess={handleUploadSuccess} />
             </motion.div>
 
             {showModal && documentId && (
