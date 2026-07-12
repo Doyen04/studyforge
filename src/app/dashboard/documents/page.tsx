@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
 
@@ -20,21 +21,19 @@ export default function DocumentsPage() {
     const router = useRouter();
     const [documents, setDocuments] = useState<Document[]>([]);
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [generatingDocId, setGeneratingDocId] = useState<string | null>(null);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            fetch(`/api/documents?search=${encodeURIComponent(search)}`)
-                .then((res) => res.json())
-                .then((data) => setDocuments(data.documents))
-                .catch(() => {})
-                .finally(() => setLoading(false));
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [search]);
+        fetch(`/api/documents?search=${encodeURIComponent(debouncedSearch)}`)
+            .then((res) => res.json())
+            .then((data) => setDocuments(data.documents))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, [debouncedSearch]);
 
     const handleDelete = async (id: string) => {
         setConfirmDeleteId(null);

@@ -4,25 +4,24 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function StudySetsIndex() {
     const [sets, setSets] = useState<Array<{ id: string; title: string; document: { filename: string; wordCount: number } }>>([]);
     const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            fetch(`/api/study-sets?search=${encodeURIComponent(search)}`)
-                .then((res) => res.json())
-                .then((data) => setSets(data.studySets))
-                .catch(() => {})
-                .finally(() => setLoading(false));
-        }, 300);
-        return () => clearTimeout(timer);
-    }, [search]);
+        fetch(`/api/study-sets?search=${encodeURIComponent(debouncedSearch)}`)
+            .then((res) => res.json())
+            .then((data) => setSets(data.studySets))
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, [debouncedSearch]);
 
     const handleDelete = async (id: string) => {
         setConfirmDeleteId(null);
