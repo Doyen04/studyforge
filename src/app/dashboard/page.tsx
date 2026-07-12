@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UploadModal } from "@/components/UploadModal";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
@@ -60,7 +59,7 @@ export default function DashboardPage() {
 
                 {studySetCount === 0 ? (
                     <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-                        <UploadModal standalone onClose={() => {}} />
+                        <UploadTile />
                         <p className="text-sm text-ink-muted text-center">
                             Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
                         </p>

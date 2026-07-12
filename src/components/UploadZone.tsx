@@ -3,25 +3,6 @@
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 
-function CardFan() {
-    const rotations = [-6, -2, 3, 7];
-    return (
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-            <div className="relative w-64 h-32">
-                {rotations.map((deg, i) => (
-                    <div
-                        key={i}
-                        className="absolute left-1/2 top-0 h-32 w-24 rounded-lg border border-rule bg-card/65 backdrop-blur-xs"
-                        style={{
-                            transform: `translateX(-50%) rotate(${deg}deg)`,
-                            transformOrigin: "bottom center",
-                        }}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-}
 
 function ProgressBar({ value, indeterminate = false }: { value?: number; indeterminate?: boolean }) {
     return (
@@ -155,9 +136,9 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={uploadStage === "idle" ? handleButtonClick : undefined}
-                className={`relative min-h-[220px] rounded-lg border-2 border-dashed p-6 text-center transition-all duration-200 flex flex-col items-center justify-center ${
-                    uploadStage === "idle" ? "cursor-pointer hover:border-accent" : ""
-                } ${dragActive ? "border-accent bg-paper-hover" : "border-rule bg-card"}`}
+                className={`group relative min-h-[148px] rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200 flex flex-col items-center justify-center ${
+                    uploadStage === "idle" ? "cursor-pointer hover:border-accent/60" : ""
+                } ${dragActive ? "border-accent bg-accent/[0.07]" : "border-accent/30 bg-accent/[0.03]"}`}
             >
                 <input
                     ref={fileInputRef}
@@ -168,17 +149,15 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 />
 
                 {uploadStage === "idle" && (
-                    <>
-                        <CardFan />
-                        <div className="relative z-10 space-y-2 mt-20">
-                            <p className="font-sans text-base font-semibold text-ink">
-                                Drop a file here, or tap to browse
-                            </p>
-                            <p className="font-sans text-xs text-ink-muted">
-                                .pptx, .docx, or .pdf
-                            </p>
-                        </div>
-                    </>
+                    <div className="space-y-2">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-lg font-semibold text-accent mx-auto group-hover:bg-accent/20 group-hover:scale-110 transition-all">+</span>
+                        <p className="font-sans text-sm font-semibold text-accent">
+                            Upload material
+                        </p>
+                        <p className="font-sans text-[11px] text-accent/60">
+                            .pptx, .docx, or .pdf
+                        </p>
+                    </div>
                 )}
 
                 {uploadStage === "uploading" && (
