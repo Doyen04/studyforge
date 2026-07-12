@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Check, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Check, Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -62,6 +62,25 @@ export default function SettingsPage() {
         }
     };
 
+    const handleRemove = async () => {
+        setSaving(true);
+        try {
+            const res = await fetch("/api/settings", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ geminiApiKey: "" }),
+            });
+            if (!res.ok) throw new Error("Failed to remove");
+            setApiKey("");
+            setSavedKey(null);
+            toast.success("API key removed");
+        } catch {
+            toast.error("Failed to remove key");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
         <main className="min-h-screen">
             <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-8">
@@ -115,10 +134,21 @@ export default function SettingsPage() {
                                     </button>
                                 </div>
                                 {hasStoredKey && (
-                                    <p className="text-xs text-mastered flex items-center gap-1.5">
-                                        <Check size={12} />
-                                        Key saved · {savedKey!.slice(0, 6)}…{savedKey!.slice(-4)}
-                                    </p>
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-xs text-mastered flex items-center gap-1.5">
+                                            <Check size={12} />
+                                            Key saved · {savedKey!.slice(0, 6)}…{savedKey!.slice(-4)}
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemove}
+                                            disabled={saving}
+                                            className="cursor-pointer text-xs text-ink-muted hover:text-error flex items-center gap-1 transition disabled:opacity-50"
+                                        >
+                                            <Trash2 size={12} />
+                                            Remove key
+                                        </button>
+                                    </div>
                                 )}
                             </div>
 
