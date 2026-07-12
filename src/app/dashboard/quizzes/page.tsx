@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function QuizzesIndex() {
     const [quizzes, setQuizzes] = useState<Array<{
@@ -15,6 +16,7 @@ export default function QuizzesIndex() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -28,7 +30,7 @@ export default function QuizzesIndex() {
     }, [search]);
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Delete this quiz and all its attempts?")) return;
+        setConfirmDeleteId(null);
         setDeleting(id);
         try {
             const res = await fetch(`/api/quizzes/${id}`, { method: "DELETE" });
@@ -92,7 +94,7 @@ export default function QuizzesIndex() {
                                         </Link>
                                         <button
                                             type="button"
-                                            onClick={() => handleDelete(q.id)}
+                                            onClick={() => setConfirmDeleteId(q.id)}
                                             disabled={deleting === q.id}
                                             aria-label="Delete quiz"
                                             className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
@@ -106,6 +108,16 @@ export default function QuizzesIndex() {
                     )}
                 </section>
             </div>
+
+            <ConfirmModal
+                open={confirmDeleteId !== null}
+                title="Delete quiz?"
+                message="This will permanently delete this quiz and all its attempts. This cannot be undone."
+                confirmLabel="Delete"
+                destructive
+                onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}
+                onCancel={() => setConfirmDeleteId(null)}
+            />
         </main>
     );
 }

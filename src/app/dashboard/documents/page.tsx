@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ConfirmModal } from "@/components/ConfirmModal";
+import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
 
 interface Document {
     id: string;
@@ -14,10 +17,13 @@ interface Document {
 }
 
 export default function DocumentsPage() {
+    const router = useRouter();
     const [documents, setDocuments] = useState<Document[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [generatingDocId, setGeneratingDocId] = useState<string | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -31,7 +37,7 @@ export default function DocumentsPage() {
     }, [search]);
 
     const handleDelete = async (id: string) => {
-        if (!confirm("Delete this document and all its study sets?")) return;
+        setConfirmDeleteId(null);
         setDeleting(id);
         try {
             const res = await fetch(`/api/documents/${id}`, { method: "DELETE" });
@@ -52,7 +58,7 @@ export default function DocumentsPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                             <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Documents</h1>
-                            <p className="mt-2 text-sm text-ink-muted">All uploaded files.</p>
+                            <p className="mt-2 text-sm text-ink-muted">All uploaded files. Click a document to generate a study set.</p>
                         </div>
                         <div className="relative">
                             <Search className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
@@ -79,7 +85,8 @@ export default function DocumentsPage() {
                             {documents.map((doc) => (
                                 <div
                                     key={doc.id}
-                                    className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover group"
+                                    className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover group cursor-pointer"
+                                    onClick={() => setGeneratingDocId(doc.id)}
                                 >
                                     <div className="flex items-start justify-between">
                                         <div className="min-w-0 flex-1">
@@ -96,7 +103,10 @@ export default function DocumentsPage() {
                                         </div>
                                         <button
                                             type="button"
-                                            onClick={() => handleDelete(doc.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setConfirmDeleteId(doc.id);
+                                            }}
                                             disabled={deleting === doc.id}
                                             aria-label="Delete document"
                                             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
@@ -110,6 +120,41 @@ export default function DocumentsPage() {
                     )}
                 </section>
             </div>
+
+            <ConfirmModal
+                open={confirmDeleteId !== null}
+                title="Delete document?"
+                message="This will permanently delete this document and all of its study sets. This cannot be undone."
+                confirmLabel="Delete"
+                destructive
+                onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}
+                onCancel={() => setConfirmDeleteId(null)}
+            />
+
+            {generatingDocId && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setGeneratingDocId(null);
+                    }}
+                >
+                    <div className="w-full max-w-md rounded-lg border border-rule bg-card shadow-xl" onClick={(e) => e.stopPropagation()}>
+                        <div className="px-6 pt-6 pb-2">
+                            <p className="font-sans text-base font-semibold text-ink">Configure study set</p>
+                        </div>
+                        <div className="px-6 pb-6">
+                            <GenerateOptionsPanel
+                                documentId={generatingDocId}
+                                onGenerationSuccess={(studySetId) => {
+                                    setGeneratingDocId(null);
+                                    router.push(`/dashboard/study-sets/${studySetId}`);
+                                }}
+                                onReset={() => setGeneratingDocId(null)}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
