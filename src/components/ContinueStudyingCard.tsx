@@ -16,18 +16,18 @@ export function ContinueStudyingCard({
     const scoreLabel = lastScore === null ? "Not quizzed yet" : `Last score ${lastScore}%`;
 
     return (
-        <div className="relative overflow-hidden rounded-xl border border-rule bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-accent/20">
+        <div className="relative overflow-hidden rounded-xl border border-rule bg-card p-4 sm:p-6 transition-all hover:-translate-y-0.5 hover:border-accent/20">
             <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-r-full" />
-            <div className="flex items-center justify-between gap-4">
-                <div className="space-y-2.5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="space-y-2.5 min-w-0">
                     <div className="flex items-center gap-2">
-                        <BookOpen size={16} className="text-accent" />
+                        <BookOpen size={16} className="text-accent shrink-0" />
                         <p className="text-xs font-semibold uppercase tracking-widest text-ink-muted">Continue studying</p>
                     </div>
-                    <p className="font-sans text-lg font-semibold text-ink">{studySet.title}</p>
-                    <div className="flex items-center gap-1.5 text-sm">
+                    <p className="font-sans text-lg font-semibold text-ink truncate">{studySet.title}</p>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
                         <span className={`font-medium ${scoreColor}`}>{scoreLabel}</span>
-                        <span className="text-ink-muted/30 mx-1">·</span>
+                        <span className="text-ink-muted/30 hidden sm:inline">·</span>
                         <span className="flex items-center gap-3 text-ink-muted">
                             <span className="flex items-center gap-1"><BookCopy size={13} />{itemCounts.flashcards}</span>
                             <span className="flex items-center gap-1"><ListChecks size={13} />{itemCounts.mcq}</span>
@@ -38,7 +38,7 @@ export function ContinueStudyingCard({
                 </div>
                 <Link
                     href={`/dashboard/study-sets/${studySet.id}`}
-                    className="group flex items-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white! transition-all hover:bg-accent-hover"
+                    className="group flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white! transition-all hover:bg-accent-hover sm:self-center"
                 >
                     <span>{lastScore === null ? "Start studying" : "Quiz again"}</span>
                     <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
