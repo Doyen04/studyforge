@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 
 type Theme = "light" | "dark";
 
@@ -13,33 +13,37 @@ export function useTheme() {
     return useContext(ThemeContext);
 }
 
+function readTheme(): Theme {
+    if (typeof window === "undefined") return "light";
+    const stored = localStorage.getItem("theme") as Theme | null;
+    return stored ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-    const [theme, setTheme] = useState<Theme>("light");
+    const themeRef = useRef<Theme>("light");
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        const stored = localStorage.getItem("theme") as Theme | null;
-        const preferred = stored ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        setTheme(preferred);
-        document.documentElement.classList.toggle("dark", preferred === "dark");
+        const theme = readTheme();
+        themeRef.current = theme;
+        document.documentElement.classList.toggle("dark", theme === "dark");
         setMounted(true);
     }, []);
 
-    const toggle = () => {
-        setTheme((prev) => {
-            const next = prev === "dark" ? "light" : "dark";
-            localStorage.setItem("theme", next);
-            document.documentElement.classList.toggle("dark", next === "dark");
-            return next;
-        });
-    };
+    const toggle = useCallback(() => {
+        const next = themeRef.current === "dark" ? "light" : "dark";
+        themeRef.current = next;
+        localStorage.setItem("theme", next);
+        document.documentElement.classList.toggle("dark", next === "dark");
+        setMounted((v) => !v);
+    }, []);
 
     if (!mounted) {
         return <ThemeContext.Provider value={{ theme: "light", toggle }}>{children}</ThemeContext.Provider>;
     }
 
     return (
-        <ThemeContext.Provider value={{ theme, toggle }}>
+        <ThemeContext.Provider value={{ theme: themeRef.current, toggle }}>
             {children}
         </ThemeContext.Provider>
     );
