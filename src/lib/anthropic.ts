@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+import { prisma } from "./db";
 
 export const GENERATION_MODEL = "gemini-3.1-flash-lite";
 
@@ -9,18 +10,25 @@ interface StructuredCallOptions {
     maxTokens?: number;
 }
 
+async function getGeminiApiKey(): Promise<string> {
+    const setting = await prisma.userSetting.findUnique({ where: { id: "default" } });
+    if (setting?.geminiApiKey) return setting.geminiApiKey;
+
+    const envKey = process.env.GEMINI_API_KEY;
+    if (envKey) return envKey;
+
+    throw new Error(
+        "No Gemini API key configured. Go to Settings to add your own key, or set GEMINI_API_KEY in your environment."
+    );
+}
+
 export async function generateStructured<T>({
     system,
     user,
     schema,
     maxTokens = 4096,
 }: StructuredCallOptions): Promise<T> {
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    
-    if (!apiKey) {
-        throw new Error("Missing GEMINI_API_KEY environment variable. Please add it to your .env file.");
-    }
+    const apiKey = await getGeminiApiKey();
 
     const ai = new GoogleGenAI({ apiKey });
 
@@ -42,5 +50,3 @@ export async function generateStructured<T>({
 
     return JSON.parse(text) as T;
 }
-
-

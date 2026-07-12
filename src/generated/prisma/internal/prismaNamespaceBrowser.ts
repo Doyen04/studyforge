@@ -58,7 +58,8 @@ export const ModelName = {
   FillInBlank: 'FillInBlank',
   TheoryQuestion: 'TheoryQuestion',
   Quiz: 'Quiz',
-  QuizAttempt: 'QuizAttempt'
+  QuizAttempt: 'QuizAttempt',
+  UserSetting: 'UserSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -165,6 +166,15 @@ export const QuizAttemptScalarFieldEnum = {
 } as const
 
 export type QuizAttemptScalarFieldEnum = (typeof QuizAttemptScalarFieldEnum)[keyof typeof QuizAttemptScalarFieldEnum]
+
+
+export const UserSettingScalarFieldEnum = {
+  id: 'id',
+  geminiApiKey: 'geminiApiKey',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
 
 
 export const SortOrder = {

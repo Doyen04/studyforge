@@ -57,3 +57,8 @@ export type Quiz = Prisma.QuizModel
  * 
  */
 export type QuizAttempt = Prisma.QuizAttemptModel
+/**
+ * Model UserSetting
+ * 
+ */
+export type UserSetting = Prisma.UserSettingModel

@@ -391,7 +391,8 @@ export const ModelName = {
   FillInBlank: 'FillInBlank',
   TheoryQuestion: 'TheoryQuestion',
   Quiz: 'Quiz',
-  QuizAttempt: 'QuizAttempt'
+  QuizAttempt: 'QuizAttempt',
+  UserSetting: 'UserSetting'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "document" | "studySet" | "flashcard" | "mcqQuestion" | "fillInBlank" | "theoryQuestion" | "quiz" | "quizAttempt"
+    modelProps: "document" | "studySet" | "flashcard" | "mcqQuestion" | "fillInBlank" | "theoryQuestion" | "quiz" | "quizAttempt" | "userSetting"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1003,6 +1004,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    UserSetting: {
+      payload: Prisma.$UserSettingPayload<ExtArgs>
+      fields: Prisma.UserSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.UserSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        findMany: {
+          args: Prisma.UserSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>[]
+        }
+        create: {
+          args: Prisma.UserSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        createMany: {
+          args: Prisma.UserSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UserSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.UserSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        update: {
+          args: Prisma.UserSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UserSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.UserSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.UserSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserSetting>
+        }
+        groupBy: {
+          args: Prisma.UserSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSettingCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1130,6 +1205,15 @@ export const QuizAttemptScalarFieldEnum = {
 } as const
 
 export type QuizAttemptScalarFieldEnum = (typeof QuizAttemptScalarFieldEnum)[keyof typeof QuizAttemptScalarFieldEnum]
+
+
+export const UserSettingScalarFieldEnum = {
+  id: 'id',
+  geminiApiKey: 'geminiApiKey',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserSettingScalarFieldEnum = (typeof UserSettingScalarFieldEnum)[keyof typeof UserSettingScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1335,6 +1419,7 @@ export type GlobalOmitConfig = {
   theoryQuestion?: Prisma.TheoryQuestionOmit
   quiz?: Prisma.QuizOmit
   quizAttempt?: Prisma.QuizAttemptOmit
+  userSetting?: Prisma.UserSettingOmit
 }
 
 /* Types for Logging */
