@@ -72,7 +72,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
     };
 
     return (
-        <div className="rounded-lg border border-rule bg-card p-6 md:p-8 space-y-6">
+        <div className="space-y-6">
             <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Configure Study Set</p>
                 <h2 className="mt-2 font-sans text-xl font-semibold text-ink">Choose generation counts</h2>
