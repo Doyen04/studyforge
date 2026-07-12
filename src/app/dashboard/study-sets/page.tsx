@@ -98,7 +98,12 @@ export default function StudySetsIndex() {
             <ConfirmModal
                 open={confirmDeleteId !== null}
                 title="Delete study set?"
-                message="This will permanently delete this study set and all its quizzes. This cannot be undone."
+                message="This will permanently delete this study set and cannot be undone."
+                details={[
+                    "All flashcards, MCQ, fill-in-the-blank, and theory questions",
+                    "All quizzes created from this study set",
+                    "All quiz attempts and scores",
+                ]}
                 confirmLabel="Delete"
                 destructive
                 onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}

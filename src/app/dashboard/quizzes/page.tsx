@@ -112,7 +112,10 @@ export default function QuizzesIndex() {
             <ConfirmModal
                 open={confirmDeleteId !== null}
                 title="Delete quiz?"
-                message="This will permanently delete this quiz and all its attempts. This cannot be undone."
+                message="This will permanently delete this quiz and cannot be undone."
+                details={[
+                    "All quiz attempts and recorded scores",
+                ]}
                 confirmLabel="Delete"
                 destructive
                 onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}

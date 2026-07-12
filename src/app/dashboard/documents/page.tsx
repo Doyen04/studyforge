@@ -124,7 +124,12 @@ export default function DocumentsPage() {
             <ConfirmModal
                 open={confirmDeleteId !== null}
                 title="Delete document?"
-                message="This will permanently delete this document and all of its study sets. This cannot be undone."
+                message="This will permanently delete this document and cannot be undone."
+                details={[
+                    "All study sets created from this document",
+                    "All flashcards, quiz questions, and theory questions",
+                    "All quizzes and quiz attempts",
+                ]}
                 confirmLabel="Delete"
                 destructive
                 onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}

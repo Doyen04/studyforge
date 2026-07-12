@@ -8,6 +8,7 @@ interface ConfirmModalProps {
     open: boolean;
     title: string;
     message: string;
+    details?: string[];
     confirmLabel?: string;
     cancelLabel?: string;
     onConfirm: () => void;
@@ -19,6 +20,7 @@ export function ConfirmModal({
     open,
     title,
     message,
+    details,
     confirmLabel = "Confirm",
     cancelLabel = "Cancel",
     onConfirm,
@@ -57,6 +59,16 @@ export function ConfirmModal({
                         </div>
                         <h2 className="font-sans text-base font-semibold text-ink">{title}</h2>
                         <p className="mt-2 text-sm text-ink-muted leading-relaxed">{message}</p>
+                        {details && details.length > 0 && (
+                            <ul className="mt-3 w-full text-left text-xs text-ink-muted space-y-1 rounded-md bg-paper border border-rule px-3 py-2.5">
+                                {details.map((detail) => (
+                                    <li key={detail} className="flex items-start gap-2">
+                                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-error/60" />
+                                        <span>{detail}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </div>
                     <div className="flex gap-3 px-6 pb-6">
                         <button
