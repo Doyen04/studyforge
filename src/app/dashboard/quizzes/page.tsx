@@ -6,14 +6,10 @@ import { Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import type { QuizIndexItem } from "@/lib/page-types";
 
 export default function QuizzesIndex() {
-    const [quizzes, setQuizzes] = useState<Array<{
-        id: string;
-        title: string;
-        studySet: { title: string };
-        attempts: Array<{ score: number; completedAt: string | null }>;
-    }>>([]);
+    const [quizzes, setQuizzes] = useState<QuizIndexItem[]>([]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
     const [loading, setLoading] = useState(true);

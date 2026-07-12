@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { QuizRunner } from "@/components/QuizRunner";
-import type { QuizQuestion } from "@/lib/types";
+import type { QuizPageData } from "@/lib/page-types";
 
 interface QuizPageProps {
     params: Promise<{ id: string }>;
 }
 
 export default function QuizPage({ params }: QuizPageProps) {
-    const [quiz, setQuiz] = useState<{ quizId: string; title: string; questions: QuizQuestion[] } | null>(null);
+    const [quiz, setQuiz] = useState<QuizPageData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

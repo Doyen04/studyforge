@@ -5,31 +5,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { parseJsonArray } from "@/lib/deserialize";
 import { GradedMargin } from "@/components/GradedMargin";
-import type { GradedAnswer } from "@/lib/types";
+import type { QuizResultData } from "@/lib/page-types";
 
 export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
-    const [data, setData] = useState<{
-        quiz: {
-            id: string;
-            title: string;
-            studySet: {
-                mcqQuestions: Array<{
-                    id: string;
-                    question: string;
-                    options: string;
-                }>;
-                fillInBlanks: Array<{
-                    id: string;
-                    sentence: string;
-                }>;
-            };
-        };
-        attempt: {
-            score: number;
-            completedAt: string | null;
-        };
-        answers: GradedAnswer[];
-    } | null>(null);
+    const [data, setData] = useState<QuizResultData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

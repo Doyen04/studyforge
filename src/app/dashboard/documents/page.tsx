@@ -7,19 +7,11 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
-
-interface Document {
-    id: string;
-    filename: string;
-    fileType: string;
-    wordCount: number;
-    createdAt: string;
-    _count: { studySets: number };
-}
+import type { DocumentItem } from "@/lib/page-types";
 
 export default function DocumentsPage() {
     const router = useRouter();
-    const [documents, setDocuments] = useState<Document[]>([]);
+    const [documents, setDocuments] = useState<DocumentItem[]>([]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
     const [loading, setLoading] = useState(true);
