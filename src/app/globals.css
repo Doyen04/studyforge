@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
     --color-ink: #211c1f;
     --color-ink-muted: #6b6266;
@@ -20,13 +22,27 @@
     --font-data: var(--font-plex-mono), ui-monospace, monospace;
 }
 
+.dark {
+    --color-ink: #e8e4e6;
+    --color-ink-muted: #9a9196;
+    --color-paper: #1a1718;
+    --color-paper-hover: #242021;
+    --color-card: #211e1f;
+    --color-rule: #3a3536;
+    --color-accent: #b07ab5;
+    --color-accent-hover: #c99dce;
+    --color-mastered: #5aad72;
+    --color-review: #d4a24a;
+    --color-error: #c95454;
+}
+
 html {
     height: 100%;
 }
 
 body {
     min-height: 100%;
-    background: #ffffff;
+    background: var(--color-paper);
     color: var(--color-ink);
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }

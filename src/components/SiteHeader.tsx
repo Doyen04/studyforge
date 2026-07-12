@@ -3,8 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { useTheme } from "./ThemeProvider";
 
 const links = [
     { href: "/dashboard", label: "Dashboard" },
@@ -17,6 +18,7 @@ const links = [
 export function SiteHeader() {
     const pathname = usePathname();
     const [mobileOpen, setMobileOpen] = useState(false);
+    const { theme, toggle } = useTheme();
 
     function isActive(href: string) {
         if (href === "/dashboard") return pathname === "/dashboard";
@@ -47,14 +49,24 @@ export function SiteHeader() {
                     ))}
                 </nav>
 
-                {/* Mobile hamburger */}
-                <button
-                    onClick={() => setMobileOpen((prev) => !prev)}
-                    className="md:hidden flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
-                    aria-label={mobileOpen ? "Close menu" : "Open menu"}
-                >
-                    {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggle}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
+                        aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                    >
+                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                    </button>
+
+                    {/* Mobile hamburger */}
+                    <button
+                        onClick={() => setMobileOpen((prev) => !prev)}
+                        className="md:hidden flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
+                        aria-label={mobileOpen ? "Close menu" : "Open menu"}
+                    >
+                        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile nav panel */}

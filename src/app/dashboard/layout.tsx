@@ -1,9 +1,10 @@
 import { SiteHeader } from "@/components/SiteHeader";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "sonner";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
-        <>
+        <ThemeProvider>
             <SiteHeader />
             {children}
             <Toaster
@@ -18,6 +19,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     },
                 }}
             />
-        </>
+        </ThemeProvider>
     );
 }
