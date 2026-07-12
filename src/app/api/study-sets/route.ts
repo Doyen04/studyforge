@@ -82,8 +82,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ studySet });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search");
+
     const studySets = await prisma.studySet.findMany({
+        where: search
+            ? {
+                  OR: [
+                      { title: { contains: search, mode: "insensitive" } },
+                      { document: { filename: { contains: search, mode: "insensitive" } } },
+                  ],
+              }
+            : {},
         orderBy: { createdAt: "desc" },
         include: { document: true },
     });

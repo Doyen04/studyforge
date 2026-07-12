@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Search } from "lucide-react";
 
 export default function QuizzesIndex() {
     const [quizzes, setQuizzes] = useState<Array<{
@@ -10,39 +11,48 @@ export default function QuizzesIndex() {
         studySet: { title: string };
         attempts: Array<{ score: number; completedAt: string | null }>;
     }>>([]);
+    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("/api/quizzes")
-            .then((res) => res.json())
-            .then((data) => setQuizzes(data.quizzes))
-            .catch(() => {})
-            .finally(() => setLoading(false));
-    }, []);
-
-    if (loading) {
-        return (
-            <main className="min-h-screen">
-                <div className="mx-auto max-w-5xl px-4 py-8 space-y-6 animate-pulse">
-                    <div className="h-8 w-40 rounded bg-rule" />
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-lg bg-rule" />)}
-                    </div>
-                </div>
-            </main>
-        );
-    }
+        const timer = setTimeout(() => {
+            fetch(`/api/quizzes?search=${encodeURIComponent(search)}`)
+                .then((res) => res.json())
+                .then((data) => setQuizzes(data.quizzes))
+                .catch(() => {})
+                .finally(() => setLoading(false));
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [search]);
 
     return (
         <main className="min-h-screen">
             <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
                 <section>
-                    <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Quizzes</h1>
-                    <p className="mt-2 text-sm text-ink-muted">Your generated quizzes and past results.</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Quizzes</h1>
+                            <p className="mt-2 text-sm text-ink-muted">Your generated quizzes and past results.</p>
+                        </div>
+                        <div className="relative">
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
+                            <input
+                                type="text"
+                                placeholder="Search quizzes..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-9 pr-4 py-2 w-full sm:w-64 rounded-md border border-rule bg-card text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
+                            />
+                        </div>
+                    </div>
 
-                    {quizzes.length === 0 ? (
+                    {loading ? (
+                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                            {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-lg bg-rule" />)}
+                        </div>
+                    ) : quizzes.length === 0 ? (
                         <div className="mt-6 rounded-lg border border-dashed border-rule bg-card p-6 text-sm text-ink-muted">
-                            No quizzes yet. Create one from a study set to test your knowledge.
+                            {search ? "No quizzes found matching your search." : "No quizzes yet. Create one from a study set to test your knowledge."}
                         </div>
                     ) : (
                         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">

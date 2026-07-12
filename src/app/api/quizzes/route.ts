@@ -39,8 +39,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ quiz });
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const search = searchParams.get("search");
+
     const quizzes = await prisma.quiz.findMany({
+        where: search
+            ? {
+                  OR: [
+                      { title: { contains: search, mode: "insensitive" } },
+                      { studySet: { title: { contains: search, mode: "insensitive" } } },
+                  ],
+              }
+            : {},
         orderBy: { createdAt: "desc" },
         include: {
             studySet: { select: { title: true } },
