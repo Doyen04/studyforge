@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { FlashcardData } from "@/lib/types";
+import type { FlashcardData } from "@/types/domain";
 
 export function FlashcardViewer({ cards }: { cards: FlashcardData[] }) {
     const [index, setIndex] = useState(0);

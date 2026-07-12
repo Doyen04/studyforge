@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
-import type { GradedAnswer } from "@/lib/types";
+import type { GradedAnswer } from "@/types/domain";
 
 export async function GET(
     request: NextRequest,

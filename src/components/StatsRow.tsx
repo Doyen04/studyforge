@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { BookOpen, PenLine, ListChecks, Clock } from "lucide-react";
-import type { DashboardStats } from "@/lib/types";
+import type { DashboardStats } from "@/types/domain";
 
 export function StatsRow({
     stats,

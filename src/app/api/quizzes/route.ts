@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { pick } from "@/lib/utils";
-import type { QuestionType } from "@/lib/types";
+import type { QuestionType } from "@/types/domain";
 
 interface CreateQuizBody {
     studySetId: string;

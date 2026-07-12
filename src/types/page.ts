@@ -1,4 +1,4 @@
-import type { GradedAnswer, QuizQuestion } from "@/lib/types";
+import type { GradedAnswer, QuizQuestion } from "./domain";
 
 export interface QuizIndexItem {
     id: string;

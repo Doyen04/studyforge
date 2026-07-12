@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { parseJsonArray } from "@/lib/deserialize";
 import { gradeTheoryAnswer } from "@/lib/prompts/gradeTheoryAnswer";
-import type { SubmittedAnswer } from "@/lib/types";
+import type { SubmittedAnswer } from "@/types/domain";
 
 export async function POST(
     request: NextRequest,

@@ -6,7 +6,7 @@ import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
 import { TheoryCard } from "./TheoryCard";
 import { CreateQuizModal } from "./CreateQuizModal";
-import type { FlashcardData, McqQuestionData, FillInBlankData, TheoryQuestionData } from "@/lib/types";
+import type { FlashcardData, McqQuestionData, FillInBlankData, TheoryQuestionData } from "@/types/domain";
 
 export interface StudySetViewerProps {
     studySet: {

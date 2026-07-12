@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import type { QuizQuestion } from "@/lib/types";
+import type { QuizQuestion } from "@/types/domain";
 
 export function QuizRunner({
     quizId,

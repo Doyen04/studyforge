@@ -3,7 +3,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { QuestionType } from "@/lib/types";
+import type { QuestionType } from "@/types/domain";
 
 const questionTypes: { key: QuestionType; label: string }[] = [
     { key: "mcq", label: "MCQ" },

@@ -6,7 +6,7 @@ import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
-import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/lib/types";
+import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/types/domain";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
