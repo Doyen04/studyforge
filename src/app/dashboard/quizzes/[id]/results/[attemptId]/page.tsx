@@ -9,8 +9,25 @@ import type { GradedAnswer } from "@/lib/types";
 
 export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
     const [data, setData] = useState<{
-        quiz: any;
-        attempt: any;
+        quiz: {
+            id: string;
+            title: string;
+            studySet: {
+                mcqQuestions: Array<{
+                    id: string;
+                    question: string;
+                    options: string;
+                }>;
+                fillInBlanks: Array<{
+                    id: string;
+                    sentence: string;
+                }>;
+            };
+        };
+        attempt: {
+            score: number;
+            completedAt: string | null;
+        };
         answers: GradedAnswer[];
     } | null>(null);
     const [loading, setLoading] = useState(true);
@@ -77,13 +94,13 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         let fillInBlankText = "";
 
                         if (answer.type === "mcq") {
-                            const found = quiz.studySet.mcqQuestions.find((q: any) => q.id === answer.id);
+                            const found = quiz.studySet.mcqQuestions.find((q) => q.id === answer.id);
                             if (found) {
                                 mcqQuestionText = found.question;
                                 mcqOptions = parseJsonArray<string>(found.options);
                             }
                         } else if (answer.type === "fillInBlank") {
-                            const found = quiz.studySet.fillInBlanks.find((q: any) => q.id === answer.id);
+                            const found = quiz.studySet.fillInBlanks.find((q) => q.id === answer.id);
                             if (found) {
                                 fillInBlankText = found.sentence;
                             }

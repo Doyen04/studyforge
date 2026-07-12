@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { StudySetViewer } from "@/components/StudySetViewer";
+import type { StudySetViewerProps } from "@/components/StudySetViewer";
 
 interface StudySetPageProps {
     params: Promise<{ id: string }>;
 }
 
 export default function StudySetPage({ params }: StudySetPageProps) {
-    const [studySet, setStudySet] = useState<any>(null);
+    const [studySet, setStudySet] = useState<StudySetViewerProps["studySet"] | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {

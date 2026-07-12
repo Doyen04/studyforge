@@ -8,7 +8,7 @@ import { TheoryCard } from "./TheoryCard";
 import { CreateQuizModal } from "./CreateQuizModal";
 import type { FlashcardData, McqQuestionData, FillInBlankData, TheoryQuestionData } from "@/lib/types";
 
-interface StudySetViewerProps {
+export interface StudySetViewerProps {
     studySet: {
         id: string;
         title: string;

@@ -14,7 +14,7 @@
 /coverage
 
 # next.js
-/.next/
+.next/
 /out/
 
 # production
@@ -38,7 +38,7 @@ yarn-error.log*
 
 IMPLEMENTATION.md
 DESIGN.md
-src\generated\*
+src/generated/
 
 # typescript
 *.tsbuildinfo
