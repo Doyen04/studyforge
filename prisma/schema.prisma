@@ -35,6 +35,7 @@ model Flashcard {
     id         String   @id @default(cuid())
     studySetId String
     studySet   StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    subtopic   String?
     front      String
     back       String
 }
@@ -43,6 +44,7 @@ model McqQuestion {
     id           String   @id @default(cuid())
     studySetId   String
     studySet     StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    subtopic     String?
     question     String
     options      String
     correctIndex Int
@@ -53,6 +55,7 @@ model FillInBlank {
     id                String   @id @default(cuid())
     studySetId        String
     studySet          StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    subtopic          String?
     sentence          String
     answer            String
     acceptableAnswers String
@@ -62,6 +65,7 @@ model TheoryQuestion {
     id              String   @id @default(cuid())
     studySetId      String
     studySet        StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
+    subtopic        String?
     question        String
     referenceAnswer String
     keyPoints       String

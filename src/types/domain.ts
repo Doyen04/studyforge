@@ -1,9 +1,11 @@
 export interface GeneratedFlashcard {
+    subtopic: string;
     front: string;
     back: string;
 }
 
 export interface GeneratedMcqQuestion {
+    subtopic: string;
     question: string;
     options: string[];
     correctIndex: number;
@@ -11,12 +13,14 @@ export interface GeneratedMcqQuestion {
 }
 
 export interface GeneratedFillInBlank {
+    subtopic: string;
     sentence: string;
     answer: string;
     acceptableAnswers: string[];
 }
 
 export interface GeneratedTheoryQuestion {
+    subtopic: string;
     question: string;
     referenceAnswer: string;
     keyPoints: string[];
@@ -47,6 +51,7 @@ export interface GradedAnswer {
 export interface FlashcardData {
     id: string;
     studySetId: string;
+    subtopic: string | null;
     front: string;
     back: string;
 }
@@ -54,6 +59,7 @@ export interface FlashcardData {
 export interface McqQuestionData {
     id: string;
     studySetId: string;
+    subtopic: string | null;
     question: string;
     options: string[];
     correctIndex: number;
@@ -63,6 +69,7 @@ export interface McqQuestionData {
 export interface FillInBlankData {
     id: string;
     studySetId: string;
+    subtopic: string | null;
     sentence: string;
     answer: string;
     acceptableAnswers: string[];
@@ -71,6 +78,7 @@ export interface FillInBlankData {
 export interface TheoryQuestionData {
     id: string;
     studySetId: string;
+    subtopic: string | null;
     question: string;
     referenceAnswer: string;
     keyPoints: string[];

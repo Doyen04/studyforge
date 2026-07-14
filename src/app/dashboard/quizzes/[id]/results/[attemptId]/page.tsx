@@ -19,7 +19,6 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                 .then((result) => {
                     if (!result.quiz) {
                         notFound();
-                        return;
                     }
                     setData(result);
                 })

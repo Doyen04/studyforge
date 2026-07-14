@@ -55,12 +55,14 @@ export async function GET(
         flashcards: studySet.flashcards.map((f) => ({
             id: f.id,
             studySetId: f.studySetId,
+            subtopic: f.subtopic,
             front: f.front,
             back: f.back,
         })),
         mcqQuestions: studySet.mcqQuestions.map((q) => ({
             id: q.id,
             studySetId: q.studySetId,
+            subtopic: q.subtopic,
             question: q.question,
             options: parseJsonArray<string>(q.options),
             correctIndex: q.correctIndex,
@@ -69,6 +71,7 @@ export async function GET(
         fillInBlanks: studySet.fillInBlanks.map((f) => ({
             id: f.id,
             studySetId: f.studySetId,
+            subtopic: f.subtopic,
             sentence: f.sentence,
             answer: f.answer,
             acceptableAnswers: parseJsonArray<string>(f.acceptableAnswers),
@@ -76,6 +79,7 @@ export async function GET(
         theoryQuestions: studySet.theoryQuestions.map((t) => ({
             id: t.id,
             studySetId: t.studySetId,
+            subtopic: t.subtopic,
             question: t.question,
             referenceAnswer: t.referenceAnswer,
             keyPoints: parseJsonArray<string>(t.keyPoints),

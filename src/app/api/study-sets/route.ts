@@ -52,9 +52,16 @@ export async function POST(request: NextRequest) {
         data: {
             documentId,
             title: document.filename.replace(/\.(docx|pptx|pdf)$/i, ""),
-            flashcards: { create: flashcardResults.flat() },
+            flashcards: {
+                create: flashcardResults.flat().map((item) => ({
+                    subtopic: item.subtopic,
+                    front: item.front,
+                    back: item.back,
+                })),
+            },
             mcqQuestions: {
                 create: mcqResults.flat().map((question) => ({
+                    subtopic: question.subtopic,
                     question: question.question,
                     options: JSON.stringify(question.options),
                     correctIndex: question.correctIndex,
@@ -63,6 +70,7 @@ export async function POST(request: NextRequest) {
             },
             fillInBlanks: {
                 create: fillInBlankResults.flat().map((item) => ({
+                    subtopic: item.subtopic,
                     sentence: item.sentence,
                     answer: item.answer,
                     acceptableAnswers: JSON.stringify(item.acceptableAnswers),
@@ -70,6 +78,7 @@ export async function POST(request: NextRequest) {
             },
             theoryQuestions: {
                 create: theoryResults.flat().map((item) => ({
+                    subtopic: item.subtopic,
                     question: item.question,
                     referenceAnswer: item.referenceAnswer,
                     keyPoints: JSON.stringify(item.keyPoints),
