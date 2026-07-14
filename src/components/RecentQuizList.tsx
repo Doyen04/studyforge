@@ -22,7 +22,7 @@ export function RecentQuizList({
                                 {attempt.score}%
                             </span>
                             <span className="font-data text-xs text-ink-muted">
-                                {attempt.completedAt?.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                                {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : null}
                             </span>
                         </span>
                     </div>
