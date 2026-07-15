@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Trash2, Upload } from "lucide-react";
+import { IconSearch, IconTrash, IconUpload } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
@@ -100,7 +100,7 @@ export default function DocumentsPage() {
                                 disabled={uploading}
                                 className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
                             >
-                                <Upload size={16} />
+                                <IconUpload size={16} stroke={2} />
                                 {uploading ? "Uploading…" : "Upload"}
                             </button>
                             <input
@@ -111,7 +111,7 @@ export default function DocumentsPage() {
                                 className="hidden"
                             />
                             <div className="relative">
-                                <Search className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
+                                <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
                                 <input
                                     type="text"
                                     placeholder="Search documents..."
@@ -165,7 +165,7 @@ export default function DocumentsPage() {
                                             aria-label="Delete document"
                                             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
                                         >
-                                            <Trash2 size={14} />
+                                            <IconTrash size={14} stroke={2} />
                                         </button>
                                     </div>
                                 </div>

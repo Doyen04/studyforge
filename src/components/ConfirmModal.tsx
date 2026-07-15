@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { motion } from "motion/react";
-import { AlertTriangle } from "lucide-react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 
 interface ConfirmModalProps {
     open: boolean;
@@ -55,7 +55,7 @@ export function ConfirmModal({
                 <div className="rounded-lg border border-rule bg-card shadow-xl">
                     <div className="flex flex-col items-center px-6 pt-6 pb-4 text-center">
                         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-error/10 text-error mb-3">
-                            <AlertTriangle size={20} />
+                            <IconAlertTriangle size={20} stroke={2} />
                         </div>
                         <h2 className="font-sans text-base font-semibold text-ink">{title}</h2>
                         <p className="mt-2 text-sm text-ink-muted leading-relaxed">{message}</p>

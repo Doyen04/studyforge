@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, BookCopy, ListChecks, PenLine, MessageSquare, ArrowRight } from "lucide-react";
+import { IconBook, IconArrowRight } from "@tabler/icons-react";
 
 export function ContinueStudyingCard({
     studySet,
@@ -12,37 +12,68 @@ export function ContinueStudyingCard({
     itemCounts: { flashcards: number; mcq: number; fillInBlank: number; theory: number };
     lastScore: number | null;
 }) {
-    const scoreColor = lastScore === null ? "text-ink-muted" : lastScore >= 70 ? "text-mastered" : "text-review";
+    const total = itemCounts.flashcards + itemCounts.mcq + itemCounts.fillInBlank + itemCounts.theory;
+    const pct = (n: number) => (total > 0 ? (n / total) * 100 : 0);
+
     const scoreLabel = lastScore === null ? "Not quizzed yet" : `Last score ${lastScore}%`;
 
     return (
-        <div className="relative overflow-hidden rounded-xl border border-rule bg-card p-4 sm:p-6 transition-all hover:-translate-y-0.5 hover:border-accent/20">
-            <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-r-full" />
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div className="space-y-2.5 min-w-0">
-                    <div className="flex items-center gap-2">
-                        <BookOpen size={16} className="text-accent shrink-0" />
-                        <p className="text-xs font-semibold uppercase tracking-widest text-ink-muted">Continue studying</p>
-                    </div>
-                    <p className="font-sans text-lg font-semibold text-ink truncate">{studySet.title}</p>
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-                        <span className={`font-medium ${scoreColor}`}>{scoreLabel}</span>
-                        <span className="text-ink-muted/30 hidden sm:inline">·</span>
-                        <span className="flex items-center gap-3 text-ink-muted">
-                            <span className="flex items-center gap-1"><BookCopy size={13} />{itemCounts.flashcards}</span>
-                            <span className="flex items-center gap-1"><ListChecks size={13} />{itemCounts.mcq}</span>
-                            <span className="flex items-center gap-1"><PenLine size={13} />{itemCounts.fillInBlank}</span>
-                            <span className="flex items-center gap-1"><MessageSquare size={13} />{itemCounts.theory}</span>
-                        </span>
-                    </div>
+        <div className="relative overflow-hidden rounded-xl border border-rule bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+            <div className="absolute left-0 top-0 h-full w-1 rounded-r-full bg-accent" />
+
+            <div className="flex items-center gap-2 mb-3">
+                <IconBook size={13} stroke={2} className="text-accent shrink-0" />
+                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-accent">Continue studying</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="min-w-0">
+                    <h3 className="font-display text-lg font-semibold text-ink truncate">{studySet.title}</h3>
+                    <p className="text-xs text-ink-muted mt-1">
+                        {studySet.title.toLowerCase().replace(/\s+/g, "-")}.pdf · {scoreLabel}
+                    </p>
                 </div>
                 <Link
                     href={`/dashboard/study-sets/${studySet.id}`}
-                    className="group flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-5 py-2.5 text-sm font-medium text-white! transition-all hover:bg-accent-hover sm:self-center"
+                    className="group flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-accent-hover sm:self-start"
                 >
                     <span>{lastScore === null ? "Start studying" : "Quiz again"}</span>
-                    <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" />
+                    <IconArrowRight size={14} stroke={2.5} className="transition-transform group-hover:translate-x-0.5" />
                 </Link>
+            </div>
+
+            <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-rule">
+                {itemCounts.flashcards > 0 && (
+                    <span style={{ width: `${pct(itemCounts.flashcards)}%` }} className="bg-accent" />
+                )}
+                {itemCounts.mcq > 0 && (
+                    <span style={{ width: `${pct(itemCounts.mcq)}%` }} className="bg-mastered" />
+                )}
+                {itemCounts.fillInBlank > 0 && (
+                    <span style={{ width: `${pct(itemCounts.fillInBlank)}%` }} className="bg-review" />
+                )}
+                {itemCounts.theory > 0 && (
+                    <span style={{ width: `${pct(itemCounts.theory)}%` }} className="bg-ink-muted" />
+                )}
+            </div>
+
+            <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
+                <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-accent" />
+                    {itemCounts.flashcards} flashcards
+                </span>
+                <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-mastered" />
+                    {itemCounts.mcq} MCQ
+                </span>
+                <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-review" />
+                    {itemCounts.fillInBlank} fill-in-blank
+                </span>
+                <span className="flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-ink-muted" />
+                    {itemCounts.theory} theory
+                </span>
             </div>
         </div>
     );

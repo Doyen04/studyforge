@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown } from "lucide-react";
+import { IconChevronDown } from "@tabler/icons-react";
 import { Reveal } from "./Reveal";
 
 const faqs = [
@@ -34,7 +34,7 @@ const faqs = [
 
 function ChevronDownIcon({ open }: { open: boolean }) {
     return (
-        <ChevronDown
+        <IconChevronDown
             size={16}
             className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
         />

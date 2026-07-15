@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
-import { X } from "lucide-react";
+import { IconX } from "@tabler/icons-react";
 import { CreateQuizPanel } from "./CreateQuizPanel";
 
 export function CreateQuizModal({
@@ -40,7 +40,7 @@ export function CreateQuizModal({
                     className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                     aria-label="Close modal"
                 >
-                    <X size={16} />
+                    <IconX size={16} stroke={2} />
                 </button>
 
                 <div className="max-h-[85vh] overflow-y-auto">

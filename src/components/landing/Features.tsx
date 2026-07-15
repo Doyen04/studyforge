@@ -1,29 +1,29 @@
 "use client";
 
 import { motion } from "motion/react";
-import { BookOpen, ListChecks, PenLine, Clock } from "lucide-react";
+import { IconBook, IconListCheck, IconPencil, IconClock } from "@tabler/icons-react";
 import { Reveal } from "./Reveal";
 
 const features = [
     {
         title: "Flashcards",
         description: "Front-and-back recall cards for key terms and concepts.",
-        icon: <BookOpen size={24} />,
+        icon: <IconBook size={24} stroke={1.5} />,
     },
     {
         title: "Multiple choice",
         description: "Four-option questions with explanations for the correct answer.",
-        icon: <ListChecks size={24} />,
+        icon: <IconListCheck size={24} stroke={1.5} />,
     },
     {
         title: "Fill in the blank",
         description: "Sentence-completion exercises with synonym support.",
-        icon: <PenLine size={24} />,
+        icon: <IconPencil size={24} stroke={1.5} />,
     },
     {
         title: "Theory questions",
         description: "Open-ended questions with AI grading against a rubric.",
-        icon: <Clock size={24} />,
+        icon: <IconClock size={24} stroke={1.5} />,
     },
 ];
 

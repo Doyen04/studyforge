@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { X } from "lucide-react";
+import { IconX } from "@tabler/icons-react";
 import { UploadZone } from "./UploadZone";
 import { GenerateOptionsPanel } from "./GenerateOptionsPanel";
 
@@ -65,7 +65,7 @@ export function UploadTile() {
                                     aria-label="Close"
                                     className="flex h-7 w-7 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
                                 >
-                                    <X size={16} />
+                                    <IconX size={16} stroke={2} />
                                 </button>
                             </div>
                             <div className="px-6 pb-6">

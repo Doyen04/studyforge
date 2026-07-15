@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Search, Trash2 } from "lucide-react";
+import { IconSearch, IconTrash } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
@@ -49,7 +49,7 @@ export default function QuizzesIndex() {
                             <p className="mt-2 text-sm text-ink-muted">Your generated quizzes and past results.</p>
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
+                            <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
                             <input
                                 type="text"
                                 placeholder="Search quizzes..."
@@ -94,7 +94,7 @@ export default function QuizzesIndex() {
                                             aria-label="Delete quiz"
                                             className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
                                         >
-                                            <Trash2 size={14} />
+                                            <IconTrash size={14} stroke={2} />
                                         </button>
                                     </div>
                                 );

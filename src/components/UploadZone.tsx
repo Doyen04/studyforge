@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { toast } from "sonner";
+import { IconPlus } from "@tabler/icons-react";
 
 
 function ProgressBar({ value, indeterminate = false }: { value?: number; indeterminate?: boolean }) {
@@ -138,7 +139,7 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 onClick={uploadStage === "idle" ? handleButtonClick : undefined}
                 className={`group relative min-h-[148px] rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200 flex flex-col items-center justify-center ${
                     uploadStage === "idle" ? "cursor-pointer hover:border-accent/60" : ""
-                } ${dragActive ? "border-accent bg-accent/[0.07]" : "border-accent/30 bg-accent/[0.03]"}`}
+                } ${dragActive ? "border-accent bg-accent/[0.07] text-accent" : "border-rule text-ink-muted"}`}
             >
                 <input
                     ref={fileInputRef}
@@ -150,11 +151,13 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
 
                 {uploadStage === "idle" && (
                     <div className="space-y-2">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-lg font-semibold text-accent mx-auto group-hover:bg-accent/20 group-hover:scale-110 transition-all">+</span>
-                        <p className="font-sans text-sm font-semibold text-accent">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-accent/40 text-accent mx-auto group-hover:border-accent group-hover:scale-110 transition-all">
+                            <IconPlus size={14} stroke={2.5} />
+                        </span>
+                        <p className="font-sans text-sm font-semibold text-ink">
                             Upload material
                         </p>
-                        <p className="font-sans text-[11px] text-accent/60">
+                        <p className="font-sans text-[11px] text-ink-muted">
                             .pptx, .docx, or .pdf
                         </p>
                     </div>

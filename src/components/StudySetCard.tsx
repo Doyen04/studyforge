@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { BookCopy, ListChecks, PenLine, MessageSquare } from "lucide-react";
 
 interface StudySetCardProps {
     set: {
@@ -19,33 +18,53 @@ interface StudySetCardProps {
 }
 
 export function StudySetCard({ set }: StudySetCardProps) {
+    const total = set.itemCounts.flashcards + set.itemCounts.mcq + set.itemCounts.fillInBlank + set.itemCounts.theory;
+
     return (
-        <Link
-            href={`/dashboard/study-sets/${set.id}`}
-            className="group flex flex-col rounded-xl border border-rule bg-card p-5 transition-all hover:border-accent/30 hover:-translate-y-0.5"
-        >
-            <div className="flex items-start justify-between gap-3 mb-3">
-                <div className="space-y-1.5 min-w-0">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent/70">Study set</p>
-                    <h3 className="text-[15px] font-semibold text-ink truncate group-hover:text-accent transition-colors">{set.title}</h3>
+        <div className="relative group">
+            <div className="absolute top-2 left-2 right-0 bottom-0 rounded-xl border border-rule bg-paper" />
+            <Link
+                href={`/dashboard/study-sets/${set.id}`}
+                className="relative z-10 flex flex-col rounded-xl border border-rule bg-card p-5 transition-all group-hover:-translate-x-0.5 group-hover:-translate-y-0.5"
+            >
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-accent">Study set</span>
+                        <h3 className="font-display text-base font-semibold text-ink mt-1 truncate">{set.title}</h3>
+                    </div>
+                    {set.lastScore !== null && (
+                        <span
+                            className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-semibold ${
+                                set.lastScore >= 70
+                                    ? "bg-mastered/10 text-mastered"
+                                    : "bg-review/10 text-review"
+                            }`}
+                        >
+                            {set.lastScore}%
+                        </span>
+                    )}
                 </div>
-                {set.lastScore !== null && (
-                    <span
-                        className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold ${
-                            set.lastScore >= 70 ? "bg-mastered/10 text-mastered" : "bg-review/10 text-review"
-                        }`}
-                    >
-                        {set.lastScore}%
-                    </span>
+                <p className="text-xs text-ink-muted mt-1.5">
+                    {set.filename} · {total} questions
+                </p>
+                {set.lastScore === null && (
+                    <span className="text-xs text-ink-muted mt-2">Not quizzed yet</span>
                 )}
-            </div>
-            <p className="text-sm text-ink-muted truncate mb-4">{set.filename}</p>
-            <div className="mt-auto flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
-                <span className="flex items-center gap-1"><BookCopy size={12} />{set.itemCounts.flashcards}</span>
-                <span className="flex items-center gap-1"><ListChecks size={12} />{set.itemCounts.mcq}</span>
-                <span className="flex items-center gap-1"><PenLine size={12} />{set.itemCounts.fillInBlank}</span>
-                <span className="flex items-center gap-1"><MessageSquare size={12} />{set.itemCounts.theory}</span>
-            </div>
-        </Link>
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold text-accent">
+                        {set.itemCounts.flashcards} flashcards
+                    </span>
+                    <span className="rounded-full bg-mastered/10 px-2.5 py-0.5 text-[10px] font-semibold text-mastered">
+                        {set.itemCounts.mcq} MCQ
+                    </span>
+                    <span className="rounded-full bg-review/10 px-2.5 py-0.5 text-[10px] font-semibold text-review">
+                        {set.itemCounts.fillInBlank} fill-blank
+                    </span>
+                    <span className="rounded-full bg-ink/5 px-2.5 py-0.5 text-[10px] font-semibold text-ink-muted">
+                        {set.itemCounts.theory} theory
+                    </span>
+                </div>
+            </Link>
+        </div>
     );
 }

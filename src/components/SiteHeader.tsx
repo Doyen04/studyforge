@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Menu, X, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { IconSun, IconMoon, IconMenu2, IconX } from "@tabler/icons-react";
 import { useTheme } from "./ThemeProvider";
 
 const links = [
@@ -33,15 +33,15 @@ export function SiteHeader() {
                 </Link>
 
                 {/* Desktop nav */}
-                <nav className="hidden md:flex items-center gap-8 text-sm">
+                <nav className="hidden md:flex items-center gap-7 text-sm">
                     {links.map((link) => (
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`relative transition-colors ${
+                            className={`transition-colors pb-0.5 ${
                                 isActive(link.href)
-                                    ? "text-accent font-semibold after:absolute after:-bottom-1 after:left-0 after:right-0 after:h-0.5 after:rounded-full after:bg-accent"
-                                    : "text-ink-muted font-medium hover:text-accent"
+                                    ? "text-ink font-medium border-b-2 border-accent"
+                                    : "text-ink-muted font-medium hover:text-ink border-b-2 border-transparent"
                             }`}
                         >
                             {link.label}
@@ -52,19 +52,27 @@ export function SiteHeader() {
                 <div className="flex items-center gap-2">
                     <button
                         onClick={toggle}
-                        className="flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-rule text-ink-muted hover:bg-paper hover:text-ink transition cursor-pointer"
                         aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
                     >
-                        {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+                        {theme === "dark" ? (
+                            <IconSun size={16} stroke={2} />
+                        ) : (
+                            <IconMoon size={16} stroke={2} />
+                        )}
                     </button>
 
                     {/* Mobile hamburger */}
                     <button
                         onClick={() => setMobileOpen((prev) => !prev)}
-                        className="md:hidden flex h-8 w-8 items-center justify-center rounded-md text-ink-muted hover:bg-rule hover:text-ink transition cursor-pointer"
+                        className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-rule text-ink-muted hover:bg-paper hover:text-ink transition cursor-pointer"
                         aria-label={mobileOpen ? "Close menu" : "Open menu"}
                     >
-                        {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+                        {mobileOpen ? (
+                            <IconX size={16} stroke={2} />
+                        ) : (
+                            <IconMenu2 size={16} stroke={2} />
+                        )}
                     </button>
                 </div>
             </div>

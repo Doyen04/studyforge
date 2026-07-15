@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Check, Loader2, Trash2 } from "lucide-react";
+import { IconEye, IconEyeOff, IconCheck, IconLoader2, IconTrash } from "@tabler/icons-react";
 import { toast } from "sonner";
 
 export default function SettingsPage() {
@@ -121,7 +121,7 @@ export default function SettingsPage() {
                                             className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink transition cursor-pointer"
                                             aria-label={showKey ? "Hide key" : "Show key"}
                                         >
-                                            {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            {showKey ? <IconEyeOff size={16} stroke={2} /> : <IconEye size={16} stroke={2} />}
                                         </button>
                                     </div>
                                     <button
@@ -130,13 +130,13 @@ export default function SettingsPage() {
                                         disabled={!apiKey.trim() || testing}
                                         className="cursor-pointer shrink-0 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper-hover disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        {testing ? <Loader2 size={16} className="animate-spin" /> : "Test"}
+                                        {testing ? <IconLoader2 size={16} stroke={2} className="animate-spin" /> : "Test"}
                                     </button>
                                 </div>
                                 {hasStoredKey && (
                                     <div className="flex items-center justify-between">
                                         <p className="text-xs text-mastered flex items-center gap-1.5">
-                                            <Check size={12} />
+                                                <IconCheck size={12} stroke={2} />
                                             Key saved · {savedKey!.slice(0, 6)}…{savedKey!.slice(-4)}
                                         </p>
                                         <button
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                                             disabled={saving}
                                             className="cursor-pointer text-xs text-ink-muted hover:text-error flex items-center gap-1 transition disabled:opacity-50"
                                         >
-                                            <Trash2 size={12} />
+                                            <IconTrash size={12} stroke={2} />
                                             Remove key
                                         </button>
                                     </div>
