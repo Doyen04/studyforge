@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const studySet = await prisma.studySet.create({
         data: {
             documentId,
-            title: document.filename.replace(/\.(docx|pptx|pdf)$/i, ""),
+            title: document.filename.replace(/\.[^/.]+$/, ""),
             flashcards: {
                 create: flashcardResults.flat().map((item) => ({
                     subtopic: item.subtopic,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 const defaultCounts = {
@@ -28,6 +28,13 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
     const [isGenerating, setIsGenerating] = useState(false);
     const [statusIndex, setStatusIndex] = useState(0);
     const [error, setError] = useState<string | null>(null);
+    const isMounted = useRef(true);
+
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     useEffect(() => {
         if (!isGenerating) return;
@@ -61,9 +68,11 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                 throw new Error(data.error || "Failed to generate study set.");
             }
 
+            if (!isMounted.current) return;
             toast.success("Study set generated successfully!");
             onGenerationSuccess(data.studySet.id);
         } catch (err) {
+            if (!isMounted.current) return;
             const msg = err instanceof Error ? err.message : "Failed to generate study set.";
             setError(msg);
             toast.error(msg);

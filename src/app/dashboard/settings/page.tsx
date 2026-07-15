@@ -19,7 +19,7 @@ export default function SettingsPage() {
                 setSavedKey(data.geminiApiKey);
                 if (data.geminiApiKey) setApiKey(data.geminiApiKey);
             })
-            .catch(() => {})
+            .catch(() => { toast.error("Failed to load settings."); })
             .finally(() => setLoading(false));
     }, []);
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
@@ -21,12 +22,12 @@ export default function DashboardPage() {
         fetch("/api/dashboard")
             .then((res) => res.json())
             .then((data) => {
-                setStats(data.stats);
+                setStats({ ...data.stats, documentsWithoutStudySet: data.documentsWithoutStudySet ?? 0 });
                 setContinueStudying(data.continueStudying);
                 setRecentStudySets(data.recentStudySets);
                 setRecentAttempts(data.recentAttempts);
             })
-            .catch(() => {})
+            .catch(() => { toast.error("Failed to load dashboard data."); })
             .finally(() => setLoading(false));
     }, []);
 

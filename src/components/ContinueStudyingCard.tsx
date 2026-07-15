@@ -8,7 +8,7 @@ export function ContinueStudyingCard({
     itemCounts,
     lastScore,
 }: {
-    studySet: { id: string; title: string };
+    studySet: { id: string; title: string; filename?: string };
     itemCounts: { flashcards: number; mcq: number; fillInBlank: number; theory: number };
     lastScore: number | null;
 }) {
@@ -27,7 +27,7 @@ export function ContinueStudyingCard({
                 <div className="min-w-0">
                     <h3 className="font-display text-[23px] font-semibold text-ink truncate">{studySet.title}</h3>
                     <p className="text-sm text-ink-muted mt-1">
-                        {studySet.title.toLowerCase().replace(/\s+/g, "-")}.pdf · {scoreLabel}
+                        {studySet.filename ?? `${studySet.title.toLowerCase().replace(/\s+/g, "-")}.pdf`} · {scoreLabel}
                     </p>
                 </div>
                 <Link

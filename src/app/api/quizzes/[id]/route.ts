@@ -33,6 +33,12 @@ export async function GET(
         return NextResponse.json({ error: "Quiz not found." }, { status: 404 });
     }
 
+    // Update lastAccessedAt so the study set stays recent in Continue Studying
+    await prisma.studySet.update({
+        where: { id: quiz.studySetId },
+        data: { lastAccessedAt: new Date() },
+    });
+
     const refs = parseJsonArray<{ type: string; id: string }>(quiz.questionRefs);
     const questions = refs.map((ref) => {
         if (ref.type === "mcq") {

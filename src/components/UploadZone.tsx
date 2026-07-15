@@ -169,8 +169,8 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                     <div className="flex flex-col items-center gap-2.5">
                         <div className="h-[22px] w-[22px] animate-spin rounded-full border-[2.5px] border-rule border-t-accent" />
                         <div>
-                            <p className="text-sm font-semibold text-ink">Generating your study set…</p>
-                            <p className="mt-0.5 text-xs text-ink-muted">This can take a minute for longer documents.</p>
+                            <p className="text-sm font-semibold text-ink">Document ready…</p>
+                            <p className="mt-0.5 text-xs text-ink-muted">Configure your study set options.</p>
                         </div>
                     </div>
                 )}

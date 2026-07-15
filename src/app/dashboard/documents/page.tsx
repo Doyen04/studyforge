@@ -32,7 +32,7 @@ export default function DocumentsPage() {
         fetch(`/api/documents?search=${encodeURIComponent(debouncedSearch)}`)
             .then((res) => res.json())
             .then((data) => setDocuments(data.documents))
-            .catch(() => {})
+            .catch(() => { toast.error("Failed to load documents."); })
             .finally(() => setLoading(false));
     }, [debouncedSearch]);
 
@@ -137,7 +137,14 @@ export default function DocumentsPage() {
                         {documents.map((doc) => {
                             const fileType = getFileType(doc.filename);
                             return (
-                                <div key={doc.id} className="relative group cursor-pointer" onClick={() => setGeneratingDocId(doc.id)}>
+                                <div
+                                    key={doc.id}
+                                    className="relative group cursor-pointer"
+                                    onClick={() => setGeneratingDocId(doc.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => e.key === "Enter" && setGeneratingDocId(doc.id)}
+                                >
                                     <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
                                     <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                                         <div className="flex items-start justify-between gap-3">

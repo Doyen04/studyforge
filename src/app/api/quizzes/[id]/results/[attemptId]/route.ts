@@ -12,7 +12,7 @@ export async function GET(
     const [quiz, attempt] = await Promise.all([
         prisma.quiz.findUnique({
             where: { id },
-            include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true } } },
+            include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true, theoryQuestions: true } } },
         }),
         prisma.quizAttempt.findUnique({ where: { id: attemptId }, include: { quiz: true } }),
     ]);

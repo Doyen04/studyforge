@@ -19,12 +19,13 @@ export default function QuizzesIndex() {
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState<string | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
 
     useEffect(() => {
         fetch(`/api/quizzes?search=${encodeURIComponent(debouncedSearch)}`)
             .then((res) => res.json())
             .then((data) => setQuizzes(data.quizzes))
-            .catch(() => {})
+            .catch(() => { toast.error("Failed to load quizzes."); })
             .finally(() => setLoading(false));
     }, [debouncedSearch]);
 
@@ -80,26 +81,47 @@ export default function QuizzesIndex() {
                         {quizzes.map((q) => {
                             const lastAttempt = q.attempts[0] ?? null;
                             const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
+                            let questionCount = 0;
+                            try { questionCount = JSON.parse((q as any).questionRefs ?? "[]").length; } catch {}
                             return (
                                 <div key={q.id} className="relative group">
                                     <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
                                     <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                                         <div className="flex items-start justify-between gap-3">
                                             <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz</p>
-                                            <button
-                                                type="button"
-                                                onClick={() => setConfirmDeleteId(q.id)}
-                                                disabled={deleting === q.id}
-                                                aria-label="Delete quiz"
-                                                className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-error cursor-pointer transition disabled:opacity-50 shrink-0"
-                                            >
-                                                ⋯
-                                            </button>
+                                            <div className="relative shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMenuOpenId(menuOpenId === q.id ? null : q.id)}
+                                                    disabled={deleting === q.id}
+                                                    aria-label="More options"
+                                                    className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer transition disabled:opacity-50"
+                                                >
+                                                    ⋯
+                                                </button>
+                                                {menuOpenId === q.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
+                                                        <div className="absolute right-0 top-9 z-20 min-w-[140px] overflow-hidden rounded-md border border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => { setMenuOpenId(null); setConfirmDeleteId(q.id); }}
+                                                                className="w-full cursor-pointer border-none bg-transparent px-3.5 py-2 text-left text-[13.5px] font-sans text-error hover:bg-paper"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
                                         <Link href={`/dashboard/quizzes/${q.id}`} className="block mt-1">
                                             <h3 className="font-display text-[17px] font-semibold text-ink truncate">{q.title}</h3>
                                         </Link>
                                         <p className="text-[12.5px] text-ink-muted mt-1">{q.studySet.title}</p>
+                                        {questionCount > 0 && (
+                                            <p className="text-[11px] text-ink-muted mt-1">{questionCount} question{questionCount !== 1 ? "s" : ""}</p>
+                                        )}
                                         {lastAttempt && (
                                             <p className={`text-xs font-semibold mt-2 ${scoreColor}`}>
                                                 Last score: {lastAttempt.score}%

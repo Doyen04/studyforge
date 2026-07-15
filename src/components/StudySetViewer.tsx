@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -19,7 +19,7 @@ interface QuizSummary {
     lastAttempt: { id: string; score: number; completedAt: Date } | null;
 }
 
-interface StudySetData {
+export interface StudySetData {
     id: string;
     title: string;
     document: { filename: string; wordCount: number };
@@ -36,6 +36,7 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
     const [activeTab, setActiveTab] = useState<"questions" | "quizzes">("questions");
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [creating, setCreating] = useState(false);
+    const questionsRef = useRef<HTMLDivElement>(null);
 
     const totalQuizItems =
         studySet.mcqQuestions.length +
@@ -91,6 +92,13 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
         }
     };
 
+    const scrollToQuestions = () => {
+        setActiveTab("questions");
+        setTimeout(() => {
+            questionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+    };
+
     return (
         <div className="space-y-8">
             {/* Pagehead */}
@@ -120,7 +128,7 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                     ) : (
                         <button
                             type="button"
-                            onClick={() => setActiveTab("questions")}
+                            onClick={scrollToQuestions}
                             className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer"
                         >
                             <IconArrowRight size={14} stroke={2} />
@@ -130,7 +138,7 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                     <button
                         type="button"
                         disabled={totalQuizItems === 0}
-                        onClick={() => setActiveTab("questions")}
+                        onClick={scrollToQuestions}
                         className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
                         <IconPlayerPlay size={14} stroke={2} />
@@ -173,7 +181,7 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
 
             {/* Questions tab */}
             {activeTab === "questions" && (
-                <div>
+                <div ref={questionsRef} className="scroll-mt-8">
                     {totalQuizItems === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
                             No quiz questions in this set.

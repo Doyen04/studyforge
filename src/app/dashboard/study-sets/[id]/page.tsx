@@ -1,32 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { notFound } from "next/navigation";
-import { StudySetViewer } from "@/components/StudySetViewer";
+import { use, useEffect, useState } from "react";
+import { toast } from "sonner";
+import { StudySetViewer, type StudySetData } from "@/components/StudySetViewer";
 
-interface StudySetPageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default function StudySetPage({ params }: StudySetPageProps) {
-    const [studySet, setStudySet] = useState<any>(null);
+export default function StudySetPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = use(params);
+    const [studySet, setStudySet] = useState<StudySetData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [notFoundError, setNotFoundError] = useState(false);
 
     useEffect(() => {
-        params.then(({ id }) => {
-            fetch(`/api/study-sets/${id}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (!data.studySet) {
-                        notFound();
-                        return;
-                    }
-                    setStudySet(data.studySet);
-                })
-                .catch(() => {})
-                .finally(() => setLoading(false));
-        });
-    }, [params]);
+        fetch(`/api/study-sets/${id}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (!data.studySet) { setNotFoundError(true); return; }
+                setStudySet(data.studySet);
+            })
+            .catch(() => { toast.error("Failed to load study set."); })
+            .finally(() => setLoading(false));
+    }, [id]);
 
     if (loading) {
         return (
@@ -40,7 +33,15 @@ export default function StudySetPage({ params }: StudySetPageProps) {
         );
     }
 
-    if (!studySet) return null;
+    if (notFoundError || !studySet) {
+        return (
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-5xl px-6 py-8 lg:py-10 text-center">
+                    <p className="text-sm text-ink-muted">Study set not found.</p>
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="min-h-screen bg-paper">

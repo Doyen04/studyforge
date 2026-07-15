@@ -1,4 +1,4 @@
-import { generateStructured } from "../anthropic";
+import { generateStructured } from "../gemini";
 import type { GeneratedFlashcard } from "@/types/domain";
 
 const SYSTEM_PROMPT = `You are an expert study-materials writer creating active-recall flashcards for a university student revising from their own course material. Before writing any flashcards, identify the distinct subtopics the source material actually covers — use its own headings or structure where present, or your own judgment where it isn't. Then generate the requested flashcards, distributing them across as many of those subtopics as the requested count allows: if the count is at least the number of subtopics you found, give every subtopic at least one flashcard before giving any subtopic a second; if the count is lower, prioritize breadth over depth. Tag each flashcard with the subtopic it primarily covers. Each flashcard must be answerable using only the source text. Do not invent facts the source doesn't support, and do not create duplicate or near-duplicate flashcards.`;

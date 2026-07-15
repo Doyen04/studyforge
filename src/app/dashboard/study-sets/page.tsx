@@ -27,7 +27,7 @@ export default function StudySetsIndex() {
         fetch(`/api/study-sets?search=${encodeURIComponent(debouncedSearch)}`)
             .then((res) => res.json())
             .then((data) => setSets(data.studySets))
-            .catch(() => {})
+            .catch(() => { toast.error("Failed to load study sets."); })
             .finally(() => setLoading(false));
     }, [debouncedSearch]);
 

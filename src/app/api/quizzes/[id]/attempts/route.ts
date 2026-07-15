@@ -4,6 +4,17 @@ import { parseJsonArray } from "@/lib/deserialize";
 import { gradeTheoryAnswer } from "@/lib/prompts/gradeTheoryAnswer";
 import type { SubmittedAnswer } from "@/types/domain";
 
+/** Normalize text for comparison: lowercase, strip all non-alphanumeric characters. */
+function normalizeText(text: string): string {
+    return text
+        .trim()
+        .toLowerCase()
+        .replace(/[\s\-–—_.,;:!?'"()/\\]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -36,8 +47,11 @@ export async function POST(
 
             if (answer.type === "fillInBlank") {
                 const question = quiz.studySet.fillInBlanks.find((item) => item.id === answer.id)!;
-                const acceptable = [question.answer, ...parseJsonArray<string>(question.acceptableAnswers)].map((value: string) => value.trim().toLowerCase());
-                const isCorrect = acceptable.includes(answer.userAnswer.trim().toLowerCase());
+                const normalizedUserAnswer = normalizeText(answer.userAnswer);
+                const acceptable = [question.answer, ...parseJsonArray<string>(question.acceptableAnswers)].map(
+                    (value: string) => normalizeText(value)
+                );
+                const isCorrect = acceptable.includes(normalizedUserAnswer);
                 return {
                     ...answer,
                     isCorrect,

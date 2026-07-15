@@ -22,7 +22,7 @@ export function FlashcardViewer({ cards }: { cards: FlashcardData[] }) {
     }
 
     return (
-        <div className="mx-auto max-w-sm">
+        <div className="mx-auto max-w-lg">
             <button
                 type="button"
                 onClick={() => setFlipped((f) => !f)}
@@ -33,8 +33,11 @@ export function FlashcardViewer({ cards }: { cards: FlashcardData[] }) {
                     className="relative h-full w-full rounded-lg border border-rule bg-card transition-transform duration-500 [transform-style:preserve-3d] motion-reduce:transition-none"
                     style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
                 >
-                    <div className="absolute inset-0 flex items-center justify-center p-6 text-center [backface-visibility:hidden]">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center [backface-visibility:hidden]">
                         <p className="font-sans text-base text-ink">{card.front}</p>
+                        {!flipped && (
+                            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted opacity-60">Click to flip</p>
+                        )}
                     </div>
                     <div
                         className="absolute inset-0 flex items-center justify-center p-6 text-center [backface-visibility:hidden]"

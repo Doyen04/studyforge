@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { toast } from "sonner";
 import { IconArrowLeft, IconRotate, IconCheck, IconX } from "@tabler/icons-react";
 import { parseJsonArray } from "@/lib/deserialize";
 import { GradedMargin } from "@/components/GradedMargin";
@@ -10,23 +10,21 @@ import type { QuizResultData } from "@/types/page";
 import type { GradedAnswer } from "@/types/domain";
 
 export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
+    const { id, attemptId } = use(params);
     const [data, setData] = useState<QuizResultData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [notFoundError, setNotFoundError] = useState(false);
 
     useEffect(() => {
-        params.then(({ id, attemptId }) => {
-            fetch(`/api/quizzes/${id}/results/${attemptId}`)
-                .then((res) => res.json())
-                .then((result) => {
-                    if (!result.quiz) {
-                        notFound();
-                    }
-                    setData(result);
-                })
-                .catch(() => {})
-                .finally(() => setLoading(false));
-        });
-    }, [params]);
+        fetch(`/api/quizzes/${id}/results/${attemptId}`)
+            .then((res) => res.json())
+            .then((result) => {
+                if (!result.quiz) { setNotFoundError(true); return; }
+                setData(result);
+            })
+            .catch(() => { toast.error("Failed to load quiz results."); })
+            .finally(() => setLoading(false));
+    }, [id, attemptId]);
 
     if (loading) {
         return (
@@ -39,7 +37,15 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
         );
     }
 
-    if (!data) return null;
+    if (notFoundError || !data) {
+        return (
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 text-center">
+                    <p className="text-sm text-ink-muted">Results not found.</p>
+                </div>
+            </main>
+        );
+    }
 
     const { quiz, attempt, answers } = data;
     const passed = attempt.score >= 70;
@@ -90,6 +96,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         let mcqQuestionText = "";
                         let mcqOptions: string[] = [];
                         let fillInBlankText = "";
+                        let theoryQuestionText = "";
 
                         if (answer.type === "mcq") {
                             const found = quiz.studySet.mcqQuestions.find((q) => q.id === answer.id);
@@ -100,6 +107,9 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         } else if (answer.type === "fillInBlank") {
                             const found = quiz.studySet.fillInBlanks.find((q) => q.id === answer.id);
                             if (found) fillInBlankText = found.sentence;
+                        } else if (answer.type === "theory") {
+                            const found = quiz.studySet.theoryQuestions.find((q) => q.id === answer.id);
+                            if (found) theoryQuestionText = found.question;
                         }
 
                         return (
@@ -126,7 +136,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
 
                                 <div className="space-y-3">
                                     <h2 className="font-display text-[17px] font-semibold text-ink leading-7">
-                                        {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : "Theory Question"}
+                                        {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : theoryQuestionText || "Theory Question"}
                                     </h2>
 
                                     {answer.type === "mcq" && (

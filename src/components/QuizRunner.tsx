@@ -25,8 +25,8 @@ export function QuizRunner({
 
     const progress = useMemo(() => {
         if (questions.length === 0) return 0;
-        return ((currentIndex + 1) / questions.length) * 100;
-    }, [currentIndex, questions.length]);
+        return (answeredCount / questions.length) * 100;
+    }, [answeredCount, questions.length]);
 
     const currentAnswerText = answers[currentQuestion?.id] ?? "";
     const theoryWordCount = useMemo(() => {
@@ -48,6 +48,14 @@ export function QuizRunner({
     }, [isLastQuestion]);
 
     async function submitQuiz() {
+        const unansweredCount = questions.length - answeredCount;
+        if (unansweredCount > 0) {
+            const proceed = window.confirm(
+                `You have ${unansweredCount} unanswered question${unansweredCount !== 1 ? "s" : ""}. Unanswered questions will be marked as incorrect.\n\nSubmit anyway?`
+            );
+            if (!proceed) return;
+        }
+
         setIsSubmitting(true);
         try {
             const response = await fetch(`/api/quizzes/${quizId}/attempts`, {
@@ -91,7 +99,7 @@ export function QuizRunner({
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-4">
                         <h1 className="font-display text-xl font-semibold text-ink">Active Recall Practice</h1>
-                        <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% completed</span>
+                        <span className="font-data text-xs text-ink-muted">{answeredCount} / {questions.length} answered</span>
                     </div>
                     <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-rule w-full">
                         <div

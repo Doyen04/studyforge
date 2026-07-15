@@ -18,6 +18,11 @@ export interface FillInBlankBrief {
     sentence: string;
 }
 
+export interface TheoryQuestionBrief {
+    id: string;
+    question: string;
+}
+
 export interface QuizResultData {
     quiz: {
         id: string;
@@ -25,6 +30,7 @@ export interface QuizResultData {
         studySet: {
             mcqQuestions: McqQuestionBrief[];
             fillInBlanks: FillInBlankBrief[];
+            theoryQuestions: TheoryQuestionBrief[];
         };
     };
     attempt: {

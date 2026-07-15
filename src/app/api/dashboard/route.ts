@@ -53,7 +53,7 @@ export async function GET() {
         }),
         prisma.studySet.findMany({
             orderBy: { lastAccessedAt: "desc" },
-            take: 4,
+            take: 3,
             select: {
                 id: true,
                 title: true,
