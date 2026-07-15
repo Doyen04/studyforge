@@ -27,7 +27,7 @@ export function SiteHeader() {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-rule bg-card">
-            <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
+            <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 lg:px-10 py-[18px]">
                 <Link href="/" className="font-display text-xl font-semibold text-ink tracking-tight">
                     StudyForge
                 </Link>

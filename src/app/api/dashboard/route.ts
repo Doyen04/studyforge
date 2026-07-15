@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
-    const [stats, studySets, recentAttempts] = await Promise.all([
+    const [stats, continueStudying, recentStudySets, documentsWithoutStudySet, recentAttempts] = await Promise.all([
         (async () => {
             const [studySetCount, flashcardCount, mcqCount, fillInBlankCount, theoryCount, attemptAgg] = await Promise.all([
                 prisma.studySet.count(),
@@ -24,7 +24,7 @@ export async function GET() {
                 averageScore: attemptAgg._avg.score !== null ? Math.round(attemptAgg._avg.score) : null,
             };
         })(),
-        prisma.studySet.findMany({
+        prisma.studySet.findFirst({
             orderBy: { lastAccessedAt: "desc" },
             select: {
                 id: true,
@@ -50,26 +50,35 @@ export async function GET() {
                     },
                 },
             },
-        }).then((rows) =>
-            rows.map((set) => {
-                const lastAttempt = set.quizzes
-                    .flatMap((quiz) => quiz.attempts)
-                    .sort((left, right) => (right.completedAt?.getTime() ?? 0) - (left.completedAt?.getTime() ?? 0))[0] ?? null;
-
-                return {
-                    id: set.id,
-                    title: set.title,
-                    filename: set.document.filename,
-                    itemCounts: {
-                        flashcards: set._count.flashcards,
-                        mcq: set._count.mcqQuestions,
-                        fillInBlank: set._count.fillInBlanks,
-                        theory: set._count.theoryQuestions,
+        }),
+        prisma.studySet.findMany({
+            orderBy: { lastAccessedAt: "desc" },
+            take: 4,
+            select: {
+                id: true,
+                title: true,
+                document: { select: { filename: true } },
+                _count: {
+                    select: {
+                        flashcards: true,
+                        mcqQuestions: true,
+                        fillInBlanks: true,
+                        theoryQuestions: true,
                     },
-                    lastScore: lastAttempt?.score ?? null,
-                };
-            })
-        ),
+                },
+                quizzes: {
+                    select: {
+                        attempts: {
+                            where: { completedAt: { not: null } },
+                            orderBy: { completedAt: "desc" },
+                            take: 1,
+                            select: { score: true, completedAt: true },
+                        },
+                    },
+                },
+            },
+        }),
+        prisma.document.count({ where: { studySets: { none: {} } } }),
         prisma.quizAttempt.findMany({
             where: { completedAt: { not: null } },
             orderBy: { completedAt: "desc" },
@@ -87,5 +96,49 @@ export async function GET() {
         }),
     ]);
 
-    return NextResponse.json({ stats, studySets, recentAttempts });
+    const recentStudySetsMapped = recentStudySets.map((set) => {
+        const lastAttempt = set.quizzes
+            .flatMap((q) => q.attempts)
+            .sort((a, b) => (b.completedAt?.getTime() ?? 0) - (a.completedAt?.getTime() ?? 0))[0] ?? null;
+        return {
+            id: set.id,
+            title: set.title,
+            filename: set.document.filename,
+            itemCounts: {
+                flashcards: set._count.flashcards,
+                mcq: set._count.mcqQuestions,
+                fillInBlank: set._count.fillInBlanks,
+                theory: set._count.theoryQuestions,
+            },
+            lastScore: lastAttempt?.score ?? null,
+        };
+    });
+
+    const continueStudyingMapped = continueStudying
+        ? {
+              id: continueStudying.id,
+              title: continueStudying.title,
+              filename: continueStudying.document.filename,
+              itemCounts: {
+                  flashcards: continueStudying._count.flashcards,
+                  mcq: continueStudying._count.mcqQuestions,
+                  fillInBlank: continueStudying._count.fillInBlanks,
+                  theory: continueStudying._count.theoryQuestions,
+              },
+              lastScore: (() => {
+                  const last = continueStudying.quizzes
+                      .flatMap((q) => q.attempts)
+                      .sort((a, b) => (b.completedAt?.getTime() ?? 0) - (a.completedAt?.getTime() ?? 0))[0] ?? null;
+                  return last?.score ?? null;
+              })(),
+          }
+        : null;
+
+    return NextResponse.json({
+        stats,
+        continueStudying: continueStudyingMapped,
+        recentStudySets: recentStudySetsMapped,
+        documentsWithoutStudySet,
+        recentAttempts,
+    });
 }

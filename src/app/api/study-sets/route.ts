@@ -104,9 +104,44 @@ export async function GET(request: NextRequest) {
                   ],
               }
             : {},
-        orderBy: { createdAt: "desc" },
-        include: { document: true },
+        orderBy: { lastAccessedAt: "desc" },
+        include: {
+            document: { select: { filename: true } },
+            _count: { select: { flashcards: true, mcqQuestions: true, fillInBlanks: true, theoryQuestions: true, quizzes: true } },
+            quizzes: {
+                include: {
+                    attempts: {
+                        where: { completedAt: { not: null } },
+                        select: { score: true },
+                    },
+                },
+            },
+        },
     });
 
-    return NextResponse.json({ studySets });
+    const mapped = studySets.map((set) => {
+        const allScores = set.quizzes.flatMap((q) => q.attempts.map((a) => a.score));
+        const bestScore = allScores.length > 0 ? Math.max(...allScores) : null;
+        return {
+            id: set.id,
+            title: set.title,
+            document: { filename: set.document.filename },
+            createdAt: set.createdAt,
+            itemCounts: {
+                flashcards: set._count.flashcards,
+                mcq: set._count.mcqQuestions,
+                fillInBlank: set._count.fillInBlanks,
+                theory: set._count.theoryQuestions,
+            },
+            totalQuestions:
+                set._count.flashcards +
+                set._count.mcqQuestions +
+                set._count.fillInBlanks +
+                set._count.theoryQuestions,
+            quizCount: set._count.quizzes,
+            bestScore,
+        };
+    });
+
+    return NextResponse.json({ studySets: mapped });
 }

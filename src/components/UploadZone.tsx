@@ -4,33 +4,13 @@ import React, { useState, useRef } from "react";
 import { toast } from "sonner";
 import { IconPlus } from "@tabler/icons-react";
 
-
-function ProgressBar({ value, indeterminate = false }: { value?: number; indeterminate?: boolean }) {
-    return (
-        <div className="h-2 overflow-hidden rounded-full bg-rule w-full">
-            <div
-                className={`h-full rounded-full bg-accent ${
-                    indeterminate
-                        ? "w-1/3 animate-[pulse_1.4s_ease-in-out_infinite]"
-                        : "transition-[width] duration-300 ease-out"
-                }`}
-                style={
-                    indeterminate
-                        ? { transform: "translateX(100%)" }
-                        : { width: `${Math.max(0, Math.min(100, value ?? 0))}%` }
-                }
-            />
-        </div>
-    );
-}
-
 interface UploadZoneProps {
     onUploadSuccess: (documentId: string) => void;
 }
 
 export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
     const [dragActive, setDragActive] = useState(false);
-    const [uploadStage, setUploadStage] = useState<"idle" | "uploading" | "parsing">("idle");
+    const [uploadStage, setUploadStage] = useState<"idle" | "uploading" | "processing">("idle");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +29,6 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
         e.preventDefault();
         e.stopPropagation();
         setDragActive(false);
-
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             void startUpload(e.dataTransfer.files[0]);
         }
@@ -108,9 +87,9 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
             });
 
             const response = await uploadPromise;
-            setUploadStage("parsing");
-            
-            // Wait briefly to allow user to see parsing stage
+            setUploadStage("processing");
+
+            // Brief delay so user sees processing state
             await new Promise((r) => setTimeout(r, 800));
 
             onUploadSuccess(response.documentId);
@@ -126,8 +105,15 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
     return (
         <div className="w-full">
             {error && (
-                <div className="mb-4 rounded-md border border-error/30 bg-error/10 px-4 py-3 text-sm text-error font-medium">
+                <div className="mb-3 rounded-md border border-error/30 bg-error/10 px-4 py-3 text-sm text-error font-medium">
                     {error}
+                    <button
+                        type="button"
+                        onClick={() => setError(null)}
+                        className="ml-3 underline cursor-pointer"
+                    >
+                        Retry
+                    </button>
                 </div>
             )}
 
@@ -137,9 +123,15 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={uploadStage === "idle" ? handleButtonClick : undefined}
-                className={`group relative min-h-[148px] rounded-xl border-2 border-dashed p-6 text-center transition-all duration-200 flex flex-col items-center justify-center ${
-                    uploadStage === "idle" ? "cursor-pointer hover:border-accent/60" : ""
-                } ${dragActive ? "border-accent bg-accent/[0.07] text-accent" : "border-rule text-ink-muted"}`}
+                className={`relative flex min-h-[140px] flex-col items-center justify-center rounded-md border-[1.5px] border-dashed p-8 text-center transition-colors duration-150 ${
+                    uploadStage === "idle" ? "cursor-pointer hover:border-accent hover:text-accent" : ""
+                } ${
+                    error
+                        ? "border-error text-error"
+                        : dragActive || uploadStage !== "idle"
+                        ? "border-accent"
+                        : "border-rule text-ink-muted"
+                }`}
             >
                 <input
                     ref={fileInputRef}
@@ -150,34 +142,36 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 />
 
                 {uploadStage === "idle" && (
-                    <div className="space-y-2">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-accent/40 text-accent mx-auto group-hover:border-accent group-hover:scale-110 transition-all">
+                    <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-current">
                             <IconPlus size={14} stroke={2.5} />
-                        </span>
-                        <p className="font-sans text-sm font-semibold text-ink">
-                            Upload material
-                        </p>
-                        <p className="font-sans text-[11px] text-ink-muted">
-                            .pptx, .docx, or .pdf
-                        </p>
+                        </div>
+                        <div>
+                            <p className="text-sm font-semibold text-ink">Upload material</p>
+                            <p className="mt-1 text-xs text-current">.pptx, .docx, or .pdf</p>
+                        </div>
                     </div>
                 )}
 
                 {uploadStage === "uploading" && (
-                    <div className="w-full max-w-xs space-y-4">
-                        <p className="font-sans text-sm font-semibold text-ink">
-                            Uploading document… {uploadProgress}%
-                        </p>
-                        <ProgressBar value={uploadProgress} />
+                    <div className="flex w-full max-w-[160px] flex-col items-center gap-3">
+                        <p className="text-sm font-semibold text-ink">Uploading… {uploadProgress}%</p>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-rule">
+                            <div
+                                className="h-full rounded-full bg-accent transition-[width] duration-200 ease-out"
+                                style={{ width: `${uploadProgress}%` }}
+                            />
+                        </div>
                     </div>
                 )}
 
-                {uploadStage === "parsing" && (
-                    <div className="w-full max-w-xs space-y-4">
-                        <p className="font-sans text-sm font-semibold text-ink">
-                            Reading document details…
-                        </p>
-                        <ProgressBar indeterminate />
+                {uploadStage === "processing" && (
+                    <div className="flex flex-col items-center gap-2.5">
+                        <div className="h-[22px] w-[22px] animate-spin rounded-full border-[2.5px] border-rule border-t-accent" />
+                        <div>
+                            <p className="text-sm font-semibold text-ink">Generating your study set…</p>
+                            <p className="mt-0.5 text-xs text-ink-muted">This can take a minute for longer documents.</p>
+                        </div>
                     </div>
                 )}
             </div>

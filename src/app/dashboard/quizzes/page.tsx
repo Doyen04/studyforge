@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IconSearch, IconTrash } from "@tabler/icons-react";
+import { IconSearch } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import type { QuizIndexItem } from "@/types/page";
 
+interface QuizWithMeta extends QuizIndexItem {
+    totalQuestions?: number;
+}
+
 export default function QuizzesIndex() {
-    const [quizzes, setQuizzes] = useState<QuizIndexItem[]>([]);
+    const [quizzes, setQuizzes] = useState<QuizWithMeta[]>([]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
     const [loading, setLoading] = useState(true);
@@ -40,77 +44,83 @@ export default function QuizzesIndex() {
     };
 
     return (
-        <main className="min-h-screen">
-            <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
-                <section>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Quizzes</h1>
-                            <p className="mt-2 text-sm text-ink-muted">Your generated quizzes and past results.</p>
-                        </div>
-                        <div className="relative">
-                            <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
-                            <input
-                                type="text"
-                                placeholder="Search quizzes..."
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                className="pl-9 pr-4 py-2 w-full sm:w-64 rounded-md border border-rule bg-card text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
-                            />
-                        </div>
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div>
+                        <h1 className="font-display text-[32px] font-semibold text-ink tracking-tight">Quizzes</h1>
+                        <p className="text-sm text-ink-muted mt-1">Your generated quizzes and past results.</p>
                     </div>
+                    <div className="relative sm:mt-1.5">
+                        <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted pointer-events-none" />
+                        <input
+                            type="text"
+                            placeholder="Search quizzes..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full sm:w-64 rounded-md border border-rule bg-card py-2 pl-9 pr-4 text-sm text-ink placeholder:text-ink-muted outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
+                        />
+                    </div>
+                </div>
 
-                    {loading ? (
-                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
-                            {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-lg bg-rule" />)}
-                        </div>
-                    ) : quizzes.length === 0 ? (
-                        <div className="mt-6 rounded-lg border border-dashed border-rule bg-card p-6 text-sm text-ink-muted">
-                            {search ? "No quizzes found matching your search." : "No quizzes yet. Create one from a study set to test your knowledge."}
-                        </div>
-                    ) : (
-                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {quizzes.map((q) => {
-                                const lastAttempt = q.attempts[0] ?? null;
-                                const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
-                                return (
-                                    <div key={q.id} className="relative group rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover">
-                                        <Link href={`/dashboard/quizzes/${q.id}`} className="block">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Quiz</p>
-                                            <h2 className="mt-3 font-sans text-base font-semibold text-ink">{q.title}</h2>
-                                            <p className="mt-2 text-sm leading-6 text-ink-muted">
-                                                {q.studySet.title}
-                                            </p>
-                                            {lastAttempt && (
-                                                <p className={`mt-3 text-xs font-semibold ${scoreColor}`}>
-                                                    Last score: {lastAttempt.score}%
-                                                </p>
-                                            )}
+                {loading ? (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
+                    </div>
+                ) : quizzes.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
+                        <p className="text-sm text-ink-muted max-w-xs">
+                            {search
+                                ? "No quizzes found matching your search."
+                                : "No quizzes yet. Create one from a study set to test your knowledge."}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {quizzes.map((q) => {
+                            const lastAttempt = q.attempts[0] ?? null;
+                            const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
+                            return (
+                                <div key={q.id} className="relative group">
+                                    <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
+                                    <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz</p>
+                                            <button
+                                                type="button"
+                                                onClick={() => setConfirmDeleteId(q.id)}
+                                                disabled={deleting === q.id}
+                                                aria-label="Delete quiz"
+                                                className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-error cursor-pointer transition disabled:opacity-50 shrink-0"
+                                            >
+                                                ⋯
+                                            </button>
+                                        </div>
+                                        <Link href={`/dashboard/quizzes/${q.id}`} className="block mt-1">
+                                            <h3 className="font-display text-[17px] font-semibold text-ink truncate">{q.title}</h3>
                                         </Link>
-                                        <button
-                                            type="button"
-                                            onClick={() => setConfirmDeleteId(q.id)}
-                                            disabled={deleting === q.id}
-                                            aria-label="Delete quiz"
-                                            className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
-                                        >
-                                            <IconTrash size={14} stroke={2} />
-                                        </button>
+                                        <p className="text-[12.5px] text-ink-muted mt-1">{q.studySet.title}</p>
+                                        {lastAttempt && (
+                                            <p className={`text-xs font-semibold mt-2 ${scoreColor}`}>
+                                                Last score: {lastAttempt.score}%
+                                            </p>
+                                        )}
+                                        {!lastAttempt && (
+                                            <p className="text-[11px] text-ink-muted mt-2">No attempts yet</p>
+                                        )}
                                     </div>
-                                );
-                            })}
-                        </div>
-                    )}
-                </section>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             <ConfirmModal
                 open={confirmDeleteId !== null}
                 title="Delete quiz?"
                 message="This will permanently delete this quiz and cannot be undone."
-                details={[
-                    "All quiz attempts and recorded scores",
-                ]}
+                details={["All quiz attempts and recorded scores"]}
                 confirmLabel="Delete"
                 destructive
                 onConfirm={() => confirmDeleteId && handleDelete(confirmDeleteId)}

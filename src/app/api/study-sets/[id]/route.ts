@@ -32,6 +32,18 @@ export async function GET(
             mcqQuestions: true,
             fillInBlanks: true,
             theoryQuestions: true,
+            quizzes: {
+                orderBy: { createdAt: "desc" },
+                include: {
+                    _count: { select: { attempts: true } },
+                    attempts: {
+                        where: { completedAt: { not: null } },
+                        orderBy: { completedAt: "desc" },
+                        take: 1,
+                        select: { id: true, score: true, completedAt: true },
+                    },
+                },
+            },
         },
     });
 
@@ -83,6 +95,13 @@ export async function GET(
             question: t.question,
             referenceAnswer: t.referenceAnswer,
             keyPoints: parseJsonArray<string>(t.keyPoints),
+        })),
+        quizzes: studySet.quizzes.map((q) => ({
+            id: q.id,
+            title: q.title,
+            createdAt: q.createdAt,
+            attemptCount: q._count.attempts,
+            lastAttempt: q.attempts[0] ?? null,
         })),
     };
 

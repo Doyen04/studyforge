@@ -1,50 +1,54 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { IconArrowLeft, IconArrowRight, IconCheck } from "@tabler/icons-react";
 import type { QuizQuestion } from "@/types/domain";
 
 export function QuizRunner({
     quizId,
     questions,
+    quizTitle,
 }: {
     quizId: string;
     questions: QuizQuestion[];
+    quizTitle?: string;
 }) {
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const currentQuestion = questions[currentIndex];
     const isLastQuestion = currentIndex === questions.length - 1;
+    const answeredCount = Object.keys(answers).length;
 
-    // Calculate progress as fraction of answered questions
     const progress = useMemo(() => {
         if (questions.length === 0) return 0;
         return ((currentIndex + 1) / questions.length) * 100;
     }, [currentIndex, questions.length]);
 
-    // Track words dynamically for theory questions
     const currentAnswerText = answers[currentQuestion?.id] ?? "";
     const theoryWordCount = useMemo(() => {
         if (!currentAnswerText.trim()) return 0;
         return currentAnswerText.trim().split(/\s+/).length;
     }, [currentAnswerText]);
 
-    // Auto-focus on inputs on question change
     useEffect(() => {
         const firstOption = document.querySelector<HTMLInputElement>('input[type="radio"]');
-        if (firstOption) {
-            firstOption.focus();
-        } else {
+        if (firstOption) firstOption.focus();
+        else {
             const textInput = document.querySelector<HTMLInputElement | HTMLTextAreaElement>('input[type="text"], textarea');
             textInput?.focus();
         }
     }, [currentIndex]);
 
+    const goNext = useCallback(() => {
+        if (!isLastQuestion) setCurrentIndex((i) => i + 1);
+    }, [isLastQuestion]);
+
     async function submitQuiz() {
         setIsSubmitting(true);
-
         try {
             const response = await fetch(`/api/quizzes/${quizId}/attempts`, {
                 method: "POST",
@@ -57,12 +61,8 @@ export function QuizRunner({
                     })),
                 }),
             });
-
             const json = (await response.json()) as { attemptId?: string; error?: string };
-            if (!response.ok || !json.attemptId) {
-                throw new Error(json.error || "Could not submit quiz.");
-            }
-
+            if (!response.ok || !json.attemptId) throw new Error(json.error || "Could not submit quiz.");
             router.push(`/dashboard/quizzes/${quizId}/results/${json.attemptId}`);
         } catch (error) {
             alert(error instanceof Error ? error.message : "Submission failed.");
@@ -72,24 +72,26 @@ export function QuizRunner({
 
     if (!currentQuestion) {
         return (
-            <div className="rounded-lg border border-rule bg-card p-6 text-center text-sm text-ink-muted">
+            <div className="rounded-md border border-rule bg-card p-6 text-center text-sm text-ink-muted">
                 No questions found in this quiz.
             </div>
         );
     }
 
     return (
-        <main className="min-h-screen px-4 py-4 sm:px-6 md:py-8 lg:px-8">
-            <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-                {/* Progress Card */}
-                <section className="rounded-lg border border-rule bg-card p-6">
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-2xl px-6 py-8 lg:py-10 space-y-6">
+                {/* Progress card */}
+                <div className="rounded-md border border-rule bg-card p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
                     <div className="flex items-center justify-between">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Taking Quiz</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">
+                            {quizTitle || "Taking Quiz"}
+                        </p>
                         <span className="font-data text-xs text-ink-muted">{currentIndex + 1} / {questions.length}</span>
                     </div>
                     <div className="mt-4 flex items-center justify-between gap-4">
-                        <h1 className="font-sans text-lg font-bold text-ink">Active Recall Practice</h1>
-                        <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% Completed</span>
+                        <h1 className="font-display text-xl font-semibold text-ink">Active Recall Practice</h1>
+                        <span className="font-data text-xs text-ink-muted">{Math.round(progress)}% completed</span>
                     </div>
                     <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-rule w-full">
                         <div
@@ -97,18 +99,18 @@ export function QuizRunner({
                             style={{ width: `${progress}%` }}
                         />
                     </div>
-                </section>
+                </div>
 
-                {/* Question Area */}
-                <section className="rounded-lg border border-rule bg-card p-6 md:p-8 space-y-6">
-                    <div className="flex items-center justify-between border-b border-rule/50 pb-3">
+                {/* Question area */}
+                <div className="rounded-md border border-rule bg-card p-6 md:p-8 space-y-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                    <div className="flex items-center justify-between border-b border-rule pb-3">
                         <span className="font-data text-xs text-ink-muted">Question {currentIndex + 1} of {questions.length}</span>
-                        <span className="rounded-full bg-accent/10 px-2 py-0.5 font-sans text-xs font-semibold text-accent capitalize">
-                            {currentQuestion.type === "mcq" ? "Multiple Choice" : currentQuestion.type === "fillInBlank" ? "Fill in the Blank" : "Theory Review"}
+                        <span className="rounded-full bg-wine-tint px-2.5 py-1 text-[11.5px] font-semibold text-accent capitalize">
+                            {currentQuestion.type === "mcq" ? "Multiple choice" : currentQuestion.type === "fillInBlank" ? "Fill in the blank" : "Theory"}
                         </span>
                     </div>
 
-                    <h2 className="text-lg font-bold leading-8 text-ink">
+                    <h2 className="font-display text-[19px] font-semibold leading-8 text-ink">
                         {currentQuestion.type === "mcq"
                             ? currentQuestion.question
                             : currentQuestion.type === "fillInBlank"
@@ -116,22 +118,17 @@ export function QuizRunner({
                             : currentQuestion.question}
                     </h2>
 
-                    {/* Inputs */}
                     {currentQuestion.type === "mcq" && (
-                        <div
-                            role="radiogroup"
-                            aria-label="Multiple choice options"
-                            className="space-y-2"
-                        >
+                        <div role="radiogroup" aria-label="Multiple choice options" className="space-y-2">
                             {currentQuestion.options.map((option, idx) => {
                                 const isChecked = answers[currentQuestion.id] === String(idx);
                                 return (
                                     <label
                                         key={idx}
-                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all focus-within:ring-2 focus-within:ring-accent ${
+                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all ${
                                             isChecked
-                                                ? "border-accent bg-accent/5 font-semibold text-ink"
-                                                : "border-rule bg-card hover:bg-paper-hover text-ink"
+                                                ? "border-accent bg-wine-tint/30 font-semibold text-ink"
+                                                : "border-rule bg-card hover:bg-paper text-ink"
                                         }`}
                                     >
                                         <input
@@ -139,12 +136,10 @@ export function QuizRunner({
                                             name={currentQuestion.id}
                                             checked={isChecked}
                                             onChange={() => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: String(idx) }))}
-                                            className="h-4 w-4 accent-accent focus:outline-none"
+                                            className="h-4 w-4 accent-accent"
                                         />
-                                        <span>
-                                            <span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>
-                                            {option}
-                                        </span>
+                                        <span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>
+                                        {option}
                                     </label>
                                 );
                             })}
@@ -169,36 +164,52 @@ export function QuizRunner({
                                 rows={5}
                                 value={answers[currentQuestion.id] ?? ""}
                                 onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
-                                placeholder="Write your explanation here (2–5 sentences recommended)..."
+                                placeholder="Write your explanation here (2\u20135 sentences recommended)..."
                                 className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                             />
                             <div className="flex items-center justify-between text-xs text-ink-muted">
                                 <span>{theoryWordCount} words</span>
-                                <span>2–5 sentences recommended</span>
+                                <span>2\u20135 sentences recommended</span>
                             </div>
                         </div>
                     )}
-                </section>
+                </div>
 
-                {/* Sticky Action Footer */}
-                <div className="sticky bottom-0 border-t border-rule bg-paper/95 px-4 py-4 backdrop-blur-xs flex justify-between gap-4 -mx-4 md:static md:border-t-0 md:bg-transparent md:px-0 md:py-0">
+                {/* Action footer */}
+                <div className="flex justify-between gap-4">
+                    {currentIndex > 0 && (
+                        <button
+                            type="button"
+                            onClick={() => setCurrentIndex((i) => i - 1)}
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer"
+                        >
+                            <IconArrowLeft size={14} stroke={2} />
+                            Previous
+                        </button>
+                    )}
+                    <div className="flex-1" />
                     <button
                         type="button"
                         onClick={() => {
-                            if (isLastQuestion) {
-                                void submitQuiz();
-                            } else {
-                                setCurrentIndex((index) => index + 1);
-                            }
+                            if (isLastQuestion) void submitQuiz();
+                            else goNext();
                         }}
                         disabled={isSubmitting}
-                        className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex items-center gap-1.5 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
-                        {isSubmitting
-                            ? "Submitting responses…"
-                            : isLastQuestion
-                            ? "Submit answers"
-                            : "Next question"}
+                        {isSubmitting ? (
+                            "Submitting..."
+                        ) : isLastQuestion ? (
+                            <>
+                                <IconCheck size={14} stroke={2.5} />
+                                Submit answers
+                            </>
+                        ) : (
+                            <>
+                                Next
+                                <IconArrowRight size={14} stroke={2.5} />
+                            </>
+                        )}
                     </button>
                 </div>
             </div>

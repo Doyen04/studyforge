@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { StudySetViewer } from "@/components/StudySetViewer";
-import type { StudySetViewerProps } from "@/components/StudySetViewer";
 
 interface StudySetPageProps {
     params: Promise<{ id: string }>;
 }
 
 export default function StudySetPage({ params }: StudySetPageProps) {
-    const [studySet, setStudySet] = useState<StudySetViewerProps["studySet"] | null>(null);
+    const [studySet, setStudySet] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,11 +30,11 @@ export default function StudySetPage({ params }: StudySetPageProps) {
 
     if (loading) {
         return (
-            <main className="min-h-screen">
-                <div className="mx-auto max-w-5xl px-4 py-8 animate-pulse space-y-4">
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-5xl px-6 py-8 lg:py-10 animate-pulse space-y-6">
                     <div className="h-8 w-64 rounded bg-rule" />
                     <div className="h-6 w-48 rounded bg-rule" />
-                    {[1, 2, 3].map((i) => <div key={i} className="h-24 rounded-lg bg-rule" />)}
+                    <div className="h-48 rounded-md bg-rule" />
                 </div>
             </main>
         );
@@ -44,8 +43,8 @@ export default function StudySetPage({ params }: StudySetPageProps) {
     if (!studySet) return null;
 
     return (
-        <main className="min-h-screen">
-            <div className="mx-auto max-w-5xl px-4 py-8">
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-5xl px-6 py-8 lg:py-10">
                 <StudySetViewer studySet={studySet} />
             </div>
         </main>

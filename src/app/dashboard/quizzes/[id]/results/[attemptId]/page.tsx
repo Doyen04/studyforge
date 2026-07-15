@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { IconArrowLeft, IconRotate, IconCheck, IconX } from "@tabler/icons-react";
 import { parseJsonArray } from "@/lib/deserialize";
 import { GradedMargin } from "@/components/GradedMargin";
 import type { QuizResultData } from "@/types/page";
@@ -29,10 +30,10 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
 
     if (loading) {
         return (
-            <main className="min-h-screen">
-                <div className="mx-auto max-w-2xl px-4 py-8 space-y-6 animate-pulse">
-                    <div className="h-48 rounded-lg bg-rule" />
-                    {[1, 2].map((i) => <div key={i} className="h-64 rounded-lg bg-rule" />)}
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-6 animate-pulse">
+                    <div className="h-48 rounded-md bg-rule" />
+                    {[1, 2].map((i) => <div key={i} className="h-64 rounded-md bg-rule" />)}
                 </div>
             </main>
         );
@@ -41,29 +42,47 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
     if (!data) return null;
 
     const { quiz, attempt, answers } = data;
+    const passed = attempt.score >= 70;
 
     return (
-        <main className="min-h-screen">
-            <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
-                <div>
-                    <Link href={`/dashboard/quizzes/${quiz.id}`} className="rounded-md border border-rule bg-card px-3 py-1.5 text-sm font-semibold text-ink transition hover:border-accent hover:text-accent">
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-8">
+                {/* Back link */}
+                <Link
+                    href={`/dashboard/quizzes/${quiz.id}`}
+                    className="inline-flex items-center gap-1.5 text-[12.5px] font-semibold text-ink-muted hover:text-ink transition"
+                >
+                    <IconArrowLeft size={14} stroke={2} />
+                    Back to quiz
+                </Link>
+
+                {/* Score hero */}
+                <div className="rounded-md border border-rule bg-card p-8 text-center space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz Results</p>
+                    <h1 className="font-display text-[23px] font-semibold text-ink">{quiz.title}</h1>
+                    <div className="flex items-center justify-center gap-4">
+                        <span className={`font-data text-[56px] font-semibold leading-none ${passed ? "text-mastered" : "text-review"}`}>
+                            {attempt.score}%
+                        </span>
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full ${passed ? "bg-green-tint text-mastered" : "bg-amber-tint text-review"}`}>
+                            {passed ? <IconCheck size={20} stroke={2.5} /> : <IconX size={20} stroke={2.5} />}
+                        </div>
+                    </div>
+                    <p className="text-xs text-ink-muted">
+                        {answers.length} question{answers.length !== 1 ? "s" : ""} · Completed on{" "}
+                        {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString() : "recently"}
+                    </p>
+                    <Link
+                        href={`/dashboard/quizzes/${quiz.id}`}
+                        className="inline-flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
+                    >
+                        <IconRotate size={14} stroke={2} />
                         Retake quiz
                     </Link>
                 </div>
 
-                {/* Score card */}
-                <section className="rounded-lg border border-rule bg-card p-6 md:p-8 text-center space-y-4">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Quiz Results</p>
-                    <h1 className="font-sans text-xl font-bold text-ink">{quiz.title}</h1>
-                    <div className="mt-2 font-data text-6xl font-semibold text-ink">{attempt.score}%</div>
-                    <div className="mx-auto h-0.5 w-24 bg-accent" />
-                    <p className="text-xs text-ink-muted">
-                        Completed on {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString() : "recently"}.
-                    </p>
-                </section>
-
                 {/* Answers list */}
-                <section className="space-y-4">
+                <div className="space-y-4">
                     {answers.map((answer: GradedAnswer, index: number) => {
                         const isTheory = answer.type === "theory";
                         const isCorrect = answer.isCorrect;
@@ -80,41 +99,33 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                             }
                         } else if (answer.type === "fillInBlank") {
                             const found = quiz.studySet.fillInBlanks.find((q) => q.id === answer.id);
-                            if (found) {
-                                fillInBlankText = found.sentence;
-                            }
+                            if (found) fillInBlankText = found.sentence;
                         }
 
                         return (
-                            <article key={answer.id} className="rounded-lg border border-rule bg-card p-5 md:p-6 space-y-4">
-                                <div className="flex items-center justify-between border-b border-rule/50 pb-2">
+                            <div key={answer.id} className="rounded-md border border-rule bg-card p-5 md:p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                                <div className="flex items-center justify-between border-b border-rule pb-2">
                                     <span className="font-data text-xs text-ink-muted">Question {index + 1}</span>
                                     <div className="flex items-center gap-2">
-                                        <span className="rounded-full bg-paper px-2 py-0.5 font-sans text-[10px] font-semibold text-ink-muted uppercase tracking-wider">
+                                        <span className="rounded-full bg-paper px-2 py-0.5 text-[11px] font-semibold text-ink-muted uppercase tracking-[0.07em]">
                                             {answer.type}
                                         </span>
                                         {!isTheory && (
-                                            <span
-                                                className={`rounded-full px-2.5 py-0.5 font-sans text-xs font-semibold flex items-center gap-1 ${
-                                                    isCorrect
-                                                        ? "bg-mastered/10 text-mastered"
-                                                        : "bg-error/10 text-error"
-                                                }`}
-                                            >
-                                                <span>{isCorrect ? "✓" : "✗"}</span>
-                                                <span>{isCorrect ? "Correct" : "Incorrect"}</span>
+                                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                                isCorrect ? "bg-green-tint text-mastered" : "bg-red-tint text-error"
+                                            }`}>
+                                                {isCorrect ? <IconCheck size={11} stroke={3} /> : <IconX size={11} stroke={3} />}
+                                                {isCorrect ? "Correct" : "Incorrect"}
                                             </span>
                                         )}
                                         {isTheory && (
-                                            <span className="font-data text-xs font-semibold text-ink">
-                                                {answer.score}% matched
-                                            </span>
+                                            <span className="font-data text-xs font-semibold text-ink">{answer.score}% matched</span>
                                         )}
                                     </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <h2 className="text-base font-bold text-ink leading-7">
+                                    <h2 className="font-display text-[17px] font-semibold text-ink leading-7">
                                         {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : "Theory Question"}
                                     </h2>
 
@@ -128,20 +139,20 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                                         key={idx}
                                                         className={`rounded-md border p-3 text-sm flex items-center justify-between ${
                                                             isRight
-                                                                ? "border-mastered bg-mastered/10 text-ink font-semibold"
+                                                                ? "border-mastered bg-green-tint text-ink font-semibold"
                                                                 : isUserChoice
-                                                                ? "border-error bg-error/10 text-ink"
+                                                                ? "border-error bg-red-tint text-ink"
                                                                 : "border-rule bg-paper text-ink-muted"
                                                         }`}
                                                     >
-                                                        <span>{idx + 1}. {option}</span>
-                                                        {isRight && <span className="text-xs text-mastered font-bold font-sans uppercase">Correct answer</span>}
-                                                        {isUserChoice && !isRight && <span className="text-xs text-error font-bold font-sans uppercase">Your selection</span>}
+                                                        <span><span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>{option}</span>
+                                                        {isRight && <span className="text-xs text-mastered font-semibold">Correct answer</span>}
+                                                        {isUserChoice && !isRight && <span className="text-xs text-error font-semibold">Your selection</span>}
                                                     </div>
                                                 );
                                             })}
                                             {answer.explanation && (
-                                                <div className="mt-3 text-xs leading-5 text-ink-muted bg-paper p-3 rounded border border-rule">
+                                                <div className="text-xs leading-5 text-ink-muted bg-paper p-3 rounded border border-rule">
                                                     <span className="font-semibold text-accent block mb-1">Explanation</span>
                                                     {answer.explanation}
                                                 </div>
@@ -152,11 +163,11 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                     {answer.type === "fillInBlank" && (
                                         <div className="space-y-3">
                                             <div className="text-sm font-semibold">
-                                                Your answer: <span className={isCorrect ? "text-mastered font-bold" : "text-error font-bold"}>{answer.userAnswer || "(None)"}</span>
+                                                Your answer: <span className={isCorrect ? "text-mastered" : "text-error"}>{answer.userAnswer || "(None)"}</span>
                                             </div>
                                             {!isCorrect && answer.correctAnswer && (
                                                 <div className="text-sm">
-                                                    Expected answer: <span className="text-mastered font-bold">{answer.correctAnswer}</span>
+                                                    Expected answer: <span className="text-mastered font-semibold">{answer.correctAnswer}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -165,40 +176,37 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                     {isTheory && (
                                         <div className="space-y-4">
                                             <div className="space-y-1">
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-accent">Your response</p>
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Your response</p>
                                                 <p className="text-sm leading-6 text-ink-muted bg-paper p-3 rounded-md border border-rule italic">
                                                     &ldquo;{answer.userAnswer || "(None)"}&rdquo;
                                                 </p>
                                             </div>
-
                                             {answer.feedback && (
                                                 <div className="space-y-1">
-                                                    <p className="text-xs font-semibold uppercase tracking-wider text-accent">Grading Feedback</p>
+                                                    <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Grading Feedback</p>
                                                     <p className="text-sm leading-6 text-ink">{answer.feedback}</p>
                                                 </div>
                                             )}
-
                                             <div className="space-y-2 pt-2">
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-accent">Rubric Matching</p>
+                                                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Rubric Matching</p>
                                                 <GradedMargin
                                                     matchedKeyPoints={answer.matchedKeyPoints || []}
                                                     missedKeyPoints={answer.missedKeyPoints || []}
                                                 />
                                             </div>
-
                                             {answer.correctAnswer && (
                                                 <details className="text-xs border border-rule bg-paper p-3 rounded">
                                                     <summary className="font-semibold text-accent cursor-pointer">View Model Reference Answer</summary>
-                                                    <p className="mt-2 text-sm text-ink-muted leading-6 font-sans">{answer.correctAnswer}</p>
+                                                    <p className="mt-2 text-sm text-ink-muted leading-6">{answer.correctAnswer}</p>
                                                 </details>
                                             )}
                                         </div>
                                     )}
                                 </div>
-                            </article>
+                            </div>
                         );
                     })}
-                </section>
+                </div>
             </div>
         </main>
     );

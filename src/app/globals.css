@@ -3,17 +3,22 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --color-ink: #211c1f;
-    --color-ink-muted: #6b6266;
-    --color-paper: #f7f5f5;
-    --color-paper-hover: #efebec;
+    --color-ink: #201c1a;
+    --color-ink-muted: #726c62;
+    --color-paper: #f0f0ec;
+    --color-paper-hover: #e6e3dc;
     --color-card: #ffffff;
-    --color-rule: #dedadc;
-    --color-accent: #5b3a5c;
-    --color-accent-hover: #452d46;
-    --color-mastered: #3a6b4d;
-    --color-review: #a67c2e;
-    --color-error: #8c3a3a;
+    --color-rule: #dedad0;
+    --color-surface-2: #f7f6f1;
+    --color-accent: #6e2140;
+    --color-accent-hover: #521830;
+    --color-wine-tint: #f4e3ea;
+    --color-mastered: #2c7a4d;
+    --color-green-tint: #e4f2e9;
+    --color-review: #9c7009;
+    --color-amber-tint: #faf0d8;
+    --color-error: #a13333;
+    --color-danger-dark: #832626;
     --color-blue: #3a5ca8;
     --color-blue-tint: #e8edf7;
     --color-graphite: #4a453e;
@@ -27,17 +32,22 @@
 }
 
 .dark {
-    --color-ink: #e8e4e6;
-    --color-ink-muted: #9a9196;
-    --color-paper: #1a1718;
-    --color-paper-hover: #242021;
-    --color-card: #211e1f;
-    --color-rule: #3a3536;
-    --color-accent: #b07ab5;
-    --color-accent-hover: #c99dce;
-    --color-mastered: #5aad72;
-    --color-review: #d4a24a;
-    --color-error: #c95454;
+    --color-ink: #efece6;
+    --color-ink-muted: #a39d94;
+    --color-paper: #17161a;
+    --color-paper-hover: #232021;
+    --color-card: #201e23;
+    --color-rule: #39353c;
+    --color-surface-2: #28252b;
+    --color-accent: #e28ab0;
+    --color-accent-hover: #c96a92;
+    --color-wine-tint: #3a2430;
+    --color-mastered: #7fcf9e;
+    --color-green-tint: #1f3327;
+    --color-review: #e0b256;
+    --color-amber-tint: #3a2e14;
+    --color-error: #e08080;
+    --color-danger-dark: #c96666;
     --color-blue: #8fa8e0;
     --color-blue-tint: #232b42;
     --color-graphite: #b5b0a6;

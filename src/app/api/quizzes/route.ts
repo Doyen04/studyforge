@@ -6,12 +6,13 @@ import type { QuestionType } from "@/types/domain";
 interface CreateQuizBody {
     studySetId: string;
     title: string;
-    types: QuestionType[];
-    counts: Record<string, number>;
+    types?: QuestionType[];
+    counts?: Record<string, number>;
+    questionRefs?: { type: QuestionType; id: string }[];
 }
 
 export async function POST(request: NextRequest) {
-    const { studySetId, title, types, counts } = (await request.json()) as CreateQuizBody;
+    const { studySetId, title, types, counts, questionRefs: explicitRefs } = (await request.json()) as CreateQuizBody;
 
     const studySet = await prisma.studySet.findUnique({
         where: { id: studySetId },
@@ -22,15 +23,23 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Study set not found." }, { status: 404 });
     }
 
-    const getCount = (type: string) => Math.min(counts[type] ?? 0, 10);
-
-    const questionRefs = [
-        ...(types.includes("mcq") ? pick(studySet.mcqQuestions, getCount("mcq")).map((id) => ({ type: "mcq", id })) : []),
-        ...(types.includes("fillInBlank")
-            ? pick(studySet.fillInBlanks, getCount("fillInBlank")).map((id) => ({ type: "fillInBlank", id }))
-            : []),
-        ...(types.includes("theory") ? pick(studySet.theoryQuestions, getCount("theory")).map((id) => ({ type: "theory", id })) : []),
-    ];
+    let questionRefs: { type: QuestionType; id: string }[];
+    if (explicitRefs && explicitRefs.length > 0) {
+        questionRefs = explicitRefs;
+    } else {
+        const getCount = (type: string) => Math.min(counts?.[type] ?? 0, 10);
+        questionRefs = [
+            ...(types?.includes("mcq" satisfies QuestionType)
+                ? pick(studySet.mcqQuestions, getCount("mcq")).map((id) => ({ type: "mcq" as const, id }))
+                : []),
+            ...(types?.includes("fillInBlank" satisfies QuestionType)
+                ? pick(studySet.fillInBlanks, getCount("fillInBlank")).map((id) => ({ type: "fillInBlank" as const, id }))
+                : []),
+            ...(types?.includes("theory" satisfies QuestionType)
+                ? pick(studySet.theoryQuestions, getCount("theory")).map((id) => ({ type: "theory" as const, id }))
+                : []),
+        ];
+    }
 
     const quiz = await prisma.quiz.create({
         data: { studySetId, title, questionRefs: JSON.stringify(questionRefs) },

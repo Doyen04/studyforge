@@ -31,11 +31,10 @@ export default function QuizPage({ params }: QuizPageProps) {
 
     if (loading) {
         return (
-            <main className="min-h-screen flex items-center justify-center">
-                <div className="animate-pulse space-y-4 w-full max-w-lg px-4">
-                    <div className="h-8 w-48 rounded bg-rule mx-auto" />
-                    <div className="h-32 rounded-lg bg-rule" />
-                    <div className="h-10 rounded-md bg-rule w-32 mx-auto" />
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-2xl px-6 py-8 lg:py-10 animate-pulse space-y-6">
+                    <div className="h-8 w-64 rounded bg-rule" />
+                    <div className="h-48 rounded-md bg-rule" />
                 </div>
             </main>
         );
@@ -43,5 +42,5 @@ export default function QuizPage({ params }: QuizPageProps) {
 
     if (!quiz) return null;
 
-    return <QuizRunner quizId={quiz.quizId} questions={quiz.questions} />;
+    return <QuizRunner quizId={quiz.quizId} questions={quiz.questions} quizTitle={quiz.title} />;
 }

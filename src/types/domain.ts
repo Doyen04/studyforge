@@ -103,6 +103,7 @@ export interface DashboardStats {
     questionsGenerated: number;
     quizzesTaken: number;
     averageScore: number | null;
+    documentsWithoutStudySet?: number;
 }
 
 export interface StudySetSummary {

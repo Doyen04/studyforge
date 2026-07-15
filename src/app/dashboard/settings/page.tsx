@@ -82,16 +82,16 @@ export default function SettingsPage() {
     };
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen bg-paper">
             <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-8">
                 <div>
-                    <h1 className="font-display text-2xl font-semibold text-ink tracking-tight">Settings</h1>
+                    <h1 className="font-display text-[32px] font-semibold text-ink tracking-tight">Settings</h1>
                     <p className="text-sm text-ink-muted mt-1">Manage your preferences and API keys.</p>
                 </div>
 
-                <section className="rounded-lg border border-rule bg-card p-6 space-y-6">
+                <section className="rounded-md border border-rule bg-card p-6 space-y-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
                     <div>
-                        <h2 className="text-sm font-semibold text-ink">Bring Your Own Key</h2>
+                        <h2 className="font-display text-lg font-semibold text-ink">Bring Your Own Key</h2>
                         <p className="text-xs text-ink-muted mt-1">
                             Provide your own Google Gemini API key. If none is set, the app falls back to the server environment variable.
                         </p>
@@ -128,7 +128,7 @@ export default function SettingsPage() {
                                         type="button"
                                         onClick={handleTest}
                                         disabled={!apiKey.trim() || testing}
-                                        className="cursor-pointer shrink-0 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper-hover disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="shrink-0 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
                                         {testing ? <IconLoader2 size={16} stroke={2} className="animate-spin" /> : "Test"}
                                     </button>
@@ -136,14 +136,14 @@ export default function SettingsPage() {
                                 {hasStoredKey && (
                                     <div className="flex items-center justify-between">
                                         <p className="text-xs text-mastered flex items-center gap-1.5">
-                                                <IconCheck size={12} stroke={2} />
+                                            <IconCheck size={12} stroke={2} />
                                             Key saved · {savedKey!.slice(0, 6)}…{savedKey!.slice(-4)}
                                         </p>
                                         <button
                                             type="button"
                                             onClick={handleRemove}
                                             disabled={saving}
-                                            className="cursor-pointer text-xs text-ink-muted hover:text-error flex items-center gap-1 transition disabled:opacity-50"
+                                            className="text-xs text-ink-muted hover:text-error flex items-center gap-1 transition disabled:opacity-50 cursor-pointer"
                                         >
                                             <IconTrash size={12} stroke={2} />
                                             Remove key
@@ -160,7 +160,7 @@ export default function SettingsPage() {
                                     type="button"
                                     onClick={handleSave}
                                     disabled={saving || !hasChanges}
-                                    className="cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="rounded-md bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     {saving ? "Saving…" : "Save"}
                                 </button>
@@ -169,8 +169,8 @@ export default function SettingsPage() {
                     )}
                 </section>
 
-                <section className="rounded-lg border border-rule bg-card p-6 space-y-4">
-                    <h2 className="text-sm font-semibold text-ink">Preferences</h2>
+                <section className="rounded-md border border-rule bg-card p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                    <h2 className="font-display text-lg font-semibold text-ink">Preferences</h2>
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-medium text-ink">Theory answer word limit</p>
@@ -187,8 +187,8 @@ export default function SettingsPage() {
                     </div>
                 </section>
 
-                <section className="rounded-lg border border-rule bg-card p-6 space-y-4">
-                    <h2 className="text-sm font-semibold text-ink">Account</h2>
+                <section className="rounded-md border border-rule bg-card p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                    <h2 className="font-display text-lg font-semibold text-ink">Account</h2>
                     <p className="text-sm text-ink-muted">Account management is not yet available.</p>
                 </section>
             </div>

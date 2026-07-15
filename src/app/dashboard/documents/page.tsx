@@ -2,12 +2,18 @@
 
 import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { IconSearch, IconTrash, IconUpload } from "@tabler/icons-react";
+import { IconSearch, IconUpload } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
 import type { DocumentItem } from "@/types/page";
+
+const typeIcons: Record<string, string> = {
+    pdf: "PDF",
+    docx: "DOCX",
+    pptx: "PPTX",
+};
 
 export default function DocumentsPage() {
     const router = useRouter();
@@ -19,23 +25,20 @@ export default function DocumentsPage() {
     const [deleting, setDeleting] = useState<string | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [generatingDocId, setGeneratingDocId] = useState<string | null>(null);
+    const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fetchDocuments = useCallback(() => {
         fetch(`/api/documents?search=${encodeURIComponent(debouncedSearch)}`)
             .then((res) => res.json())
             .then((data) => setDocuments(data.documents))
-            .catch(() => { })
+            .catch(() => {})
             .finally(() => setLoading(false));
-    }, [debouncedSearch])
+    }, [debouncedSearch]);
 
-    useEffect(() => {
-        fetchDocuments();
-    }, [debouncedSearch, fetchDocuments]);
+    useEffect(() => { fetchDocuments(); }, [debouncedSearch, fetchDocuments]);
 
-    const handleUploadClick = () => {
-        fileInputRef.current?.click();
-    };
+    const handleUploadClick = () => fileInputRef.current?.click();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -51,18 +54,14 @@ export default function DocumentsPage() {
         try {
             const formData = new FormData();
             formData.append("file", file);
-
             const res = await fetch("/api/documents", { method: "POST", body: formData });
             const data = await res.json();
-
             if (!res.ok) throw new Error(data.error || "Upload failed.");
-
             toast.success("Document uploaded successfully.");
             setLoading(true);
             fetchDocuments();
         } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to upload document.";
-            toast.error(msg);
+            toast.error(err instanceof Error ? err.message : "Failed to upload document.");
         } finally {
             setUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = "";
@@ -84,95 +83,103 @@ export default function DocumentsPage() {
         }
     };
 
+    const getFileType = (filename: string) => {
+        const ext = filename.slice(filename.lastIndexOf(".") + 1).toLowerCase();
+        return typeIcons[ext] ?? ext.toUpperCase();
+    };
+
     return (
-        <main className="min-h-screen">
-            <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
-                <section>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div>
-                            <h1 className="font-sans text-2xl font-semibold text-ink md:text-3xl">Documents</h1>
-                            <p className="mt-2 text-sm text-ink-muted">All uploaded files. Click a document to generate a study set.</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <button
-                                type="button"
-                                onClick={handleUploadClick}
-                                disabled={uploading}
-                                className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                                <IconUpload size={16} stroke={2} />
-                                {uploading ? "Uploading…" : "Upload"}
-                            </button>
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                    <div>
+                        <h1 className="font-display text-[32px] font-semibold text-ink tracking-tight">Documents</h1>
+                        <p className="text-sm text-ink-muted mt-1">All uploaded files. Click a document to generate a study set.</p>
+                    </div>
+                    <div className="flex items-center gap-3 sm:mt-1.5">
+                        <button
+                            type="button"
+                            onClick={handleUploadClick}
+                            disabled={uploading}
+                            className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                        >
+                            <IconUpload size={16} stroke={2} />
+                            {uploading ? "Uploading…" : "Upload"}
+                        </button>
+                        <input ref={fileInputRef} type="file" accept=".docx,.pptx,.pdf" onChange={handleFileChange} className="hidden" />
+                        <div className="relative">
+                            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted pointer-events-none" />
                             <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".docx,.pptx,.pdf"
-                                onChange={handleFileChange}
-                                className="hidden"
+                                type="text"
+                                placeholder="Search documents..."
+                                value={search}
+                                onChange={(e) => { setSearch(e.target.value); setLoading(true); }}
+                                className="w-full sm:w-64 rounded-md border border-rule bg-card py-2 pl-9 pr-4 text-sm text-ink placeholder:text-ink-muted outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                             />
-                            <div className="relative">
-                                <IconSearch className="absolute left-3 top-2.5 h-4 w-4 text-ink-muted" />
-                                <input
-                                    type="text"
-                                    placeholder="Search documents..."
-                                    value={search}
-                                    onChange={(e) => {
-                                        setSearch(e.target.value);
-                                        setLoading(true);
-                                    }}
-                                    className="pl-9 pr-4 py-2 w-full sm:w-64 rounded-md border border-rule bg-card text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
-                                />
-                            </div>
                         </div>
                     </div>
+                </div>
 
-                    {loading ? (
-                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
-                            {[1, 2, 3].map((i) => <div key={i} className="h-32 rounded-lg bg-rule" />)}
-                        </div>
-                    ) : documents.length === 0 ? (
-                        <div className="mt-6 rounded-lg border border-dashed border-rule bg-card p-6 text-sm text-ink-muted">
-                            {search ? "No documents found matching your search." : "No documents uploaded yet. Click the Upload button above to get started."}
-                        </div>
-                    ) : (
-                        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {documents.map((doc) => (
-                                <div
-                                    key={doc.id}
-                                    className="rounded-lg border border-rule bg-card p-5 transition hover:bg-paper-hover group cursor-pointer"
-                                    onClick={() => setGeneratingDocId(doc.id)}
-                                >
-                                    <div className="flex items-start justify-between">
-                                        <div className="min-w-0 flex-1">
-                                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-                                                {doc.fileType.toUpperCase().replace(".", "")}
-                                            </p>
-                                            <h2 className="mt-3 font-sans text-base font-semibold text-ink truncate">{doc.filename}</h2>
-                                            <p className="mt-2 text-sm leading-6 text-ink-muted">
-                                                {doc.wordCount.toLocaleString()} words · {doc._count.studySets} study set{doc._count.studySets !== 1 ? "s" : ""}
-                                            </p>
-                                            <p className="mt-1 text-xs text-ink-muted">
-                                                {new Date(doc.createdAt).toLocaleDateString()}
-                                            </p>
+                {loading ? (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
+                    </div>
+                ) : documents.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
+                        <p className="text-sm text-ink-muted max-w-xs">
+                            {search
+                                ? "No documents found matching your search."
+                                : "No documents uploaded yet. Click Upload to get started."}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {documents.map((doc) => {
+                            const fileType = getFileType(doc.filename);
+                            return (
+                                <div key={doc.id} className="relative group cursor-pointer" onClick={() => setGeneratingDocId(doc.id)}>
+                                    <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
+                                    <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">{fileType}</span>
+                                            <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setMenuOpenId(menuOpenId === doc.id ? null : doc.id)}
+                                                    className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
+                                                    aria-label="More options"
+                                                >
+                                                    ⋯
+                                                </button>
+                                                {menuOpenId === doc.id && (
+                                                    <>
+                                                        <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
+                                                        <div className="absolute right-0 top-9 z-20 min-w-[140px] overflow-hidden rounded-md border border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => { setMenuOpenId(null); setConfirmDeleteId(doc.id); }}
+                                                                className="w-full cursor-pointer border-none bg-transparent px-3.5 py-2 text-left text-[13.5px] font-sans text-error hover:bg-paper"
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </div>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setConfirmDeleteId(doc.id);
-                                            }}
-                                            disabled={deleting === doc.id}
-                                            aria-label="Delete document"
-                                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-ink-muted opacity-0 group-hover:opacity-100 hover:bg-error/10 hover:text-error transition cursor-pointer disabled:opacity-50"
-                                        >
-                                            <IconTrash size={14} stroke={2} />
-                                        </button>
+                                        <h3 className="font-display text-[17px] font-semibold text-ink truncate mt-1">{doc.filename}</h3>
+                                        <p className="text-[12.5px] text-ink-muted mt-1">
+                                            {doc.wordCount?.toLocaleString() ?? 0} words · {doc._count?.studySets ?? 0} study set{(doc._count?.studySets ?? 0) !== 1 ? "s" : ""}
+                                        </p>
+                                        <p className="text-[11px] text-ink-muted mt-2">
+                                            {new Date(doc.createdAt).toLocaleDateString()}
+                                        </p>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </section>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
 
             <ConfirmModal
@@ -193,13 +200,11 @@ export default function DocumentsPage() {
             {generatingDocId && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) setGeneratingDocId(null);
-                    }}
+                    onClick={(e) => { if (e.target === e.currentTarget) setGeneratingDocId(null); }}
                 >
-                    <div className="w-full max-w-md rounded-lg border border-rule bg-card shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="w-full max-w-md rounded-md border border-rule bg-card shadow-xl" onClick={(e) => e.stopPropagation()}>
                         <div className="px-6 pt-6 pb-2">
-                            <p className="font-sans text-base font-semibold text-ink">Configure study set</p>
+                            <p className="font-display text-lg font-semibold text-ink">Configure study set</p>
                         </div>
                         <div className="px-6 pb-6">
                             <GenerateOptionsPanel

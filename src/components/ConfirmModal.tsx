@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { IconAlertTriangle } from "@tabler/icons-react";
 
 interface ConfirmModalProps {
     open: boolean;
@@ -14,6 +13,8 @@ interface ConfirmModalProps {
     onConfirm: () => void;
     onCancel: () => void;
     destructive?: boolean;
+    /** If set, renders a text input requiring this value to match before enabling the danger button. */
+    requireInputLabel?: string;
 }
 
 export function ConfirmModal({
@@ -21,12 +22,15 @@ export function ConfirmModal({
     title,
     message,
     details,
-    confirmLabel = "Confirm",
+    confirmLabel = "Delete",
     cancelLabel = "Cancel",
     onConfirm,
     onCancel,
     destructive = false,
+    requireInputLabel,
 }: ConfirmModalProps) {
+    const [inputValue, setInputValue] = useState("");
+
     useEffect(() => {
         if (!open) return;
         const handleKey = (e: KeyboardEvent) => {
@@ -36,54 +40,67 @@ export function ConfirmModal({
         return () => document.removeEventListener("keydown", handleKey);
     }, [open, onCancel]);
 
+    useEffect(() => {
+        if (open) setInputValue("");
+    }, [open]);
+
     if (!open) return null;
+
+    const canConfirm = requireInputLabel ? inputValue === requireInputLabel : true;
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
-            onClick={(e) => {
-                if (e.target === e.currentTarget) onCancel();
-            }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ink/45 p-4"
+            onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="w-full max-w-sm"
+                className="w-full max-w-[420px]"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="rounded-lg border border-rule bg-card shadow-xl">
-                    <div className="flex flex-col items-center px-6 pt-6 pb-4 text-center">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-error/10 text-error mb-3">
-                            <IconAlertTriangle size={20} stroke={2} />
+                <div className="rounded-md border border-rule bg-card p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                    <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
+                    <p className="mt-2 text-[13.5px] text-ink-muted leading-relaxed">{message}</p>
+                    {details && details.length > 0 && (
+                        <ul className="mt-3 space-y-1 text-[13px] text-ink-muted">
+                            {details.map((d) => (
+                                <li key={d} className="flex items-start gap-2">
+                                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-ink-muted/50" />
+                                    <span>{d}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                    {requireInputLabel && (
+                        <div className="mt-4">
+                            <p className="text-xs text-ink-muted mb-1.5">
+                                Type <span className="font-semibold text-ink">{requireInputLabel}</span> to confirm:
+                            </p>
+                            <input
+                                type="text"
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                                className="w-full rounded-md border border-rule bg-paper px-3 py-2 text-[13.5px] text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
+                            />
                         </div>
-                        <h2 className="font-sans text-base font-semibold text-ink">{title}</h2>
-                        <p className="mt-2 text-sm text-ink-muted leading-relaxed">{message}</p>
-                        {details && details.length > 0 && (
-                            <ul className="mt-3 w-full text-left text-xs text-ink-muted space-y-1 rounded-md bg-paper border border-rule px-3 py-2.5">
-                                {details.map((detail) => (
-                                    <li key={detail} className="flex items-start gap-2">
-                                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-error/60" />
-                                        <span>{detail}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </div>
-                    <div className="flex gap-3 px-6 pb-6">
+                    )}
+                    <div className="mt-5 flex justify-end gap-2.5">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="flex-1 cursor-pointer rounded-md border border-rule bg-card px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper-hover"
+                            className="cursor-pointer rounded-md border-none bg-transparent px-4 py-2 text-[13.5px] font-semibold text-ink-muted transition hover:bg-paper hover:text-ink"
                         >
                             {cancelLabel}
                         </button>
                         <button
                             type="button"
                             onClick={onConfirm}
-                            className={`flex-1 cursor-pointer rounded-md px-4 py-2.5 text-sm font-semibold text-white transition ${
+                            disabled={!canConfirm}
+                            className={`cursor-pointer rounded-md border-none px-4 py-2 text-[13.5px] font-semibold text-white transition disabled:opacity-45 disabled:cursor-not-allowed ${
                                 destructive
-                                    ? "bg-error hover:bg-error/90"
+                                    ? "bg-error hover:bg-danger-dark"
                                     : "bg-accent hover:bg-accent-hover"
                             }`}
                         >

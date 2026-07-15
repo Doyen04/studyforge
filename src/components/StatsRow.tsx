@@ -10,7 +10,11 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
             label: "Study sets",
             value: stats.studySets,
             color: "accent",
-            caption: stats.studySets >= 1 ? `${stats.studySets} document${stats.studySets > 1 ? "s" : ""} uploaded` : "No documents yet",
+            caption: stats.documentsWithoutStudySet
+                ? `${stats.documentsWithoutStudySet} document${stats.documentsWithoutStudySet > 1 ? "s" : ""} not yet processed`
+                : stats.studySets > 0
+                ? "All documents processed"
+                : "No documents yet",
             icon: <IconStack2 size={16} stroke={2} />,
         },
         {
@@ -37,10 +41,10 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
     ];
 
     const colorMap: Record<string, { bg: string; text: string }> = {
-        accent: { bg: "bg-accent/10", text: "text-accent" },
+        accent: { bg: "bg-wine-tint", text: "text-accent" },
         blue: { bg: "bg-blue-tint", text: "text-blue" },
-        mastered: { bg: "bg-mastered/10", text: "text-mastered" },
-        review: { bg: "bg-review/10", text: "text-review" },
+        mastered: { bg: "bg-green-tint", text: "text-mastered" },
+        review: { bg: "bg-amber-tint", text: "text-review" },
     };
 
     return (
@@ -52,16 +56,14 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
                         key={item.label}
                         whileHover={{ y: -3 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="rounded-xl border border-rule bg-card p-5"
+                        className="rounded-md border border-rule bg-card p-5 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
                     >
-                        <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-lg ${bg} ${text}`}>
+                        <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-md ${bg} ${text}`}>
                             {item.icon}
                         </div>
-                        <div className="font-data text-2xl font-semibold text-ink">{item.value}</div>
-                        <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-muted">
-                            {item.label}
-                        </div>
-                        <div className="mt-1.5 text-xs text-ink-muted">{item.caption}</div>
+                        <div className="font-data text-[27px] font-semibold leading-none text-ink">{item.value}</div>
+                        <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted">{item.label}</div>
+                        <div className="mt-2 text-xs text-ink-muted">{item.caption}</div>
                     </motion.div>
                 );
             })}

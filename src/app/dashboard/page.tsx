@@ -1,16 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
 import { RecentQuizList } from "@/components/RecentQuizList";
 import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
+import { IconPlus } from "@tabler/icons-react";
 import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/types/domain";
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
-    const [studySets, setStudySets] = useState<StudySetSummary[]>([]);
+    const [continueStudying, setContinueStudying] = useState<StudySetSummary | null>(null);
+    const [recentStudySets, setRecentStudySets] = useState<StudySetSummary[]>([]);
     const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -19,7 +22,8 @@ export default function DashboardPage() {
             .then((res) => res.json())
             .then((data) => {
                 setStats(data.stats);
-                setStudySets(data.studySets);
+                setContinueStudying(data.continueStudying);
+                setRecentStudySets(data.recentStudySets);
                 setRecentAttempts(data.recentAttempts);
             })
             .catch(() => {})
@@ -27,8 +31,7 @@ export default function DashboardPage() {
     }, []);
 
     const safeStats: DashboardStats = stats ?? { studySets: 0, questionsGenerated: 0, quizzesTaken: 0, averageScore: null };
-    const studySetCount = stats?.studySets ?? studySets.length;
-    const mostRecent = studySets[0] ?? null;
+    const studySetCount = stats?.studySets ?? recentStudySets.length;
 
     if (loading) {
         return (
@@ -36,11 +39,30 @@ export default function DashboardPage() {
                 <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8 animate-pulse">
                     <div className="h-8 w-48 rounded bg-rule" />
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                        {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-xl bg-rule" />)}
+                        {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-md bg-rule" />)}
                     </div>
-                    <div className="h-24 rounded-xl bg-rule" />
+                    <div className="h-24 rounded-md bg-rule" />
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-xl bg-rule" />)}
+                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
+                    </div>
+                </div>
+            </main>
+        );
+    }
+
+    if (studySetCount === 0) {
+        return (
+            <main className="min-h-screen bg-paper">
+                <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
+                    <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-wine-tint text-accent mb-4">
+                            <IconPlus size={20} stroke={2} />
+                        </div>
+                        <h3 className="font-display text-lg font-semibold text-ink">Upload your first document to get started</h3>
+                        <p className="mt-1.5 text-sm text-ink-muted max-w-xs">PPTX, DOCX, or PDF — StudyForge will turn it into flashcards and quizzes.</p>
+                        <div className="mt-5">
+                            <UploadTile />
+                        </div>
                     </div>
                 </div>
             </main>
@@ -57,38 +79,32 @@ export default function DashboardPage() {
 
                 <StatsRow stats={safeStats} />
 
-                {studySetCount === 0 ? (
-                    <section className="mx-auto flex w-full max-w-2xl flex-col gap-4">
-                        <UploadTile />
-                        <p className="text-sm text-ink-muted text-center">
-                            Nothing here yet. Upload a slide deck, document, or PDF to turn it into flashcards and quizzes.
-                        </p>
-                    </section>
-                ) : (
-                    <>
-                        {mostRecent && (
-                            <ContinueStudyingCard
-                                studySet={mostRecent}
-                                itemCounts={mostRecent.itemCounts}
-                                lastScore={mostRecent.lastScore}
-                            />
-                        )}
-
-                        <section className="space-y-4">
-                            <div className="flex items-baseline justify-between">
-                                <h2 className="font-display text-xl font-semibold text-ink">Your study sets</h2>
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                <UploadTile />
-                                {studySets.map((set) => (
-                                    <StudySetCard key={set.id} set={set} />
-                                ))}
-                            </div>
-                        </section>
-
-                        {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
-                    </>
+                {continueStudying && (
+                    <ContinueStudyingCard
+                        studySet={continueStudying}
+                        itemCounts={continueStudying.itemCounts}
+                        lastScore={continueStudying.lastScore}
+                    />
                 )}
+
+                <section className="space-y-4">
+                    <h2 className="font-display text-xl font-semibold text-ink">Your study sets</h2>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        <UploadTile />
+                        {recentStudySets.map((set, i) => (
+                            <StudySetCard key={set.id} set={set} index={i} />
+                        ))}
+                    </div>
+                    {studySetCount > 4 && (
+                        <div className="text-center">
+                            <Link href="/dashboard/study-sets" className="text-sm font-semibold text-accent hover:text-accent-hover transition">
+                                View all study sets →
+                            </Link>
+                        </div>
+                    )}
+                </section>
+
+                {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
             </div>
         </main>
     );
