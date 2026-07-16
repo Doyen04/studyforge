@@ -5,12 +5,16 @@ import { parseDocument } from "@/lib/parseDocument";
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
+    const cursor = searchParams.get("cursor");
 
     const documents = await prisma.document.findMany({
         where: search
             ? { filename: { contains: search, mode: "insensitive" } }
             : {},
         orderBy: { createdAt: "desc" },
+        take: 12,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
         include: {
             _count: { select: { studySets: true } },
         },
