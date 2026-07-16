@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconCards, IconClipboardCheck, IconRefresh, IconStack2, IconPencilMinus, IconMessage, IconTrash } from "@tabler/icons-react";
+import { IconCards, IconClipboardCheck, IconStack2, IconPencilMinus, IconMessage, IconPlayerPlay, IconArrowLeft, IconArrowRight, IconRefresh, IconTrash } from "@tabler/icons-react";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
@@ -46,7 +46,6 @@ const tabs: { id: Tab; label: string; icon: typeof IconStack2 }[] = [
 export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; refresh: () => void }) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<Tab>("flashcards");
-    const [selected, setSelected] = useState<Set<string>>(new Set());
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [newTitle, setNewTitle] = useState(studySet.title);
     const panelRef = useRef<HTMLDivElement>(null);
@@ -86,19 +85,9 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
             }),
         onSuccess: (data) => {
             toast.success("Quiz created");
-            setSelected(new Set());
             router.push(`/dashboard/quizzes/${data.quiz.id}`);
         },
     });
-
-    const handleCreateQuiz = () => {
-        if (selected.size === 0) return;
-        const questionRefs: { type: QuestionType; id: string }[] = [];
-        studySet.mcqQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "mcq", id: q.id }); });
-        studySet.fillInBlanks.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "fillInBlank", id: q.id }); });
-        studySet.theoryQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "theory", id: q.id }); });
-        createQuizMutation.mutate(questionRefs);
-    };
 
     const now = new Date();
     const dueCount = studySet.flashcards.filter((f) => {
@@ -111,24 +100,31 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
         studySet.fillInBlanks.length +
         studySet.theoryQuestions.length;
 
-    const toggleSelect = useCallback((id: string) => {
-        setSelected((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }, []);
+    const allQuestionRefs = (): { type: QuestionType; id: string }[] => {
+        const refs: { type: QuestionType; id: string }[] = [];
+        studySet.mcqQuestions.forEach((q) => refs.push({ type: "mcq", id: q.id }));
+        studySet.fillInBlanks.forEach((q) => refs.push({ type: "fillInBlank", id: q.id }));
+        studySet.theoryQuestions.forEach((q) => refs.push({ type: "theory", id: q.id }));
+        return refs;
+    };
 
-    const selectAll = useCallback(() => {
-        const all = new Set<string>();
-        studySet.mcqQuestions.forEach((q) => all.add(q.id));
-        studySet.fillInBlanks.forEach((q) => all.add(q.id));
-        studySet.theoryQuestions.forEach((q) => all.add(q.id));
-        setSelected(all);
-    }, [studySet.mcqQuestions, studySet.fillInBlanks, studySet.theoryQuestions]);
+    const handleCreateQuizAll = () => {
+        const refs = allQuestionRefs();
+        if (refs.length === 0) {
+            toast.error("No questions to create a quiz from");
+            return;
+        }
+        createQuizMutation.mutate(refs);
+    };
 
-    const clearSelection = useCallback(() => setSelected(new Set()), []);
+    const handleCreateQuizFromTab = (tab: "mcq" | "fillInBlank" | "theory") => {
+        const refs: { type: QuestionType; id: string }[] = [];
+        if (tab === "mcq") studySet.mcqQuestions.forEach((q) => refs.push({ type: "mcq", id: q.id }));
+        if (tab === "fillInBlank") studySet.fillInBlanks.forEach((q) => refs.push({ type: "fillInBlank", id: q.id }));
+        if (tab === "theory") studySet.theoryQuestions.forEach((q) => refs.push({ type: "theory", id: q.id }));
+        if (refs.length === 0) return;
+        createQuizMutation.mutate(refs);
+    };
 
     const setActiveTabAndScroll = (tab: Tab) => {
         setActiveTab(tab);
@@ -181,7 +177,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     {studySet.quizzes.length > 0 ? (
                         <Link
                             href={`/dashboard/quizzes/${studySet.quizzes[0].id}`}
-                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper  "
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer  "
                         >
                             <IconArrowRight size={14} stroke={2} />
                             Start studying
@@ -198,12 +194,12 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     )}
                     <button
                         type="button"
-                        disabled={totalQuizItems === 0}
-                        onClick={() => setActiveTabAndScroll("mcq")}
+                        disabled={totalQuizItems === 0 || createQuizMutation.isPending}
+                        onClick={handleCreateQuizAll}
                         className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
                         <IconPlayerPlay size={14} stroke={2} />
-                        Create a quiz
+                        {createQuizMutation.isPending ? "Creating..." : "Create a quiz"}
                     </button>
                 </div>
             </div>
@@ -234,7 +230,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
 
             {/* Tab panels */}
             <div ref={panelRef} className="scroll-mt-8">
-                {/* Flashcards tab */}
                 {activeTab === "flashcards" && (
                     studySet.flashcards.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
@@ -250,9 +245,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                             You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
                                         </p>
                                     ) : (
-                                        <p className="text-xs text-ink-muted mt-0.5">
-                                            All caught up! No cards currently due for review.
-                                        </p>
+                                        <p className="text-xs text-ink-muted mt-0.5">All caught up! No cards currently due for review.</p>
                                     )}
                                 </div>
                                 <Link
@@ -271,126 +264,110 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     )
                 )}
 
-                {/* MCQ tab */}
                 {activeTab === "mcq" && (
                     studySet.mcqQuestions.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
                             No MCQ questions in this set.
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Multiple Choice</p>
                                 <button
                                     type="button"
-                                    onClick={selectAll}
-                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                    onClick={() => handleCreateQuizFromTab("mcq")}
+                                    disabled={createQuizMutation.isPending}
+                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                                 >
-                                    Select all
+                                    <IconPlayerPlay size={12} stroke={2} />
+                                    Quiz from these
                                 </button>
                             </div>
                             {studySet.mcqQuestions.map((q) => (
-                                <QuestionCard
-                                    key={q.id}
-                                    id={q.id}
-                                    type="mcq"
-                                    selected={selected.has(q.id)}
-                                    onToggle={toggleSelect}
-                                    refresh={refresh}
-                                >
+                                <div key={q.id} className="relative">
+                                    <DeleteQuestionButton id={q.id} type="mcq" refresh={refresh} />
                                     <McqCard
                                         question={q.question}
                                         options={q.options}
                                         correctIndex={q.correctIndex}
                                         explanation={q.explanation}
                                     />
-                                </QuestionCard>
+                                </div>
                             ))}
                         </div>
                     )
                 )}
 
-                {/* Fill-in-blank tab */}
                 {activeTab === "fillInBlank" && (
                     studySet.fillInBlanks.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
                             No fill-in-blank questions in this set.
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Fill-in-the-Blank</p>
                                 <button
                                     type="button"
-                                    onClick={selectAll}
-                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                    onClick={() => handleCreateQuizFromTab("fillInBlank")}
+                                    disabled={createQuizMutation.isPending}
+                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                                 >
-                                    Select all
+                                    <IconPlayerPlay size={12} stroke={2} />
+                                    Quiz from these
                                 </button>
                             </div>
                             {studySet.fillInBlanks.map((q) => (
-                                <QuestionCard
-                                    key={q.id}
-                                    id={q.id}
-                                    type="fillInBlank"
-                                    selected={selected.has(q.id)}
-                                    onToggle={toggleSelect}
-                                    refresh={refresh}
-                                >
+                                <div key={q.id} className="relative">
+                                    <DeleteQuestionButton id={q.id} type="fillInBlank" refresh={refresh} />
                                     <FillInBlankCard
                                         sentence={q.sentence}
                                         answer={q.answer}
                                         acceptableAnswers={q.acceptableAnswers}
                                     />
-                                </QuestionCard>
+                                </div>
                             ))}
                         </div>
                     )
                 )}
 
-                {/* Theory tab */}
                 {activeTab === "theory" && (
                     studySet.theoryQuestions.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
                             No theory questions in this set.
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Theory</p>
                                 <button
                                     type="button"
-                                    onClick={selectAll}
-                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                    onClick={() => handleCreateQuizFromTab("theory")}
+                                    disabled={createQuizMutation.isPending}
+                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                                 >
-                                    Select all
+                                    <IconPlayerPlay size={12} stroke={2} />
+                                    Quiz from these
                                 </button>
                             </div>
                             {studySet.theoryQuestions.map((q) => (
-                                <QuestionCard
-                                    key={q.id}
-                                    id={q.id}
-                                    type="theory"
-                                    selected={selected.has(q.id)}
-                                    onToggle={toggleSelect}
-                                    refresh={refresh}
-                                >
+                                <div key={q.id} className="relative">
+                                    <DeleteQuestionButton id={q.id} type="theory" refresh={refresh} />
                                     <TheoryCard
                                         question={q.question}
                                         referenceAnswer={q.referenceAnswer}
                                         keyPoints={q.keyPoints}
                                     />
-                                </QuestionCard>
+                                </div>
                             ))}
                         </div>
                     )
                 )}
 
-                {/* Quizzes tab */}
                 {activeTab === "quizzes" && (
                     studySet.quizzes.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
-                            No quizzes yet. Select questions from MCQs, Fill-in-blank, or Theory tabs and create one.
+                            No quizzes yet. Create one from the button above.
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -429,54 +406,11 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     )
                 )}
             </div>
-
-            {/* Sticky selection bar (visible in MCQ/FIB/Theory tabs when items selected) */}
-            {selected.size > 0 && activeTab !== "flashcards" && activeTab !== "quizzes" && (
-                <div className="sticky bottom-0 z-20 -mx-6 mt-6 border-t border-rule bg-card px-6 py-3  ">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold text-ink">{selected.size} question{selected.size !== 1 ? "s" : ""} selected</span>
-                            <button
-                                type="button"
-                                onClick={clearSelection}
-                                className="text-xs font-semibold text-ink-muted hover:text-ink transition cursor-pointer"
-                            >
-                                Clear selection
-                            </button>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button
-                                type="button"
-                                onClick={handleCreateQuiz}
-                                disabled={createQuizMutation.isPending}
-                                className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
-                            >
-                                <IconPlayerPlay size={14} />
-                                {createQuizMutation.isPending ? "Creating..." : `Create Quiz (${selected.size} questions)`}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
 
-function QuestionCard({
-    id,
-    type,
-    selected,
-    onToggle,
-    refresh,
-    children,
-}: {
-    id: string;
-    type: QuestionType;
-    selected: boolean;
-    onToggle: (id: string) => void;
-    refresh: () => void;
-    children: React.ReactNode;
-}) {
+function DeleteQuestionButton({ id, type, refresh }: { id: string; type: QuestionType; refresh: () => void }) {
     const deleteMutation = useMutation({
         mutationFn: () => fetchJson(`/api/questions/${type}/${id}`, { method: "DELETE" }),
         onSuccess: () => {
@@ -491,30 +425,13 @@ function QuestionCard({
     };
 
     return (
-        <div className={`relative rounded-md border transition ${selected ? "border-accent bg-wine-tint/30 " : "border-rule bg-card  "
-            }`}>
-            <button
-                type="button"
-                onClick={() => onToggle(id)}
-                className={`absolute top-3 left-3 z-10 flex h-5 w-5 items-center justify-center rounded border transition cursor-pointer ${selected
-                        ? "border-accent bg-accent text-white"
-                        : "border-rule bg-card text-transparent hover:border-ink-muted"
-                    }`}
-                aria-label={selected ? "Deselect question" : "Select question"}
-            >
-                {selected && <IconCheck size={12} stroke={3} />}
-            </button>
-            <button
-                type="button"
-                onClick={handleDelete}
-                className="absolute top-3 right-3 z-10 p-1 rounded hover:bg-paper text-ink-muted hover:text-error transition cursor-pointer"
-                aria-label="Delete question"
-            >
-                <IconTrash size={16} />
-            </button>
-            <div className="pl-10 pr-10 py-3">
-                {children}
-            </div>
-        </div>
+        <button
+            type="button"
+            onClick={handleDelete}
+            className="absolute top-2 right-2 z-10 p-1.5 rounded hover:bg-paper text-ink-muted hover:text-error transition cursor-pointer"
+            aria-label="Delete question"
+        >
+            <IconTrash size={14} />
+        </button>
     );
 }
