@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { IconSearch } from "@tabler/icons-react";
 import { toast } from "sonner";
@@ -17,7 +17,7 @@ interface StudySetIndexItem {
     bestScore: number | null;
 }
 
-export default function StudySetsIndex() {
+function StudySetsIndexContent() {
     const searchParams = useSearchParams();
     const docId = searchParams.get("docId");
     const [sets, setSets] = useState<StudySetIndexItem[]>([]);
@@ -102,5 +102,29 @@ export default function StudySetsIndex() {
                 )}
             </div>
         </main>
+    );
+}
+
+function StudySetsIndexFallback() {
+    return (
+        <main className="min-h-screen bg-paper">
+            <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8">
+                <div>
+                    <h1 className="font-display text-[32px] font-semibold text-ink tracking-tight">Study sets</h1>
+                    <p className="text-sm text-ink-muted mt-1">Your generated study materials.</p>
+                </div>
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                    {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
+                </div>
+            </div>
+        </main>
+    );
+}
+
+export default function StudySetsIndex() {
+    return (
+        <Suspense fallback={<StudySetsIndexFallback />}>
+            <StudySetsIndexContent />
+        </Suspense>
     );
 }
