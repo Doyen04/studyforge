@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 interface ConfirmModalProps {
@@ -30,30 +30,47 @@ export function ConfirmModal({
     requireInputLabel,
 }: ConfirmModalProps) {
     const [inputValue, setInputValue] = useState("");
-    const onCancelRef = useRef(onCancel);
-    onCancelRef.current = onCancel;
+
+    const handleCancel = useCallback(() => {
+        setInputValue("");
+        onCancel();
+    }, [onCancel]);
+
+    const handleConfirm = useCallback(() => {
+        setInputValue("");
+        onConfirm();
+    }, [onConfirm]);
 
     useEffect(() => {
         if (!open) return;
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onCancelRef.current();
-        };
-        document.addEventListener("keydown", handleKey);
-        return () => document.removeEventListener("keydown", handleKey);
-    }, [open]);
 
-    useEffect(() => {
-        if (open) setInputValue("");
-    }, [open]);
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                handleCancel();
+            }
+        };
+
+        document.addEventListener("keydown", handleKey);
+
+        return () => {
+            document.removeEventListener("keydown", handleKey);
+        };
+    }, [open, onCancel, handleCancel]);
 
     if (!open) return null;
 
-    const canConfirm = requireInputLabel ? inputValue === requireInputLabel : true;
+    const canConfirm = requireInputLabel
+        ? inputValue === requireInputLabel
+        : true;
 
     return (
         <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-ink/45 p-4"
-            onClick={(e) => { if (e.target === e.currentTarget) onCancel(); }}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                    handleCancel();
+                }
+            }}
         >
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -62,24 +79,39 @@ export function ConfirmModal({
                 className="w-full max-w-105"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="rounded-md border border-rule bg-card p-6  ">
-                    <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
-                    <p className="mt-2 text-[13.5px] text-ink-muted leading-relaxed">{message}</p>
+                <div className="rounded-md border border-rule bg-card p-6">
+                    <h3 className="font-display text-lg font-semibold text-ink">
+                        {title}
+                    </h3>
+
+                    <p className="mt-2 text-[13.5px] leading-relaxed text-ink-muted">
+                        {message}
+                    </p>
+
                     {details && details.length > 0 && (
                         <ul className="mt-3 space-y-1 text-[13px] text-ink-muted">
                             {details.map((d) => (
-                                <li key={d} className="flex items-start gap-2">
+                                <li
+                                    key={d}
+                                    className="flex items-start gap-2"
+                                >
                                     <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-ink-muted/50" />
                                     <span>{d}</span>
                                 </li>
                             ))}
                         </ul>
                     )}
+
                     {requireInputLabel && (
                         <div className="mt-4">
-                            <p className="text-xs text-ink-muted mb-1.5">
-                                Type <span className="font-semibold text-ink">{requireInputLabel}</span> to confirm:
+                            <p className="mb-1.5 text-xs text-ink-muted">
+                                Type{" "}
+                                <span className="font-semibold text-ink">
+                                    {requireInputLabel}
+                                </span>{" "}
+                                to confirm:
                             </p>
+
                             <input
                                 type="text"
                                 value={inputValue}
@@ -88,19 +120,21 @@ export function ConfirmModal({
                             />
                         </div>
                     )}
+
                     <div className="mt-5 flex justify-end gap-2.5">
                         <button
                             type="button"
-                            onClick={onCancel}
+                            onClick={handleCancel}
                             className="cursor-pointer rounded-md border-none bg-transparent px-4 py-2 text-[13.5px] font-semibold text-ink-muted transition hover:bg-paper hover:text-ink"
                         >
                             {cancelLabel}
                         </button>
+
                         <button
                             type="button"
-                            onClick={onConfirm}
+                            onClick={handleConfirm}
                             disabled={!canConfirm}
-                            className={`cursor-pointer rounded-md border-none px-4 py-2 text-[13.5px] font-semibold text-white transition disabled:opacity-45 disabled:cursor-not-allowed ${destructive
+                            className={`cursor-pointer rounded-md border-none px-4 py-2 text-[13.5px] font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-45 ${destructive
                                     ? "bg-error hover:bg-danger-dark"
                                     : "bg-accent hover:bg-accent-hover"
                                 }`}
