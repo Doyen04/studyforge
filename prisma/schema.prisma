@@ -35,9 +35,13 @@ model Flashcard {
     id         String   @id @default(cuid())
     studySetId String
     studySet   StudySet @relation(fields: [studySetId], references: [id], onDelete: Cascade)
-    subtopic   String?
-    front      String
-    back       String
+    subtopic       String?
+    front          String
+    back           String
+    nextReviewDate DateTime @default(now())
+    interval       Int      @default(0)
+    easeFactor     Float    @default(2.5)
+    repetitions    Int      @default(0)
 }
 
 model McqQuestion {

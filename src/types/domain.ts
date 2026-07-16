@@ -54,6 +54,10 @@ export interface FlashcardData {
     subtopic: string | null;
     front: string;
     back: string;
+    nextReviewDate?: Date | string;
+    interval?: number;
+    easeFactor?: number;
+    repetitions?: number;
 }
 
 export interface McqQuestionData {

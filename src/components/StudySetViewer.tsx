@@ -4,7 +4,7 @@ import { useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck } from "@tabler/icons-react";
+import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck, IconRefresh, IconCards } from "@tabler/icons-react";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
@@ -37,6 +37,12 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [creating, setCreating] = useState(false);
     const questionsRef = useRef<HTMLDivElement>(null);
+
+    const now = new Date();
+    const dueCount = studySet.flashcards.filter((f) => {
+        if (!f.nextReviewDate) return true;
+        return new Date(f.nextReviewDate) <= now;
+    }).length;
 
     const totalQuizItems =
         studySet.mcqQuestions.length +
@@ -249,8 +255,32 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
 
                             {/* Flashcards section (not quiz-able, no checkboxes) */}
                             {studySet.flashcards.length > 0 && (
-                                <div className="mt-8 pt-6 border-t border-rule">
-                                    <p className="font-display text-lg font-semibold text-ink mb-4">Flashcards</p>
+                                <div className="mt-8 pt-6 border-t border-rule space-y-4">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                        <div>
+                                            <p className="font-display text-lg font-semibold text-ink">Flashcards</p>
+                                            {dueCount > 0 ? (
+                                                <p className="text-xs text-ink-muted mt-0.5">
+                                                    You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
+                                                </p>
+                                            ) : (
+                                                <p className="text-xs text-ink-muted mt-0.5">
+                                                    All caught up! No cards currently due for review.
+                                                </p>
+                                            )}
+                                        </div>
+                                        <Link
+                                            href={`/dashboard/study-sets/${studySet.id}/flashcards`}
+                                            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold shadow-sm transition cursor-pointer ${
+                                                dueCount > 0
+                                                    ? "bg-accent text-white hover:bg-accent-hover"
+                                                    : "border border-rule bg-card text-ink hover:bg-paper"
+                                            }`}
+                                        >
+                                            {dueCount > 0 ? <IconRefresh size={14} stroke={2} /> : <IconCards size={14} stroke={2} />}
+                                            {dueCount > 0 ? `Review Due Cards (${dueCount})` : "Study All Cards"}
+                                        </Link>
+                                    </div>
                                     <FlashcardViewer cards={studySet.flashcards} />
                                 </div>
                             )}

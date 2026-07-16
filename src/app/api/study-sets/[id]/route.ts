@@ -70,6 +70,10 @@ export async function GET(
             subtopic: f.subtopic,
             front: f.front,
             back: f.back,
+            nextReviewDate: f.nextReviewDate,
+            interval: f.interval,
+            easeFactor: f.easeFactor,
+            repetitions: f.repetitions,
         })),
         mcqQuestions: studySet.mcqQuestions.map((q) => ({
             id: q.id,
