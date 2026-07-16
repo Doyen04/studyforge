@@ -240,7 +240,7 @@ export default function DocumentsPage() {
                 >
                     <div className="w-full max-w-md rounded-md border border-rule bg-card " onClick={(e) => e.stopPropagation()}>
                         <div className="px-6 pt-6 pb-2">
-                            <p className="font-display text-lg font-semibold text-ink">Configure study set</p>
+                            <p className="font-display text-lg font-semibold text-accent">Configure study set</p>
                         </div>
                         <div className="px-6 pb-6">
                             <GenerateOptionsPanel

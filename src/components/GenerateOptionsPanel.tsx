@@ -78,7 +78,6 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
     return (
         <div className="space-y-6">
             <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-accent">Configure Study Set</p>
                 <h2 className="mt-2 font-sans text-xl font-semibold text-ink">Choose generation counts</h2>
                 <p className="mt-1 text-sm text-ink-muted">
                     Specify how many items of each type you want generated from your document.
