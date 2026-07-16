@@ -239,7 +239,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         <div className="space-y-4">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                 <div>
-                                    <p className="font-display text-lg font-semibold text-ink">Flashcards</p>
                                     {dueCount > 0 ? (
                                         <p className="text-xs text-ink-muted mt-0.5">
                                             You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
@@ -272,7 +271,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Multiple Choice</p>
                                 <button
                                     type="button"
                                     onClick={() => handleCreateQuizFromTab("mcq")}
@@ -306,7 +304,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Fill-in-the-Blank</p>
                                 <button
                                     type="button"
                                     onClick={() => handleCreateQuizFromTab("fillInBlank")}
@@ -339,7 +336,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Theory</p>
                                 <button
                                     type="button"
                                     onClick={() => handleCreateQuizFromTab("theory")}
@@ -419,7 +415,8 @@ function DeleteQuestionButton({ id, type, refresh }: { id: string; type: Questio
         },
     });
 
-    const handleDelete = () => {
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
         if (!confirm("Are you sure you want to delete this question?")) return;
         deleteMutation.mutate();
     };
