@@ -5,7 +5,9 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { IconArrowLeft, IconRotate, IconCheck, IconX } from "@tabler/icons-react";
 import { parseJsonArray } from "@/lib/deserialize";
-import { GradedMargin } from "@/components/GradedMargin";
+import { McqAnswerCard } from "@/components/McqAnswerCard";
+import { FillInBlankAnswerCard } from "@/components/FillInBlankAnswerCard";
+import { TheoryAnswerCard } from "@/components/TheoryAnswerCard";
 import type { QuizResultData } from "@/types/page";
 import type { GradedAnswer } from "@/types/domain";
 import { queryKeys, fetchJson } from "@/lib/queries";
@@ -85,7 +87,6 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         const isTheory = answer.type === "theory";
                         const isCorrect = answer.isCorrect;
 
-                        let mcqQuestionText = "";
                         let mcqOptions: string[] = [];
                         let fillInBlankText = "";
                         let theoryQuestionText = "";
@@ -93,7 +94,6 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         if (answer.type === "mcq") {
                             const found = quiz.studySet.mcqQuestions.find((q) => q.id === answer.id);
                             if (found) {
-                                mcqQuestionText = found.question;
                                 mcqOptions = parseJsonArray<string>(found.options);
                             }
                         } else if (answer.type === "fillInBlank") {
@@ -104,8 +104,15 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                             if (found) theoryQuestionText = found.question;
                         }
 
+                        const questionText =
+                            answer.type === "mcq"
+                                ? quiz.studySet.mcqQuestions.find((q) => q.id === answer.id)?.question
+                                : answer.type === "fillInBlank"
+                                    ? fillInBlankText
+                                    : theoryQuestionText;
+
                         return (
-                            <div key={answer.id} className="rounded-md border border-rule bg-card p-5 md:p-6 space-y-4  ">
+                            <div key={answer.id} className="rounded-md border border-rule bg-card p-5 md:p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
                                 <div className="flex items-center justify-between border-b border-rule pb-2">
                                     <span className="font-data text-xs text-ink-muted">Question {index + 1}</span>
                                     <div className="flex items-center gap-2">
@@ -113,8 +120,9 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                             {answer.type}
                                         </span>
                                         {!isTheory && (
-                                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${isCorrect ? "bg-green-tint text-mastered" : "bg-red-tint text-error"
-                                                }`}>
+                                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                                                isCorrect ? "bg-green-tint text-mastered" : "bg-red-tint text-error"
+                                            }`}>
                                                 {isCorrect ? <IconCheck size={11} stroke={3} /> : <IconX size={11} stroke={3} />}
                                                 {isCorrect ? "Correct" : "Incorrect"}
                                             </span>
@@ -127,80 +135,35 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
 
                                 <div className="space-y-3">
                                     <h2 className="font-display text-[17px] font-semibold text-ink leading-7">
-                                        {answer.type === "mcq" ? mcqQuestionText : answer.type === "fillInBlank" ? fillInBlankText : theoryQuestionText || "Theory Question"}
+                                        {questionText || "Theory Question"}
                                     </h2>
 
                                     {answer.type === "mcq" && (
-                                        <div className="space-y-2">
-                                            {mcqOptions.map((option, idx) => {
-                                                const isUserChoice = String(idx) === answer.userAnswer;
-                                                const isRight = idx === answer.correctIndex;
-                                                return (
-                                                    <div
-                                                        key={idx}
-                                                        className={`rounded-md border p-3 text-sm flex items-center justify-between ${isRight
-                                                                ? "border-mastered bg-green-tint text-ink font-semibold"
-                                                                : isUserChoice
-                                                                    ? "border-error bg-red-tint text-ink"
-                                                                    : "border-rule bg-paper text-ink-muted"
-                                                            }`}
-                                                    >
-                                                        <span><span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>{option}</span>
-                                                        {isRight && <span className="text-xs text-mastered font-semibold">Correct answer</span>}
-                                                        {isUserChoice && !isRight && <span className="text-xs text-error font-semibold">Your selection</span>}
-                                                    </div>
-                                                );
-                                            })}
-                                            {answer.explanation && (
-                                                <div className="text-xs leading-5 text-ink-muted bg-paper p-3 rounded border border-rule">
-                                                    <span className="font-semibold text-accent block mb-1">Explanation</span>
-                                                    {answer.explanation}
-                                                </div>
-                                            )}
-                                        </div>
+                                        <McqAnswerCard
+                                            options={mcqOptions}
+                                            userAnswer={answer.userAnswer}
+                                            correctIndex={answer.correctIndex}
+                                            explanation={answer.explanation}
+                                        />
                                     )}
 
                                     {answer.type === "fillInBlank" && (
-                                        <div className="space-y-3">
-                                            <div className="text-sm font-semibold">
-                                                Your answer: <span className={isCorrect ? "text-mastered" : "text-error"}>{answer.userAnswer || "(None)"}</span>
-                                            </div>
-                                            {!isCorrect && answer.correctAnswer && (
-                                                <div className="text-sm">
-                                                    Expected answer: <span className="text-mastered font-semibold">{answer.correctAnswer}</span>
-                                                </div>
-                                            )}
-                                        </div>
+                                        <FillInBlankAnswerCard
+                                            userAnswer={answer.userAnswer}
+                                            correctAnswer={answer.correctAnswer}
+                                            isCorrect={isCorrect}
+                                        />
                                     )}
 
                                     {isTheory && (
-                                        <div className="space-y-4">
-                                            <div className="space-y-1">
-                                                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Your response</p>
-                                                <p className="text-sm leading-6 text-ink-muted bg-paper p-3 rounded-md border border-rule italic">
-                                                    &ldquo;{answer.userAnswer || "(None)"}&rdquo;
-                                                </p>
-                                            </div>
-                                            {answer.feedback && (
-                                                <div className="space-y-1">
-                                                    <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Grading Feedback</p>
-                                                    <p className="text-sm leading-6 text-ink">{answer.feedback}</p>
-                                                </div>
-                                            )}
-                                            <div className="space-y-2 pt-2">
-                                                <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Rubric Matching</p>
-                                                <GradedMargin
-                                                    matchedKeyPoints={answer.matchedKeyPoints || []}
-                                                    missedKeyPoints={answer.missedKeyPoints || []}
-                                                />
-                                            </div>
-                                            {answer.correctAnswer && (
-                                                <details className="text-xs border border-rule bg-paper p-3 rounded">
-                                                    <summary className="font-semibold text-accent cursor-pointer">View Model Reference Answer</summary>
-                                                    <p className="mt-2 text-sm text-ink-muted leading-6">{answer.correctAnswer}</p>
-                                                </details>
-                                            )}
-                                        </div>
+                                        <TheoryAnswerCard
+                                            userAnswer={answer.userAnswer}
+                                            score={answer.score}
+                                            feedback={answer.feedback}
+                                            matchedKeyPoints={answer.matchedKeyPoints}
+                                            missedKeyPoints={answer.missedKeyPoints}
+                                            correctAnswer={answer.correctAnswer}
+                                        />
                                     )}
                                 </div>
                             </div>

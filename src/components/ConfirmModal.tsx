@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "motion/react";
 
 interface ConfirmModalProps {
@@ -30,15 +30,17 @@ export function ConfirmModal({
     requireInputLabel,
 }: ConfirmModalProps) {
     const [inputValue, setInputValue] = useState("");
+    const onCancelRef = useRef(onCancel);
+    onCancelRef.current = onCancel;
 
     useEffect(() => {
         if (!open) return;
         const handleKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onCancel();
+            if (e.key === "Escape") onCancelRef.current();
         };
         document.addEventListener("keydown", handleKey);
         return () => document.removeEventListener("keydown", handleKey);
-    }, [open, onCancel]);
+    }, [open]);
 
     useEffect(() => {
         if (open) setInputValue("");

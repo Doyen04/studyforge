@@ -2,7 +2,7 @@
 
 import { useEffect, useState, use } from "react";
 import Link from "next/link";
-import { notFound, useRouter } from "next/navigation";
+import { notFound } from "next/navigation";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 import { IconArrowLeft, IconCheck, IconCards, IconRotateDot, IconChevronRight } from "@tabler/icons-react";
@@ -20,7 +20,6 @@ interface FlashcardsStudyPageProps {
 
 export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps) {
     const { id } = use(params);
-    const router = useRouter();
     const [studySet, setStudySet] = useState<StudySetData | null>(null);
     const [loading, setLoading] = useState(true);
     const [dueCards, setDueCards] = useState<FlashcardData[]>([]);
@@ -37,7 +36,6 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
             .then((data) => {
                 if (!data.studySet) {
                     notFound();
-                    return;
                 }
                 setStudySet(data.studySet);
 

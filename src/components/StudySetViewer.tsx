@@ -60,7 +60,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
             }),
         onSuccess: () => {
             toast.success("Study set renamed");
-            studySet.title = newTitle;
             refresh();
         },
     });
