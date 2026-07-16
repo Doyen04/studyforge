@@ -238,15 +238,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     ) : (
                         <div className="space-y-4">
                             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                <div>
-                                    {dueCount > 0 ? (
-                                        <p className="text-xs text-ink-muted mt-0.5">
-                                            You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
-                                        </p>
-                                    ) : (
-                                        <p className="text-xs text-ink-muted mt-0.5">All caught up! No cards currently due for review.</p>
-                                    )}
-                                </div>
                                 <Link
                                     href={`/dashboard/study-sets/${studySet.id}/flashcards`}
                                     className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition cursor-pointer   ${dueCount > 0
