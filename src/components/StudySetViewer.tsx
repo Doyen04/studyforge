@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck, IconRefresh, IconCards, IconTrash } from "@tabler/icons-react";
+import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconCards, IconClipboardCheck, IconRefresh, IconStack2, IconPencilMinus, IconMessage, IconTrash } from "@tabler/icons-react";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
@@ -33,13 +33,23 @@ export interface StudySetData {
     quizzes: QuizSummary[];
 }
 
+type Tab = "flashcards" | "mcq" | "fillInBlank" | "theory" | "quizzes";
+
+const tabs: { id: Tab; label: string; icon: typeof IconStack2 }[] = [
+    { id: "flashcards", label: "Flashcards", icon: IconCards },
+    { id: "mcq", label: "MCQ", icon: IconStack2 },
+    { id: "fillInBlank", label: "Fill-in-blank", icon: IconPencilMinus },
+    { id: "theory", label: "Theory", icon: IconMessage },
+    { id: "quizzes", label: "Quizzes", icon: IconClipboardCheck },
+];
+
 export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; refresh: () => void }) {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"questions" | "quizzes">("questions");
+    const [activeTab, setActiveTab] = useState<Tab>("flashcards");
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [newTitle, setNewTitle] = useState(studySet.title);
-    const questionsRef = useRef<HTMLDivElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
 
     const renameMutation = useMutation({
         mutationFn: (title: string) =>
@@ -121,11 +131,21 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
 
     const clearSelection = useCallback(() => setSelected(new Set()), []);
 
-    const scrollToQuestions = () => {
-        setActiveTab("questions");
+    const setActiveTabAndScroll = (tab: Tab) => {
+        setActiveTab(tab);
         setTimeout(() => {
-            questionsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 100);
+    };
+
+    const countForTab = (tab: Tab): number => {
+        switch (tab) {
+            case "flashcards": return studySet.flashcards.length;
+            case "mcq": return studySet.mcqQuestions.length;
+            case "fillInBlank": return studySet.fillInBlanks.length;
+            case "theory": return studySet.theoryQuestions.length;
+            case "quizzes": return studySet.quizzes.length;
+        }
     };
 
     return (
@@ -162,7 +182,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     {studySet.quizzes.length > 0 ? (
                         <Link
                             href={`/dashboard/quizzes/${studySet.quizzes[0].id}`}
-                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
                         >
                             <IconArrowRight size={14} stroke={2} />
                             Start studying
@@ -170,8 +190,8 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     ) : (
                         <button
                             type="button"
-                            onClick={scrollToQuestions}
-                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer"
+                            onClick={() => setActiveTabAndScroll("flashcards")}
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
                         >
                             <IconArrowRight size={14} stroke={2} />
                             Start studying
@@ -180,7 +200,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     <button
                         type="button"
                         disabled={totalQuizItems === 0}
-                        onClick={scrollToQuestions}
+                        onClick={() => setActiveTabAndScroll("mcq")}
                         className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
                         <IconPlayerPlay size={14} stroke={2} />
@@ -191,180 +211,189 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
 
             {/* Tab bar */}
             <div className="border-b border-rule">
-                <div className="flex gap-0">
-                    <button
-                        onClick={() => setActiveTab("questions")}
-                        className={`relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition cursor-pointer ${
-                            activeTab === "questions" ? "text-accent" : "text-ink-muted hover:text-ink"
-                        }`}
-                    >
-                        <IconStack2 size={16} stroke={1.5} />
-                        Questions
-                        <span className="font-data text-xs px-1.5 py-0.5 rounded-full bg-rule/45 text-ink-muted">
-                            {totalQuizItems}
-                        </span>
-                        {activeTab === "questions" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("quizzes")}
-                        className={`relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition cursor-pointer ${
-                            activeTab === "quizzes" ? "text-accent" : "text-ink-muted hover:text-ink"
-                        }`}
-                    >
-                        <IconClipboardCheck size={16} stroke={1.5} />
-                        Quizzes
-                        <span className="font-data text-xs px-1.5 py-0.5 rounded-full bg-rule/45 text-ink-muted">
-                            {studySet.quizzes.length}
-                        </span>
-                        {activeTab === "quizzes" && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
-                    </button>
+                <div className="flex gap-0 overflow-x-auto">
+                    {tabs.map(({ id, label, icon: Icon }) => {
+                        const count = countForTab(id);
+                        return (
+                            <button
+                                key={id}
+                                onClick={() => setActiveTabAndScroll(id)}
+                                className={`relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
+                                    activeTab === id ? "text-accent" : "text-ink-muted hover:text-ink"
+                                }`}
+                            >
+                                <Icon size={16} stroke={1.5} />
+                                {label}
+                                <span className="font-data text-xs px-1.5 py-0.5 rounded-full bg-rule/45 text-ink-muted">
+                                    {count}
+                                </span>
+                                {activeTab === id && <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent" />}
+                            </button>
+                        );
+                    })}
                 </div>
             </div>
 
-            {/* Questions tab */}
-            {activeTab === "questions" && (
-                <div ref={questionsRef} className="scroll-mt-8">
-                    {totalQuizItems === 0 ? (
+            {/* Tab panels */}
+            <div ref={panelRef} className="scroll-mt-8">
+                {/* Flashcards tab */}
+                {activeTab === "flashcards" && (
+                    studySet.flashcards.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
-                            No quiz questions in this set.
+                            No flashcards in this set.
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div>
+                                    <p className="font-display text-lg font-semibold text-ink">Flashcards</p>
+                                    {dueCount > 0 ? (
+                                        <p className="text-xs text-ink-muted mt-0.5">
+                                            You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
+                                        </p>
+                                    ) : (
+                                        <p className="text-xs text-ink-muted mt-0.5">
+                                            All caught up! No cards currently due for review.
+                                        </p>
+                                    )}
+                                </div>
+                                <Link
+                                    href={`/dashboard/study-sets/${studySet.id}/flashcards`}
+                                    className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition cursor-pointer shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)] ${
+                                        dueCount > 0
+                                            ? "bg-accent text-white hover:bg-accent-hover"
+                                            : "border border-rule bg-card text-ink hover:bg-paper"
+                                    }`}
+                                >
+                                    {dueCount > 0 ? <IconRefresh size={14} stroke={2} /> : <IconCards size={14} stroke={2} />}
+                                    {dueCount > 0 ? `Review Due Cards (${dueCount})` : "Study All Cards"}
+                                </Link>
+                            </div>
+                            <FlashcardViewer cards={studySet.flashcards} />
+                        </div>
+                    )
+                )}
+
+                {/* MCQ tab */}
+                {activeTab === "mcq" && (
+                    studySet.mcqQuestions.length === 0 ? (
+                        <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
+                            No MCQ questions in this set.
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {studySet.mcqQuestions.length > 0 && (
-                                <div>
-                                    <p className="text-[13px] font-semibold text-ink-muted px-1 mb-2">Multiple Choice</p>
-                                    {studySet.mcqQuestions.map((q) => (
-                                        <QuestionCard
-                                            key={q.id}
-                                            id={q.id}
-                                            type="mcq"
-                                            selected={selected.has(q.id)}
-                                            onToggle={toggleSelect}
-                                            refresh={refresh}
-                                        >
-                                            <McqCard
-                                                question={q.question}
-                                                options={q.options}
-                                                correctIndex={q.correctIndex}
-                                                explanation={q.explanation}
-                                            />
-                                        </QuestionCard>
-                                    ))}
-                                </div>
-                            )}
-                            {studySet.fillInBlanks.length > 0 && (
-                                <div className="mt-6">
-                                    <p className="text-[13px] font-semibold text-ink-muted px-1 mb-2">Fill-in-the-Blank</p>
-                                    {studySet.fillInBlanks.map((q) => (
-                                        <QuestionCard
-                                            key={q.id}
-                                            id={q.id}
-                                            type="fillInBlank"
-                                            selected={selected.has(q.id)}
-                                            onToggle={toggleSelect}
-                                            refresh={refresh}
-                                        >
-                                            <FillInBlankCard
-                                                sentence={q.sentence}
-                                                answer={q.answer}
-                                                acceptableAnswers={q.acceptableAnswers}
-                                            />
-                                        </QuestionCard>
-                                    ))}
-                                </div>
-                            )}
-                            {studySet.theoryQuestions.length > 0 && (
-                                <div className="mt-6">
-                                    <p className="text-[13px] font-semibold text-ink-muted px-1 mb-2">Theory</p>
-                                    {studySet.theoryQuestions.map((q) => (
-                                        <QuestionCard
-                                            key={q.id}
-                                            id={q.id}
-                                            type="theory"
-                                            selected={selected.has(q.id)}
-                                            onToggle={toggleSelect}
-                                            refresh={refresh}
-                                        >
-                                            <TheoryCard
-                                                question={q.question}
-                                                referenceAnswer={q.referenceAnswer}
-                                                keyPoints={q.keyPoints}
-                                            />
-                                        </QuestionCard>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Flashcards section (not quiz-able, no checkboxes) */}
-                            {studySet.flashcards.length > 0 && (
-                                <div className="mt-8 pt-6 border-t border-rule space-y-4">
-                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                        <div>
-                                            <p className="font-display text-lg font-semibold text-ink">Flashcards</p>
-                                            {dueCount > 0 ? (
-                                                <p className="text-xs text-ink-muted mt-0.5">
-                                                    You have <span className="font-bold text-accent">{dueCount}</span> card{dueCount === 1 ? "" : "s"} due for spaced-repetition review.
-                                                </p>
-                                            ) : (
-                                                <p className="text-xs text-ink-muted mt-0.5">
-                                                    All caught up! No cards currently due for review.
-                                                </p>
-                                            )}
-                                        </div>
-                                        <Link
-                                            href={`/dashboard/study-sets/${studySet.id}/flashcards`}
-                                            className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold shadow-sm transition cursor-pointer ${
-                                                dueCount > 0
-                                                    ? "bg-accent text-white hover:bg-accent-hover"
-                                                    : "border border-rule bg-card text-ink hover:bg-paper"
-                                            }`}
-                                        >
-                                            {dueCount > 0 ? <IconRefresh size={14} stroke={2} /> : <IconCards size={14} stroke={2} />}
-                                            {dueCount > 0 ? `Review Due Cards (${dueCount})` : "Study All Cards"}
-                                        </Link>
-                                    </div>
-                                    <FlashcardViewer cards={studySet.flashcards} />
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Sticky selection bar */}
-                    {selected.size > 0 && (
-                        <div className="sticky bottom-0 z-20 -mx-6 mt-6 border-t border-rule bg-card px-6 py-3 shadow-[0_-4px_12px_rgba(32,28,26,.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,.3)]">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-sm font-semibold text-ink">{selected.size} question{selected.size !== 1 ? "s" : ""} selected</span>
-                                    <button
-                                        type="button"
-                                        onClick={clearSelection}
-                                        className="text-xs font-semibold text-ink-muted hover:text-ink transition cursor-pointer"
-                                    >
-                                        Clear selection
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={handleCreateQuiz}
-                                        disabled={createQuizMutation.isPending}
-                                        className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {createQuizMutation.isPending ? "Creating..." : `Create Quiz (${selected.size} questions)`}
-                                    </button>
-                                </div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Multiple Choice</p>
+                                <button
+                                    type="button"
+                                    onClick={selectAll}
+                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                >
+                                    Select all
+                                </button>
                             </div>
+                            {studySet.mcqQuestions.map((q) => (
+                                <QuestionCard
+                                    key={q.id}
+                                    id={q.id}
+                                    type="mcq"
+                                    selected={selected.has(q.id)}
+                                    onToggle={toggleSelect}
+                                    refresh={refresh}
+                                >
+                                    <McqCard
+                                        question={q.question}
+                                        options={q.options}
+                                        correctIndex={q.correctIndex}
+                                        explanation={q.explanation}
+                                    />
+                                </QuestionCard>
+                            ))}
                         </div>
-                    )}
-                </div>
-            )}
+                    )
+                )}
 
-            {/* Quizzes tab */}
-            {activeTab === "quizzes" && (
-                <div>
-                    {studySet.quizzes.length === 0 ? (
+                {/* Fill-in-blank tab */}
+                {activeTab === "fillInBlank" && (
+                    studySet.fillInBlanks.length === 0 ? (
                         <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
-                            No quizzes yet. Select questions and create one.
+                            No fill-in-blank questions in this set.
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Fill-in-the-Blank</p>
+                                <button
+                                    type="button"
+                                    onClick={selectAll}
+                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                >
+                                    Select all
+                                </button>
+                            </div>
+                            {studySet.fillInBlanks.map((q) => (
+                                <QuestionCard
+                                    key={q.id}
+                                    id={q.id}
+                                    type="fillInBlank"
+                                    selected={selected.has(q.id)}
+                                    onToggle={toggleSelect}
+                                    refresh={refresh}
+                                >
+                                    <FillInBlankCard
+                                        sentence={q.sentence}
+                                        answer={q.answer}
+                                        acceptableAnswers={q.acceptableAnswers}
+                                    />
+                                </QuestionCard>
+                            ))}
+                        </div>
+                    )
+                )}
+
+                {/* Theory tab */}
+                {activeTab === "theory" && (
+                    studySet.theoryQuestions.length === 0 ? (
+                        <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
+                            No theory questions in this set.
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <p className="text-xs font-semibold uppercase tracking-[0.07em] text-accent">Theory</p>
+                                <button
+                                    type="button"
+                                    onClick={selectAll}
+                                    className="text-xs font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                >
+                                    Select all
+                                </button>
+                            </div>
+                            {studySet.theoryQuestions.map((q) => (
+                                <QuestionCard
+                                    key={q.id}
+                                    id={q.id}
+                                    type="theory"
+                                    selected={selected.has(q.id)}
+                                    onToggle={toggleSelect}
+                                    refresh={refresh}
+                                >
+                                    <TheoryCard
+                                        question={q.question}
+                                        referenceAnswer={q.referenceAnswer}
+                                        keyPoints={q.keyPoints}
+                                    />
+                                </QuestionCard>
+                            ))}
+                        </div>
+                    )
+                )}
+
+                {/* Quizzes tab */}
+                {activeTab === "quizzes" && (
+                    studySet.quizzes.length === 0 ? (
+                        <div className="rounded-md border border-dashed border-rule bg-card p-8 text-center text-sm text-ink-muted">
+                            No quizzes yet. Select questions from MCQs, Fill-in-blank, or Theory tabs and create one.
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -376,7 +405,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                             ? `/dashboard/quizzes/${quiz.id}/results/${quiz.lastAttempt.id}`
                                             : `/dashboard/quizzes/${quiz.id}`
                                     }
-                                    className="flex items-center justify-between rounded-md border border-rule bg-card px-5 py-4 transition hover:bg-paper"
+                                    className="flex items-center justify-between rounded-md border border-rule bg-card px-5 py-4 transition hover:bg-paper shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
                                 >
                                     <div>
                                         <p className="font-display text-[17px] font-semibold text-ink">{quiz.title}</p>
@@ -401,7 +430,36 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 </Link>
                             ))}
                         </div>
-                    )}
+                    )
+                )}
+            </div>
+
+            {/* Sticky selection bar (visible in MCQ/FIB/Theory tabs when items selected) */}
+            {selected.size > 0 && activeTab !== "flashcards" && activeTab !== "quizzes" && (
+                <div className="sticky bottom-0 z-20 -mx-6 mt-6 border-t border-rule bg-card px-6 py-3 shadow-[0_-4px_12px_rgba(32,28,26,.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,.3)]">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <span className="text-sm font-semibold text-ink">{selected.size} question{selected.size !== 1 ? "s" : ""} selected</span>
+                            <button
+                                type="button"
+                                onClick={clearSelection}
+                                className="text-xs font-semibold text-ink-muted hover:text-ink transition cursor-pointer"
+                            >
+                                Clear selection
+                            </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={handleCreateQuiz}
+                                disabled={createQuizMutation.isPending}
+                                className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                            >
+                                <IconPlayerPlay size={14} />
+                                {createQuizMutation.isPending ? "Creating..." : `Create Quiz (${selected.size} questions)`}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
@@ -438,7 +496,7 @@ function QuestionCard({
 
     return (
         <div className={`relative rounded-md border transition ${
-            selected ? "border-accent bg-wine-tint/30" : "border-rule bg-card"
+            selected ? "border-accent bg-wine-tint/30 shadow-[0_0_0_1px_var(--color-accent)]" : "border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
         }`}>
             <button
                 type="button"
