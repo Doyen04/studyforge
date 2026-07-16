@@ -9,8 +9,11 @@ export default function StudySetPage({ params }: { params: Promise<{ id: string 
     const [studySet, setStudySet] = useState<StudySetData | null>(null);
     const [loading, setLoading] = useState(true);
     const [notFoundError, setNotFoundError] = useState(false);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const refresh = () => setRefreshTrigger((prev) => prev + 1);
 
     useEffect(() => {
+        setLoading(true);
         fetch(`/api/study-sets/${id}`)
             .then((res) => res.json())
             .then((data) => {
@@ -19,7 +22,7 @@ export default function StudySetPage({ params }: { params: Promise<{ id: string 
             })
             .catch(() => { toast.error("Failed to load study set."); })
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, refreshTrigger]);
 
     if (loading) {
         return (
@@ -46,7 +49,7 @@ export default function StudySetPage({ params }: { params: Promise<{ id: string 
     return (
         <main className="min-h-screen bg-paper">
             <div className="mx-auto max-w-5xl px-6 py-8 lg:py-10">
-                <StudySetViewer studySet={studySet} />
+                <StudySetViewer studySet={studySet} refresh={refresh} />
             </div>
         </main>
     );

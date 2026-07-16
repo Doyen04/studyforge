@@ -4,7 +4,7 @@ import { useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck, IconRefresh, IconCards } from "@tabler/icons-react";
+import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck, IconRefresh, IconCards, IconTrash } from "@tabler/icons-react";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
@@ -31,7 +31,7 @@ export interface StudySetData {
     quizzes: QuizSummary[];
 }
 
-export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
+export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; refresh: () => void }) {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<"questions" | "quizzes">("questions");
     const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -237,8 +237,10 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                                         <QuestionCard
                                             key={q.id}
                                             id={q.id}
+                                            type="mcq"
                                             selected={selected.has(q.id)}
                                             onToggle={toggleSelect}
+                                            refresh={refresh}
                                         >
                                             <McqCard
                                                 question={q.question}
@@ -257,8 +259,10 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                                         <QuestionCard
                                             key={q.id}
                                             id={q.id}
+                                            type="fillInBlank"
                                             selected={selected.has(q.id)}
                                             onToggle={toggleSelect}
+                                            refresh={refresh}
                                         >
                                             <FillInBlankCard
                                                 sentence={q.sentence}
@@ -276,8 +280,10 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                                         <QuestionCard
                                             key={q.id}
                                             id={q.id}
+                                            type="theory"
                                             selected={selected.has(q.id)}
                                             onToggle={toggleSelect}
+                                            refresh={refresh}
                                         >
                                             <TheoryCard
                                                 question={q.question}
@@ -405,15 +411,31 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
 
 function QuestionCard({
     id,
+    type,
     selected,
     onToggle,
+    refresh,
     children,
 }: {
     id: string;
+    type: QuestionType;
     selected: boolean;
     onToggle: (id: string) => void;
+    refresh: () => void;
     children: React.ReactNode;
 }) {
+    const handleDelete = async () => {
+        if (!confirm("Are you sure you want to delete this question?")) return;
+        try {
+            const res = await fetch(`/api/questions/${type}/${id}`, { method: "DELETE" });
+            if (!res.ok) throw new Error();
+            toast.success("Question deleted");
+            refresh();
+        } catch {
+            toast.error("Failed to delete question");
+        }
+    };
+
     return (
         <div className={`relative rounded-md border transition ${
             selected ? "border-accent bg-wine-tint/30" : "border-rule bg-card"
@@ -430,7 +452,15 @@ function QuestionCard({
             >
                 {selected && <IconCheck size={12} stroke={3} />}
             </button>
-            <div className="pl-10 pr-4 py-3">
+            <button
+                type="button"
+                onClick={handleDelete}
+                className="absolute top-3 right-3 z-10 p-1 rounded hover:bg-paper text-ink-muted hover:text-error transition cursor-pointer"
+                aria-label="Delete question"
+            >
+                <IconTrash size={16} />
+            </button>
+            <div className="pl-10 pr-10 py-3">
                 {children}
             </div>
         </div>
