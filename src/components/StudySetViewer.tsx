@@ -3,12 +3,14 @@
 import { useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { IconCheck, IconArrowLeft, IconArrowRight, IconPlayerPlay, IconStack2, IconClipboardCheck, IconRefresh, IconCards, IconTrash } from "@tabler/icons-react";
 import { FlashcardViewer } from "./FlashcardViewer";
 import { McqCard } from "./McqCard";
 import { FillInBlankCard } from "./FillInBlankCard";
 import { TheoryCard } from "./TheoryCard";
+import { fetchJson } from "@/lib/queries";
 import type { FlashcardData, McqQuestionData, FillInBlankData, TheoryQuestionData, QuestionType } from "@/types/domain";
 
 interface QuizSummary {
@@ -35,30 +37,58 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<"questions" | "quizzes">("questions");
     const [selected, setSelected] = useState<Set<string>>(new Set());
-    const [creating, setCreating] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [newTitle, setNewTitle] = useState(studySet.title);
     const questionsRef = useRef<HTMLDivElement>(null);
 
-    const handleRename = async () => {
+    const renameMutation = useMutation({
+        mutationFn: (title: string) =>
+            fetchJson(`/api/study-sets/${studySet.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title }),
+            }),
+        onSuccess: () => {
+            toast.success("Study set renamed");
+            studySet.title = newTitle;
+            refresh();
+        },
+    });
+
+    const handleRename = () => {
         if (!newTitle.trim() || newTitle === studySet.title) {
             setIsEditingTitle(false);
             return;
         }
-        try {
-            const res = await fetch(`/api/study-sets/${studySet.id}`, {
-                method: "PATCH",
+        renameMutation.mutate(newTitle);
+        setIsEditingTitle(false);
+    };
+
+    const createQuizMutation = useMutation({
+        mutationFn: (questionRefs: { type: QuestionType; id: string }[]) =>
+            fetchJson<{ quiz: { id: string } }>("/api/quizzes", {
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ title: newTitle }),
-            });
-            if (!res.ok) throw new Error();
-            toast.success("Study set renamed");
-            studySet.title = newTitle; // Update local state
-        } catch {
-            toast.error("Failed to rename");
-        } finally {
-            setIsEditingTitle(false);
-        }
+                body: JSON.stringify({
+                    studySetId: studySet.id,
+                    title: `${studySet.title} Quiz`,
+                    questionRefs,
+                }),
+            }),
+        onSuccess: (data) => {
+            toast.success("Quiz created");
+            setSelected(new Set());
+            router.push(`/dashboard/quizzes/${data.quiz.id}`);
+        },
+    });
+
+    const handleCreateQuiz = () => {
+        if (selected.size === 0) return;
+        const questionRefs: { type: QuestionType; id: string }[] = [];
+        studySet.mcqQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "mcq", id: q.id }); });
+        studySet.fillInBlanks.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "fillInBlank", id: q.id }); });
+        studySet.theoryQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "theory", id: q.id }); });
+        createQuizMutation.mutate(questionRefs);
     };
 
     const now = new Date();
@@ -90,36 +120,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
     }, [studySet.mcqQuestions, studySet.fillInBlanks, studySet.theoryQuestions]);
 
     const clearSelection = useCallback(() => setSelected(new Set()), []);
-
-    const handleCreateQuiz = async () => {
-        if (selected.size === 0) return;
-        setCreating(true);
-        const questionRefs: { type: QuestionType; id: string }[] = [];
-        studySet.mcqQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "mcq", id: q.id }); });
-        studySet.fillInBlanks.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "fillInBlank", id: q.id }); });
-        studySet.theoryQuestions.forEach((q) => { if (selected.has(q.id)) questionRefs.push({ type: "theory", id: q.id }); });
-
-        try {
-            const res = await fetch("/api/quizzes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    studySetId: studySet.id,
-                    title: `${studySet.title} Quiz`,
-                    questionRefs,
-                }),
-            });
-            if (!res.ok) throw new Error("Failed to create quiz");
-            const data = await res.json();
-            toast.success("Quiz created");
-            setSelected(new Set());
-            router.push(`/dashboard/quizzes/${data.quiz.id}`);
-        } catch {
-            toast.error("Failed to create quiz");
-        } finally {
-            setCreating(false);
-        }
-    };
 
     const scrollToQuestions = () => {
         setActiveTab("questions");
@@ -347,11 +347,10 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                     <button
                                         type="button"
                                         onClick={handleCreateQuiz}
-                                        disabled={creating}
+                                        disabled={createQuizMutation.isPending}
                                         className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                                     >
-                                        <IconPlayerPlay size={14} stroke={2} />
-                                        {creating ? "Creating..." : `Create Quiz (${selected.size} questions)`}
+                                        {createQuizMutation.isPending ? "Creating..." : `Create Quiz (${selected.size} questions)`}
                                     </button>
                                 </div>
                             </div>
@@ -424,16 +423,17 @@ function QuestionCard({
     refresh: () => void;
     children: React.ReactNode;
 }) {
-    const handleDelete = async () => {
-        if (!confirm("Are you sure you want to delete this question?")) return;
-        try {
-            const res = await fetch(`/api/questions/${type}/${id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error();
+    const deleteMutation = useMutation({
+        mutationFn: () => fetchJson(`/api/questions/${type}/${id}`, { method: "DELETE" }),
+        onSuccess: () => {
             toast.success("Question deleted");
             refresh();
-        } catch {
-            toast.error("Failed to delete question");
-        }
+        },
+    });
+
+    const handleDelete = () => {
+        if (!confirm("Are you sure you want to delete this question?")) return;
+        deleteMutation.mutate();
     };
 
     return (

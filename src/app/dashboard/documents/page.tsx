@@ -50,7 +50,6 @@ export default function DocumentsPage() {
             queryClient.invalidateQueries({ queryKey });
             toast.success("Document deleted");
         },
-        onError: () => toast.error("Failed to delete document"),
     });
 
     const handleUploadClick = () => fileInputRef.current?.click();

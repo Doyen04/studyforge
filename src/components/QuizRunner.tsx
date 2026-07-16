@@ -2,7 +2,9 @@
 
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import { IconArrowLeft, IconArrowRight, IconCheck } from "@tabler/icons-react";
+import { fetchJson } from "@/lib/queries";
 import type { QuizQuestion } from "@/types/domain";
 
 export function QuizRunner({
@@ -17,7 +19,24 @@ export function QuizRunner({
     const router = useRouter();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const submitMutation = useMutation({
+        mutationFn: () =>
+            fetchJson<{ attemptId: string }>(`/api/quizzes/${quizId}/attempts`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    answers: questions.map((question) => ({
+                        type: question.type,
+                        id: question.id,
+                        userAnswer: answers[question.id] ?? "",
+                    })),
+                }),
+            }),
+        onSuccess: (data) => {
+            router.push(`/dashboard/quizzes/${quizId}/results/${data.attemptId}`);
+        },
+    });
 
     const currentQuestion = questions[currentIndex];
     const isLastQuestion = currentIndex === questions.length - 1;
@@ -47,7 +66,7 @@ export function QuizRunner({
         if (!isLastQuestion) setCurrentIndex((i) => i + 1);
     }, [isLastQuestion]);
 
-    async function submitQuiz() {
+    function submitQuiz() {
         const unansweredCount = questions.length - answeredCount;
         if (unansweredCount > 0) {
             const proceed = window.confirm(
@@ -55,27 +74,7 @@ export function QuizRunner({
             );
             if (!proceed) return;
         }
-
-        setIsSubmitting(true);
-        try {
-            const response = await fetch(`/api/quizzes/${quizId}/attempts`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    answers: questions.map((question) => ({
-                        type: question.type,
-                        id: question.id,
-                        userAnswer: answers[question.id] ?? "",
-                    })),
-                }),
-            });
-            const json = (await response.json()) as { attemptId?: string; error?: string };
-            if (!response.ok || !json.attemptId) throw new Error(json.error || "Could not submit quiz.");
-            router.push(`/dashboard/quizzes/${quizId}/results/${json.attemptId}`);
-        } catch (error) {
-            alert(error instanceof Error ? error.message : "Submission failed.");
-            setIsSubmitting(false);
-        }
+        submitMutation.mutate();
     }
 
     if (!currentQuestion) {
@@ -202,10 +201,10 @@ export function QuizRunner({
                             if (isLastQuestion) void submitQuiz();
                             else goNext();
                         }}
-                        disabled={isSubmitting}
+                        disabled={submitMutation.isPending}
                         className="flex items-center gap-1.5 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
-                        {isSubmitting ? (
+                        {submitMutation.isPending ? (
                             "Submitting..."
                         ) : isLastQuestion ? (
                             <>

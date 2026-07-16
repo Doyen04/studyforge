@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { IconPlus } from "@tabler/icons-react";
 
@@ -15,55 +16,10 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
     const [error, setError] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleDrag = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true);
-        } else if (e.type === "dragleave") {
-            setDragActive(false);
-        }
-    };
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setDragActive(false);
-        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            void startUpload(e.dataTransfer.files[0]);
-        }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            void startUpload(e.target.files[0]);
-        }
-    };
-
-    const handleButtonClick = () => {
-        fileInputRef.current?.click();
-    };
-
-    const startUpload = async (file: File) => {
-        const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
-        if (![".docx", ".pptx", ".pdf"].includes(ext)) {
-            const msg = "That's not a format StudyForge reads yet. Upload a .pptx, .docx, or .pdf.";
-            setError(msg);
-            toast.error(msg);
-            setUploadStage("idle");
-            return;
-        }
-
-        setError(null);
-        setUploadStage("uploading");
-        setUploadProgress(0);
-
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            const xhr = new XMLHttpRequest();
-            const uploadPromise = new Promise<{ documentId: string; error?: string }>((resolve, reject) => {
+    const uploadMutation = useMutation({
+        mutationFn: (file: File) => {
+            return new Promise<{ documentId: string; error?: string }>((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
                 xhr.open("POST", "/api/documents");
                 xhr.responseType = "json";
 
@@ -83,23 +39,66 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                 };
 
                 xhr.onerror = () => reject(new Error("Network upload failed. Check your connection."));
+                const formData = new FormData();
+                formData.append("file", file);
                 xhr.send(formData);
             });
-
-            const response = await uploadPromise;
+        },
+        onSuccess: async (data) => {
             setUploadStage("processing");
-
-            // Brief delay so user sees processing state
             await new Promise((r) => setTimeout(r, 800));
-
-            onUploadSuccess(response.documentId);
-        } catch (err) {
+            onUploadSuccess(data.documentId);
+        },
+        onError: (err) => {
             const msg = err instanceof Error ? err.message : "Failed to parse file.";
             setError(msg);
-            toast.error(msg);
             setUploadStage("idle");
             setUploadProgress(0);
+        },
+    });
+
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+            setDragActive(true);
+        } else if (e.type === "dragleave") {
+            setDragActive(false);
         }
+    };
+
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            startUpload(e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            startUpload(e.target.files[0]);
+        }
+    };
+
+    const handleButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const startUpload = (file: File) => {
+        const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+        if (![".docx", ".pptx", ".pdf"].includes(ext)) {
+            const msg = "That's not a format StudyForge reads yet. Upload a .pptx, .docx, or .pdf.";
+            setError(msg);
+            toast.error(msg);
+            return;
+        }
+
+        setError(null);
+        setUploadStage("uploading");
+        setUploadProgress(0);
+        uploadMutation.mutate(file);
     };
 
     return (

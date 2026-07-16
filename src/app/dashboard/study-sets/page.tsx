@@ -51,7 +51,6 @@ function StudySetsIndexContent() {
             queryClient.invalidateQueries({ queryKey });
             toast.success("Study set deleted");
         },
-        onError: () => toast.error("Failed to delete study set"),
     });
 
     return (

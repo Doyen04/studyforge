@@ -47,7 +47,6 @@ export default function QuizzesIndex() {
             queryClient.invalidateQueries({ queryKey });
             toast.success("Quiz deleted");
         },
-        onError: () => toast.error("Failed to delete quiz"),
     });
 
     const handleDelete = (id: string) => {

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { fetchJson } from "@/lib/queries";
 
 const defaultCounts = {
     flashcards: 15,
@@ -46,44 +48,31 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
         return () => clearInterval(interval);
     }, [isGenerating]);
 
-    const handleGenerate = async () => {
-        setError(null);
-        setIsGenerating(true);
-        setStatusIndex(0);
-
-        try {
-            const response = await fetch("/api/study-sets", {
+    const mutation = useMutation({
+        mutationFn: () =>
+            fetchJson<{ studySet: { id: string } }>("/api/study-sets", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    documentId,
-                    counts,
-                }),
-            });
-
-            let data: { studySet?: { id: string }; error?: string };
-            try {
-                data = await response.json();
-            } catch {
-                throw new Error("Failed to generate study set.");
-            }
-
-            if (!response.ok || !data.studySet?.id) {
-                throw new Error(data.error || "Failed to generate study set.");
-            }
-
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ documentId, counts }),
+            }),
+        onSuccess: (data) => {
             if (!isMounted.current) return;
             toast.success("Study set generated successfully!");
             onGenerationSuccess(data.studySet.id);
-        } catch (err) {
+        },
+        onError: (err) => {
             if (!isMounted.current) return;
             const msg = err instanceof Error ? err.message : "Failed to generate study set.";
             setError(msg);
-            toast.error(msg);
             setIsGenerating(false);
-        }
+        },
+    });
+
+    const handleGenerate = () => {
+        setError(null);
+        setIsGenerating(true);
+        setStatusIndex(0);
+        mutation.mutate();
     };
 
     return (
