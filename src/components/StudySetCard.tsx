@@ -44,7 +44,7 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
                                     <button
                                         type="button"
                                         onClick={() => setMenuOpen((prev) => !prev)}
-                                        className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
+                                        className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
                                         aria-label="More options"
                                     >
                                         ⋯
@@ -52,7 +52,7 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
                                     {menuOpen && (
                                         <>
                                             <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                                            <div className="absolute right-0 top-9 z-20 min-w-[140px] overflow-hidden rounded-md border border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                                            <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card  ">
                                                 <button
                                                     type="button"
                                                     onClick={() => {

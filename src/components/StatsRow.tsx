@@ -13,8 +13,8 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
             caption: stats.documentsWithoutStudySet
                 ? `${stats.documentsWithoutStudySet} document${stats.documentsWithoutStudySet > 1 ? "s" : ""} not yet processed`
                 : stats.studySets > 0
-                ? "All documents processed"
-                : "No documents yet",
+                    ? "All documents processed"
+                    : "No documents yet",
             icon: <IconStack2 size={16} stroke={2} />,
         },
         {
@@ -56,7 +56,7 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
                         key={item.label}
                         whileHover={{ y: -3 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="rounded-md border border-rule bg-card p-5 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
+                        className="rounded-md border border-rule bg-card p-5  "
                     >
                         <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-md ${bg} ${text}`}>
                             {item.icon}

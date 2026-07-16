@@ -37,7 +37,7 @@ export function HowItWorks() {
                             viewport={{ once: true, margin: "-60px" }}
                             transition={{ duration: 0.5, delay: i * 0.15, ease: "easeOut" }}
                             whileHover={{ y: -3 }}
-                            className="text-center rounded-xl bg-card p-8 border border-rule shadow-sm transition-shadow hover:shadow-md"
+                            className="text-center rounded-xl bg-card p-8 border border-rule  transition- "
                         >
                             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10 text-accent font-semibold text-lg">
                                 {step.number}

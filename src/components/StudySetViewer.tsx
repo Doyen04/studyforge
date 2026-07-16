@@ -182,7 +182,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                     {studySet.quizzes.length > 0 ? (
                         <Link
                             href={`/dashboard/quizzes/${studySet.quizzes[0].id}`}
-                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper  "
                         >
                             <IconArrowRight size={14} stroke={2} />
                             Start studying
@@ -191,7 +191,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         <button
                             type="button"
                             onClick={() => setActiveTabAndScroll("flashcards")}
-                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
+                            className="flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper cursor-pointer  "
                         >
                             <IconArrowRight size={14} stroke={2} />
                             Start studying
@@ -218,9 +218,8 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                             <button
                                 key={id}
                                 onClick={() => setActiveTabAndScroll(id)}
-                                className={`relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition cursor-pointer whitespace-nowrap ${
-                                    activeTab === id ? "text-accent" : "text-ink-muted hover:text-ink"
-                                }`}
+                                className={`relative flex items-center gap-2 px-5 py-3 text-sm font-semibold transition cursor-pointer whitespace-nowrap ${activeTab === id ? "text-accent" : "text-ink-muted hover:text-ink"
+                                    }`}
                             >
                                 <Icon size={16} stroke={1.5} />
                                 {label}
@@ -259,11 +258,10 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 </div>
                                 <Link
                                     href={`/dashboard/study-sets/${studySet.id}/flashcards`}
-                                    className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition cursor-pointer shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)] ${
-                                        dueCount > 0
+                                    className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition cursor-pointer   ${dueCount > 0
                                             ? "bg-accent text-white hover:bg-accent-hover"
                                             : "border border-rule bg-card text-ink hover:bg-paper"
-                                    }`}
+                                        }`}
                                 >
                                     {dueCount > 0 ? <IconRefresh size={14} stroke={2} /> : <IconCards size={14} stroke={2} />}
                                     {dueCount > 0 ? `Review Due Cards (${dueCount})` : "Study All Cards"}
@@ -405,7 +403,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                             ? `/dashboard/quizzes/${quiz.id}/results/${quiz.lastAttempt.id}`
                                             : `/dashboard/quizzes/${quiz.id}`
                                     }
-                                    className="flex items-center justify-between rounded-md border border-rule bg-card px-5 py-4 transition hover:bg-paper shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
+                                    className="flex items-center justify-between rounded-md border border-rule bg-card px-5 py-4 transition hover:bg-paper  "
                                 >
                                     <div>
                                         <p className="font-display text-[17px] font-semibold text-ink">{quiz.title}</p>
@@ -416,9 +414,8 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                     <div className="flex items-center gap-3">
                                         {quiz.lastAttempt && (
                                             <span
-                                                className={`font-data text-lg font-semibold ${
-                                                    quiz.lastAttempt.score >= 70 ? "text-mastered" : "text-review"
-                                                }`}
+                                                className={`font-data text-lg font-semibold ${quiz.lastAttempt.score >= 70 ? "text-mastered" : "text-review"
+                                                    }`}
                                             >
                                                 {quiz.lastAttempt.score}%
                                             </span>
@@ -436,7 +433,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
 
             {/* Sticky selection bar (visible in MCQ/FIB/Theory tabs when items selected) */}
             {selected.size > 0 && activeTab !== "flashcards" && activeTab !== "quizzes" && (
-                <div className="sticky bottom-0 z-20 -mx-6 mt-6 border-t border-rule bg-card px-6 py-3 shadow-[0_-4px_12px_rgba(32,28,26,.08)] dark:shadow-[0_-4px_12px_rgba(0,0,0,.3)]">
+                <div className="sticky bottom-0 z-20 -mx-6 mt-6 border-t border-rule bg-card px-6 py-3  ">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <span className="text-sm font-semibold text-ink">{selected.size} question{selected.size !== 1 ? "s" : ""} selected</span>
@@ -495,17 +492,15 @@ function QuestionCard({
     };
 
     return (
-        <div className={`relative rounded-md border transition ${
-            selected ? "border-accent bg-wine-tint/30 shadow-[0_0_0_1px_var(--color-accent)]" : "border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]"
-        }`}>
+        <div className={`relative rounded-md border transition ${selected ? "border-accent bg-wine-tint/30 " : "border-rule bg-card  "
+            }`}>
             <button
                 type="button"
                 onClick={() => onToggle(id)}
-                className={`absolute top-3 left-3 z-10 flex h-5 w-5 items-center justify-center rounded border transition cursor-pointer ${
-                    selected
+                className={`absolute top-3 left-3 z-10 flex h-5 w-5 items-center justify-center rounded border transition cursor-pointer ${selected
                         ? "border-accent bg-accent text-white"
                         : "border-rule bg-card text-transparent hover:border-ink-muted"
-                }`}
+                    }`}
                 aria-label={selected ? "Deselect question" : "Select question"}
             >
                 {selected && <IconCheck size={12} stroke={3} />}

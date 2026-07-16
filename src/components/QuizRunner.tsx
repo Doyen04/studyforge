@@ -89,7 +89,7 @@ export function QuizRunner({
         <main className="min-h-screen bg-paper">
             <div className="mx-auto max-w-2xl px-6 py-8 lg:py-10 space-y-6">
                 {/* Progress card */}
-                <div className="rounded-md border border-rule bg-card p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <div className="rounded-md border border-rule bg-card p-6  ">
                     <div className="flex items-center justify-between">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">
                             {quizTitle || "Taking Quiz"}
@@ -109,7 +109,7 @@ export function QuizRunner({
                 </div>
 
                 {/* Question area */}
-                <div className="rounded-md border border-rule bg-card p-6 md:p-8 space-y-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <div className="rounded-md border border-rule bg-card p-6 md:p-8 space-y-6  ">
                     <div className="flex items-center justify-between border-b border-rule pb-3">
                         <span className="font-data text-xs text-ink-muted">Question {currentIndex + 1} of {questions.length}</span>
                         <span className="rounded-full bg-wine-tint px-2.5 py-1 text-[11.5px] font-semibold text-accent capitalize">
@@ -121,8 +121,8 @@ export function QuizRunner({
                         {currentQuestion.type === "mcq"
                             ? currentQuestion.question
                             : currentQuestion.type === "fillInBlank"
-                            ? currentQuestion.sentence
-                            : currentQuestion.question}
+                                ? currentQuestion.sentence
+                                : currentQuestion.question}
                     </h2>
 
                     {currentQuestion.type === "mcq" && (
@@ -132,11 +132,10 @@ export function QuizRunner({
                                 return (
                                     <label
                                         key={idx}
-                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all ${
-                                            isChecked
+                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all ${isChecked
                                                 ? "border-accent bg-wine-tint/30 font-semibold text-ink"
                                                 : "border-rule bg-card hover:bg-paper text-ink"
-                                        }`}
+                                            }`}
                                     >
                                         <input
                                             type="radio"

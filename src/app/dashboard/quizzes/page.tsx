@@ -93,7 +93,7 @@ export default function QuizzesIndex() {
                             const lastAttempt = q.attempts[0] ?? null;
                             const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
                             let questionCount = 0;
-                            try { questionCount = JSON.parse(q.questionRefs ?? "[]").length; } catch {}
+                            try { questionCount = JSON.parse(q.questionRefs ?? "[]").length; } catch { }
                             return (
                                 <div key={q.id} className="relative group">
                                     <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
@@ -106,14 +106,14 @@ export default function QuizzesIndex() {
                                                     onClick={() => setMenuOpenId(menuOpenId === q.id ? null : q.id)}
                                                     disabled={deleting === q.id}
                                                     aria-label="More options"
-                                                    className="flex h-[26px] w-[26px] items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer transition disabled:opacity-50"
+                                                    className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer transition disabled:opacity-50"
                                                 >
                                                     ⋯
                                                 </button>
                                                 {menuOpenId === q.id && (
                                                     <>
                                                         <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
-                                                        <div className="absolute right-0 top-9 z-20 min-w-[140px] overflow-hidden rounded-md border border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                                                        <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card  ">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => { setMenuOpenId(null); setConfirmDeleteId(q.id); }}

@@ -1,8 +1,7 @@
 "use client";
 
-import { useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { IconSearch, IconUpload } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -11,6 +10,7 @@ import { GenerateOptionsPanel } from "@/components/GenerateOptionsPanel";
 import type { DocumentItem } from "@/types/page";
 import { queryKeys, fetchJson } from "@/lib/queries";
 import Link from "next/link";
+import { useRef, useState } from "react";
 
 const typeIcons: Record<string, string> = {
     pdf: "PDF",
@@ -124,98 +124,98 @@ export default function DocumentsPage() {
                     </div>
                 </div>
 
-                    {isLoading ? (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
-                            {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
-                        </div>
-                    ) : documents.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
-                            <p className="text-sm text-ink-muted max-w-xs">
-                                {search
-                                    ? "No documents found matching your search."
-                                    : "No documents uploaded yet. Click Upload to get started."}
-                            </p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                {documents.map((doc) => {
-                                    const fileType = getFileType(doc.filename);
-                                    return (
-                                        <div
-                                            key={doc.id}
-                                            className="relative group cursor-pointer"
-                                            onClick={() => setGeneratingDocId(doc.id)}
-                                            role="button"
-                                            tabIndex={0}
-                                            onKeyDown={(e) => e.key === "Enter" && setGeneratingDocId(doc.id)}
-                                        >
-                                            <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
-                                            <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
-                                                <div className="flex items-start justify-between gap-3">
-                                                    <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">{fileType}</span>
-                                                    <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setMenuOpenId(menuOpenId === doc.id ? null : doc.id)}
-                                                            className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
-                                                            aria-label="More options"
-                                                        >
-                                                            ⋯
-                                                        </button>
-                                                        {menuOpenId === doc.id && (
-                                                            <>
-                                                                <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
-                                                                <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => { setMenuOpenId(null); setConfirmDeleteId(doc.id); }}
-                                                                        className="w-full cursor-pointer border-none bg-transparent px-3.5 py-2 text-left text-[13.5px] font-sans text-error hover:bg-paper"
-                                                                    >
-                                                                        Delete
-                                                                    </button>
-                                                                </div>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                                <h3 className="font-display text-[17px] font-semibold text-ink truncate mt-1">{doc.filename}</h3>
-                                                <div className="mt-2 flex items-center justify-between gap-4">
-                                                    <p className="text-[12.5px] text-ink-muted">
-                                                        {doc.wordCount?.toLocaleString() ?? 0} words · {doc._count?.studySets ?? 0} study set{(doc._count?.studySets ?? 0) !== 1 ? "s" : ""}
-                                                    </p>
-                                                    {doc._count?.studySets > 0 && (
-                                                        <Link 
-                                                            href={`/dashboard/study-sets?docId=${doc.id}`}
-                                                            className="text-[11px] font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            View sets →
-                                                        </Link>
+                {isLoading ? (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
+                    </div>
+                ) : documents.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
+                        <p className="text-sm text-ink-muted max-w-xs">
+                            {search
+                                ? "No documents found matching your search."
+                                : "No documents uploaded yet. Click Upload to get started."}
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            {documents.map((doc) => {
+                                const fileType = getFileType(doc.filename);
+                                return (
+                                    <div
+                                        key={doc.id}
+                                        className="relative group cursor-pointer"
+                                        onClick={() => setGeneratingDocId(doc.id)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => e.key === "Enter" && setGeneratingDocId(doc.id)}
+                                    >
+                                        <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
+                                        <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">{fileType}</span>
+                                                <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setMenuOpenId(menuOpenId === doc.id ? null : doc.id)}
+                                                        className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
+                                                        aria-label="More options"
+                                                    >
+                                                        ⋯
+                                                    </button>
+                                                    {menuOpenId === doc.id && (
+                                                        <>
+                                                            <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
+                                                            <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card  ">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => { setMenuOpenId(null); setConfirmDeleteId(doc.id); }}
+                                                                    className="w-full cursor-pointer border-none bg-transparent px-3.5 py-2 text-left text-[13.5px] font-sans text-error hover:bg-paper"
+                                                                >
+                                                                    Delete
+                                                                </button>
+                                                            </div>
+                                                        </>
                                                     )}
                                                 </div>
-                                                <p className="text-[11px] text-ink-muted mt-2">
-                                                    {new Date(doc.createdAt).toLocaleDateString()}
-                                                </p>
                                             </div>
+                                            <h3 className="font-display text-[17px] font-semibold text-ink truncate mt-1">{doc.filename}</h3>
+                                            <div className="mt-2 flex items-center justify-between gap-4">
+                                                <p className="text-[12.5px] text-ink-muted">
+                                                    {doc.wordCount?.toLocaleString() ?? 0} words · {doc._count?.studySets ?? 0} study set{(doc._count?.studySets ?? 0) !== 1 ? "s" : ""}
+                                                </p>
+                                                {doc._count?.studySets > 0 && (
+                                                    <Link
+                                                        href={`/dashboard/study-sets?docId=${doc.id}`}
+                                                        className="text-[11px] font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
+                                                        View sets →
+                                                    </Link>
+                                                )}
+                                            </div>
+                                            <p className="text-[11px] text-ink-muted mt-2">
+                                                {new Date(doc.createdAt).toLocaleDateString()}
+                                            </p>
                                         </div>
-                                    );
-                                })}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                        {hasNextPage && (
+                            <div className="text-center pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => fetchNextPage()}
+                                    disabled={isFetchingNextPage}
+                                    className="rounded-md border border-rule bg-card px-6 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 cursor-pointer"
+                                >
+                                    {isFetchingNextPage ? "Loading…" : "Load More"}
+                                </button>
                             </div>
-                            {hasNextPage && (
-                                <div className="text-center pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => fetchNextPage()}
-                                        disabled={isFetchingNextPage}
-                                        className="rounded-md border border-rule bg-card px-6 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 cursor-pointer"
-                                    >
-                                        {isFetchingNextPage ? "Loading…" : "Load More"}
-                                    </button>
-                                </div>
-                            )}
-                        </>
-                    )}
+                        )}
+                    </>
+                )}
             </div>
 
             <ConfirmModal
@@ -238,7 +238,7 @@ export default function DocumentsPage() {
                     className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4"
                     onClick={(e) => { if (e.target === e.currentTarget) setGeneratingDocId(null); }}
                 >
-                    <div className="w-full max-w-md rounded-md border border-rule bg-card shadow-xl" onClick={(e) => e.stopPropagation()}>
+                    <div className="w-full max-w-md rounded-md border border-rule bg-card " onClick={(e) => e.stopPropagation()}>
                         <div className="px-6 pt-6 pb-2">
                             <p className="font-display text-lg font-semibold text-ink">Configure study set</p>
                         </div>

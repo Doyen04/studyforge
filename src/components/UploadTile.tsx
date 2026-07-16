@@ -56,7 +56,7 @@ export function UploadTile() {
                         className="w-full max-w-md"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="rounded-lg border border-rule bg-card shadow-xl">
+                        <div className="rounded-lg border border-rule bg-card ">
                             <div className="flex items-center justify-between px-6 pt-6 pb-2">
                                 <p className="font-sans text-base font-semibold text-ink">Configure study set</p>
                                 <button

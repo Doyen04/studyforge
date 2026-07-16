@@ -5,7 +5,7 @@ import { motion } from "motion/react";
 
 export function CTA() {
     return (
-        <section className="bg-gradient-to-r from-accent via-accent to-accent-hover">
+        <section className="bg-linear-to-r from-accent via-accent to-accent-hover">
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -19,7 +19,7 @@ export function CTA() {
                 </p>
                 <Link
                     href="/dashboard"
-                    className="mt-8 inline-block rounded-lg border border-white/30 bg-white px-8 py-3 text-sm font-medium text-accent shadow-sm transition-all hover:bg-white/90 hover:shadow-md active:scale-[0.97]"
+                    className="mt-8 inline-block rounded-lg border border-white/30 bg-white px-8 py-3 text-sm font-medium text-accent  transition-all hover:bg-white/90  active:scale-[0.97]"
                 >
                     Go to dashboard
                 </Link>

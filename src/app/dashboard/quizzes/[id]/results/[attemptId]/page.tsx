@@ -55,7 +55,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                 </Link>
 
                 {/* Score hero */}
-                <div className="rounded-md border border-rule bg-card p-8 text-center space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <div className="rounded-md border border-rule bg-card p-8 text-center space-y-4  ">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz Results</p>
                     <h1 className="font-display text-[23px] font-semibold text-ink">{quiz.title}</h1>
                     <div className="flex items-center justify-center gap-4">
@@ -105,7 +105,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         }
 
                         return (
-                            <div key={answer.id} className="rounded-md border border-rule bg-card p-5 md:p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                            <div key={answer.id} className="rounded-md border border-rule bg-card p-5 md:p-6 space-y-4  ">
                                 <div className="flex items-center justify-between border-b border-rule pb-2">
                                     <span className="font-data text-xs text-ink-muted">Question {index + 1}</span>
                                     <div className="flex items-center gap-2">
@@ -113,9 +113,8 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                             {answer.type}
                                         </span>
                                         {!isTheory && (
-                                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                                                isCorrect ? "bg-green-tint text-mastered" : "bg-red-tint text-error"
-                                            }`}>
+                                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${isCorrect ? "bg-green-tint text-mastered" : "bg-red-tint text-error"
+                                                }`}>
                                                 {isCorrect ? <IconCheck size={11} stroke={3} /> : <IconX size={11} stroke={3} />}
                                                 {isCorrect ? "Correct" : "Incorrect"}
                                             </span>
@@ -139,13 +138,12 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                                                 return (
                                                     <div
                                                         key={idx}
-                                                        className={`rounded-md border p-3 text-sm flex items-center justify-between ${
-                                                            isRight
+                                                        className={`rounded-md border p-3 text-sm flex items-center justify-between ${isRight
                                                                 ? "border-mastered bg-green-tint text-ink font-semibold"
                                                                 : isUserChoice
-                                                                ? "border-error bg-red-tint text-ink"
-                                                                : "border-rule bg-paper text-ink-muted"
-                                                        }`}
+                                                                    ? "border-error bg-red-tint text-ink"
+                                                                    : "border-rule bg-paper text-ink-muted"
+                                                            }`}
                                                     >
                                                         <span><span className="font-data mr-1.5 text-ink-muted">{idx + 1}.</span>{option}</span>
                                                         {isRight && <span className="text-xs text-mastered font-semibold">Correct answer</span>}

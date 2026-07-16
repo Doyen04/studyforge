@@ -181,14 +181,14 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                         {/* Card Flip Component */}
                         <div
                             onClick={() => setIsFlipped((prev) => !prev)}
-                            className="relative h-72 md:h-80 w-full cursor-pointer [perspective:1000px] group"
+                            className="relative h-72 md:h-80 w-full cursor-pointer perspective-[1000px] group"
                         >
                             <div
-                                className="relative h-full w-full rounded-xl border border-rule transition-transform duration-500 [transform-style:preserve-3d] shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] bg-card"
+                                className="relative h-full w-full rounded-xl border border-rule transition-transform duration-500 transform-3d  bg-card"
                                 style={{ transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
                             >
                                 {/* Front Face */}
-                                <div className="absolute inset-0 h-full w-full p-6 md:p-8 flex flex-col justify-between [backface-visibility:hidden]">
+                                <div className="absolute inset-0 h-full w-full p-6 md:p-8 flex flex-col justify-between backface-hidden">
                                     <span className="font-data text-[10px] uppercase tracking-wider text-accent font-bold">Front</span>
                                     <div className="flex-1 flex items-center justify-center text-center">
                                         <p className="font-sans text-base md:text-lg font-medium text-ink leading-relaxed">
@@ -200,7 +200,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
 
                                 {/* Back Face */}
                                 <div
-                                    className="absolute inset-0 h-full w-full p-6 md:p-8 flex flex-col justify-between [backface-visibility:hidden] [transform:rotateY(180deg)]"
+                                    className="absolute inset-0 h-full w-full p-6 md:p-8 flex flex-col justify-between backface-hidden transform-[rotateY(180deg)]"
                                 >
                                     <span className="font-data text-[10px] uppercase tracking-wider text-accent font-bold">Back</span>
                                     <div className="flex-1 flex items-center justify-center text-center overflow-y-auto my-2">
@@ -223,7 +223,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
                                         onClick={() => setIsFlipped(true)}
-                                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-accent hover:bg-accent-hover py-3 text-sm font-semibold text-white shadow transition cursor-pointer"
+                                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-accent hover:bg-accent-hover py-3 text-sm font-semibold text-white  transition cursor-pointer"
                                     >
                                         Reveal Answer
                                         <IconChevronRight size={16} />
@@ -279,7 +279,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="rounded-xl border border-rule bg-card p-6 md:p-8 text-center space-y-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)]"
+                        className="rounded-xl border border-rule bg-card p-6 md:p-8 text-center space-y-6 "
                     >
                         <div className="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-full bg-mastered/10 text-mastered">
                             <IconCheck size={24} stroke={2.5} />

@@ -45,7 +45,7 @@ export function Features() {
                         viewport={{ once: true, margin: "-60px" }}
                         transition={{ duration: 0.5, delay: i * 0.12, ease: "easeOut" }}
                         whileHover={{ y: -5, boxShadow: "0 12px 24px rgba(91,58,92,0.08)" }}
-                        className="rounded-xl border border-rule bg-card p-6 shadow-sm transition-shadow"
+                        className="rounded-xl border border-rule bg-card p-6"
                     >
                         <span className="block text-accent/70 mb-4">{feature.icon}</span>
                         <h3 className="text-sm font-semibold text-ink">{feature.title}</h3>

@@ -57,10 +57,10 @@ export function ConfirmModal({
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="w-full max-w-[420px]"
+                className="w-full max-w-105"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="rounded-md border border-rule bg-card p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <div className="rounded-md border border-rule bg-card p-6  ">
                     <h3 className="font-display text-lg font-semibold text-ink">{title}</h3>
                     <p className="mt-2 text-[13.5px] text-ink-muted leading-relaxed">{message}</p>
                     {details && details.length > 0 && (
@@ -98,11 +98,10 @@ export function ConfirmModal({
                             type="button"
                             onClick={onConfirm}
                             disabled={!canConfirm}
-                            className={`cursor-pointer rounded-md border-none px-4 py-2 text-[13.5px] font-semibold text-white transition disabled:opacity-45 disabled:cursor-not-allowed ${
-                                destructive
+                            className={`cursor-pointer rounded-md border-none px-4 py-2 text-[13.5px] font-semibold text-white transition disabled:opacity-45 disabled:cursor-not-allowed ${destructive
                                     ? "bg-error hover:bg-danger-dark"
                                     : "bg-accent hover:bg-accent-hover"
-                            }`}
+                                }`}
                         >
                             {confirmLabel}
                         </button>

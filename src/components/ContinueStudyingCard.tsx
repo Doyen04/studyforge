@@ -17,7 +17,7 @@ export function ContinueStudyingCard({
     const scoreLabel = lastScore === null ? "Not quizzed yet" : `Last score ${lastScore}%`;
 
     return (
-        <div className="rounded-md border border-rule bg-card p-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+        <div className="rounded-md border border-rule bg-card p-6  ">
             <div className="flex items-center gap-2 mb-3">
                 <IconBook size={13} stroke={2} className="text-accent shrink-0" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Continue studying</span>

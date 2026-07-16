@@ -31,7 +31,7 @@ export function Hero() {
                 >
                     Turn your notes into
                     <br />
-                    <span className="bg-gradient-to-r from-accent to-accent/60 bg-clip-text text-transparent">
+                    <span className="bg-linear-to-r from-accent to-accent/60 bg-clip-text text-transparent">
                         active recall
                     </span>
                 </motion.h1>
@@ -54,7 +54,7 @@ export function Hero() {
                 >
                     <Link
                         href="/dashboard"
-                        className="rounded-lg bg-accent px-8 py-3 text-sm font-medium !text-white shadow-sm transition-all hover:bg-accent-hover hover:shadow-md active:scale-[0.97]"
+                        className="rounded-lg bg-accent px-8 py-3 text-sm font-medium text-white!  transition-all hover:bg-accent-hover  active:scale-[0.97]"
                     >
                         Get started
                     </Link>

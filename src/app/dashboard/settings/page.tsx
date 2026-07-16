@@ -60,7 +60,7 @@ export default function SettingsPage() {
                     <p className="text-sm text-ink-muted mt-1">Manage your preferences and API keys.</p>
                 </div>
 
-                <section className="rounded-md border border-rule bg-card p-6 space-y-6 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <section className="rounded-md border border-rule bg-card p-6 space-y-6  ">
                     <div>
                         <h2 className="font-display text-lg font-semibold text-ink">Bring Your Own Key</h2>
                         <p className="text-xs text-ink-muted mt-1">
@@ -140,7 +140,7 @@ export default function SettingsPage() {
                     )}
                 </section>
 
-                <section className="rounded-md border border-rule bg-card p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <section className="rounded-md border border-rule bg-card p-6 space-y-4  ">
                     <h2 className="font-display text-lg font-semibold text-ink">Preferences</h2>
                     <div className="flex items-center justify-between">
                         <div>
@@ -158,7 +158,7 @@ export default function SettingsPage() {
                     </div>
                 </section>
 
-                <section className="rounded-md border border-rule bg-card p-6 space-y-4 shadow-[0_1px_2px_rgba(32,28,26,.05),0_8px_20px_-10px_rgba(32,28,26,.14)] dark:shadow-[0_1px_2px_rgba(0,0,0,.3),0_8px_20px_-10px_rgba(0,0,0,.5)]">
+                <section className="rounded-md border border-rule bg-card p-6 space-y-4  ">
                     <h2 className="font-display text-lg font-semibold text-ink">Account</h2>
                     <p className="text-sm text-ink-muted">Account management is not yet available.</p>
                 </section>
