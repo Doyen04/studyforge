@@ -206,7 +206,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
 
             {/* Tab bar */}
             <div className="border-b border-rule">
-                <div className="flex gap-0 overflow-x-auto">
+                <div className="flex items-center gap-0 overflow-x-auto">
                     {tabs.map(({ id, label, icon: Icon }) => {
                         const count = countForTab(id);
                         return (
@@ -225,6 +225,19 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                             </button>
                         );
                     })}
+                    <div className="ml-auto flex items-center gap-2 pl-4">
+                        {activeTab !== "flashcards" && activeTab !== "quizzes" && countForTab(activeTab) > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => handleCreateQuizFromTab(activeTab)}
+                                disabled={createQuizMutation.isPending}
+                                className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                            >
+                                <IconPlayerPlay size={12} stroke={2} />
+                                Quiz from these
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -261,17 +274,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    onClick={() => handleCreateQuizFromTab("mcq")}
-                                    disabled={createQuizMutation.isPending}
-                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
-                                >
-                                    <IconPlayerPlay size={12} stroke={2} />
-                                    Quiz from these
-                                </button>
-                            </div>
                             {studySet.mcqQuestions.map((q) => (
                                 <McqCard
                                     key={q.id}
@@ -293,17 +295,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    onClick={() => handleCreateQuizFromTab("fillInBlank")}
-                                    disabled={createQuizMutation.isPending}
-                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
-                                >
-                                    <IconPlayerPlay size={12} stroke={2} />
-                                    Quiz from these
-                                </button>
-                            </div>
                             {studySet.fillInBlanks.map((q) => (
                                 <FillInBlankCard
                                     key={q.id}
@@ -324,17 +315,6 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <button
-                                    type="button"
-                                    onClick={() => handleCreateQuizFromTab("theory")}
-                                    disabled={createQuizMutation.isPending}
-                                    className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
-                                >
-                                    <IconPlayerPlay size={12} stroke={2} />
-                                    Quiz from these
-                                </button>
-                            </div>
                             {studySet.theoryQuestions.map((q) => (
                                 <TheoryCard
                                     key={q.id}
