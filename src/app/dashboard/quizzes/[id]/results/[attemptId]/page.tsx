@@ -79,7 +79,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
                         {attempt.completedAt ? new Date(attempt.completedAt).toLocaleDateString() : "recently"}
                     </p>
                     <Link
-                        href={`/dashboard/quizzes/${quiz.id}`}
+                        href={`/dashboard/quizzes/${quiz.id}/take`}
                         className="inline-flex items-center gap-1.5 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper"
                     >
                         <IconRotate size={14} stroke={2} />

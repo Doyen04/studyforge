@@ -26,7 +26,10 @@ export async function GET(
 
     const quiz = await prisma.quiz.findUnique({
         where: { id },
-        include: { studySet: { include: { mcqQuestions: true, fillInBlanks: true, theoryQuestions: true } } },
+        include: { 
+            studySet: { include: { mcqQuestions: true, fillInBlanks: true, theoryQuestions: true } },
+            attempts: { orderBy: { completedAt: 'desc' } }
+        },
     });
 
     if (!quiz) {
@@ -54,5 +57,14 @@ export async function GET(
         return { type: "theory", id: question.id, question: question.question };
     });
 
-    return NextResponse.json({ quizId: quiz.id, title: quiz.title, questions });
+    return NextResponse.json({ 
+        quizId: quiz.id, 
+        title: quiz.title, 
+        questions,
+        attempts: quiz.attempts.map(a => ({
+            id: a.id,
+            score: a.score,
+            completedAt: a.completedAt
+        }))
+    });
 }

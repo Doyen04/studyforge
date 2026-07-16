@@ -44,6 +44,7 @@ export interface QuizPageData {
     quizId: string;
     title: string;
     questions: QuizQuestion[];
+    attempts: Array<{ id: string; score: number; completedAt: Date | string | null }>;
 }
 
 export interface DocumentItem {
