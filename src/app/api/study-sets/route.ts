@@ -40,13 +40,26 @@ export async function POST(request: NextRequest) {
     const fillInBlankCounts = distributeCount(counts.fillInBlank, chunks);
     const theoryCounts = distributeCount(counts.theory, chunks);
 
+    let flashcardResults: Awaited<ReturnType<typeof generateFlashcards>> = [];
+    let mcqResults: Awaited<ReturnType<typeof generateMcqQuestions>> = [];
+    let fillInBlankResults: Awaited<ReturnType<typeof generateFillInBlanks>> = [];
+    let theoryResults: Awaited<ReturnType<typeof generateTheoryQuestions>> = [];
     //optimise the ai and this too
-    const [flashcardResults, mcqResults, fillInBlankResults, theoryResults] = await Promise.all([
-        generatePerChunk(chunks, flashcardCounts, generateFlashcards),
-        generatePerChunk(chunks, mcqCounts, generateMcqQuestions),
-        generatePerChunk(chunks, fillInBlankCounts, generateFillInBlanks),
-        generatePerChunk(chunks, theoryCounts, generateTheoryQuestions),
-    ]);
+
+    try {
+        [flashcardResults, mcqResults, fillInBlankResults, theoryResults] = await Promise.all([
+            generatePerChunk(chunks, flashcardCounts, generateFlashcards),
+            generatePerChunk(chunks, mcqCounts, generateMcqQuestions),
+            generatePerChunk(chunks, fillInBlankCounts, generateFillInBlanks),
+            generatePerChunk(chunks, theoryCounts, generateTheoryQuestions),
+        ]);
+    } catch (error) {
+        console.error("AI generation failed:", error);
+        return NextResponse.json(
+            { error: "The AI couldn't process this document. Please try again." },
+            { status: 500 }
+        );
+    }
 
     const studySet = await prisma.studySet.create({
         data: {
@@ -95,8 +108,12 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
     const docId = searchParams.get("docId");
+    const cursor = searchParams.get("cursor");
 
     const studySets = await prisma.studySet.findMany({
+        take: 12,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
         where: {
             AND: [
                 search
@@ -149,5 +166,7 @@ export async function GET(request: NextRequest) {
         };
     });
 
-    return NextResponse.json({ studySets: mapped });
+    const nextCursor = studySets.length === 12 ? studySets[studySets.length - 1].id : null;
+
+    return NextResponse.json({ studySets: mapped, nextCursor });
 }

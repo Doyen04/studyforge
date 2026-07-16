@@ -1,84 +1,55 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { IconEye, IconEyeOff, IconCheck, IconLoader2, IconTrash } from "@tabler/icons-react";
 import { toast } from "sonner";
+import { queryKeys, fetchJson } from "@/lib/queries";
 
 export default function SettingsPage() {
+    const queryClient = useQueryClient();
     const [apiKey, setApiKey] = useState("");
-    const [savedKey, setSavedKey] = useState<string | null>(null);
     const [showKey, setShowKey] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
-    const [testing, setTesting] = useState(false);
 
-    useEffect(() => {
-        fetch("/api/settings")
-            .then((res) => res.json())
-            .then((data) => {
-                setSavedKey(data.geminiApiKey);
-                if (data.geminiApiKey) setApiKey(data.geminiApiKey);
-            })
-            .catch(() => { toast.error("Failed to load settings."); })
-            .finally(() => setLoading(false));
-    }, []);
+    const { data, isLoading } = useQuery({
+        queryKey: queryKeys.settings,
+        queryFn: () => fetchJson<{ geminiApiKey: string | null }>("/api/settings"),
+    });
+
+    const savedKey = data?.geminiApiKey ?? null;
+    if (savedKey !== null && apiKey === "" && savedKey) setApiKey(savedKey);
+
+    const saveMutation = useMutation({
+        mutationFn: (key: string) =>
+            fetchJson("/api/settings", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ geminiApiKey: key }),
+            }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: queryKeys.settings });
+            toast.success("API key saved");
+        },
+        onError: () => toast.error("Failed to save settings"),
+    });
+
+    const testMutation = useMutation({
+        mutationFn: (key: string) =>
+            fetchJson("/api/settings/test", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ geminiApiKey: key }),
+            }),
+        onError: (err) => toast.error(err instanceof Error ? err.message : "Test failed"),
+        onSuccess: () => toast.success("API key is working"),
+    });
 
     const hasStoredKey = savedKey !== null && savedKey.length > 0;
     const hasChanges = apiKey !== (savedKey ?? "");
 
-    const handleSave = async () => {
-        setSaving(true);
-        try {
-            const res = await fetch("/api/settings", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ geminiApiKey: apiKey }),
-            });
-            if (!res.ok) throw new Error("Failed to save");
-            setSavedKey(apiKey.trim() || null);
-            toast.success(apiKey.trim() ? "API key saved" : "API key removed");
-        } catch {
-            toast.error("Failed to save settings");
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleTest = async () => {
-        setTesting(true);
-        try {
-            const res = await fetch("/api/settings/test", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ geminiApiKey: apiKey }),
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Connection failed");
-            toast.success("API key is working");
-        } catch (err) {
-            toast.error(err instanceof Error ? err.message : "Test failed");
-        } finally {
-            setTesting(false);
-        }
-    };
-
-    const handleRemove = async () => {
-        setSaving(true);
-        try {
-            const res = await fetch("/api/settings", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ geminiApiKey: "" }),
-            });
-            if (!res.ok) throw new Error("Failed to remove");
-            setApiKey("");
-            setSavedKey(null);
-            toast.success("API key removed");
-        } catch {
-            toast.error("Failed to remove key");
-        } finally {
-            setSaving(false);
-        }
+    const handleRemove = () => {
+        saveMutation.mutate("");
+        setApiKey("");
     };
 
     return (
@@ -97,7 +68,7 @@ export default function SettingsPage() {
                         </p>
                     </div>
 
-                    {loading ? (
+                    {isLoading ? (
                         <div className="h-10 rounded-md bg-rule animate-pulse" />
                     ) : (
                         <>
@@ -126,11 +97,11 @@ export default function SettingsPage() {
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={handleTest}
-                                        disabled={!apiKey.trim() || testing}
+                                        onClick={() => testMutation.mutate(apiKey)}
+                                        disabled={!apiKey.trim() || testMutation.isPending}
                                         className="shrink-0 rounded-md border border-rule bg-card px-4 py-2 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                     >
-                                        {testing ? <IconLoader2 size={16} stroke={2} className="animate-spin" /> : "Test"}
+                                        {testMutation.isPending ? <IconLoader2 size={16} stroke={2} className="animate-spin" /> : "Test"}
                                     </button>
                                 </div>
                                 {hasStoredKey && (
@@ -142,7 +113,7 @@ export default function SettingsPage() {
                                         <button
                                             type="button"
                                             onClick={handleRemove}
-                                            disabled={saving}
+                                            disabled={saveMutation.isPending}
                                             className="text-xs text-ink-muted hover:text-error flex items-center gap-1 transition disabled:opacity-50 cursor-pointer"
                                         >
                                             <IconTrash size={12} stroke={2} />
@@ -158,11 +129,11 @@ export default function SettingsPage() {
                                 </p>
                                 <button
                                     type="button"
-                                    onClick={handleSave}
-                                    disabled={saving || !hasChanges}
+                                    onClick={() => saveMutation.mutate(apiKey)}
+                                    disabled={saveMutation.isPending || !hasChanges}
                                     className="rounded-md bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
-                                    {saving ? "Saving…" : "Save"}
+                                    {saveMutation.isPending ? "Saving…" : "Save"}
                                 </button>
                             </div>
                         </>

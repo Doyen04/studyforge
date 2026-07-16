@@ -1,47 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { IconSearch } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ConfirmModal } from "@/components/ConfirmModal";
 import type { QuizIndexItem } from "@/types/page";
+import { queryKeys, fetchJson } from "@/lib/queries";
 
 interface QuizWithMeta extends QuizIndexItem {
     totalQuestions?: number;
+    questionRefs?: string;
 }
 
 export default function QuizzesIndex() {
-    const [quizzes, setQuizzes] = useState<QuizWithMeta[]>([]);
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
-    const [loading, setLoading] = useState(true);
-    const [deleting, setDeleting] = useState<string | null>(null);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [menuOpenId, setMenuOpenId] = useState<string | null>(null);
+    const [deleting, setDeleting] = useState<string | null>(null);
 
-    useEffect(() => {
-        fetch(`/api/quizzes?search=${encodeURIComponent(debouncedSearch)}`)
-            .then((res) => res.json())
-            .then((data) => setQuizzes(data.quizzes))
-            .catch(() => { toast.error("Failed to load quizzes."); })
-            .finally(() => setLoading(false));
-    }, [debouncedSearch]);
+    const queryKey = queryKeys.quizzes(debouncedSearch);
 
-    const handleDelete = async (id: string) => {
+    const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey,
+        queryFn: ({ pageParam }) => {
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.set("search", debouncedSearch);
+            if (pageParam) params.set("cursor", pageParam);
+            return fetchJson<{ quizzes: QuizWithMeta[]; nextCursor: string | null }>(
+                `/api/quizzes?${params.toString()}`
+            );
+        },
+        initialPageParam: "",
+        getNextPageParam: (last) => last.nextCursor ?? undefined,
+    });
+
+    const quizzes = data?.pages.flatMap((p) => p.quizzes) ?? [];
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => fetchJson(`/api/quizzes/${id}`, { method: "DELETE" }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
+            toast.success("Quiz deleted");
+        },
+        onError: () => toast.error("Failed to delete quiz"),
+    });
+
+    const handleDelete = (id: string) => {
         setConfirmDeleteId(null);
         setDeleting(id);
-        try {
-            const res = await fetch(`/api/quizzes/${id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error("Failed to delete");
-            setQuizzes((prev) => prev.filter((q) => q.id !== id));
-            toast.success("Quiz deleted");
-        } catch {
-            toast.error("Failed to delete quiz");
-        } finally {
-            setDeleting(null);
-        }
+        deleteMutation.mutate(id, { onSettled: () => setDeleting(null) });
     };
 
     return (
@@ -64,7 +76,7 @@ export default function QuizzesIndex() {
                     </div>
                 </div>
 
-                {loading ? (
+                {isLoading ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
                         {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
                     </div>
@@ -82,7 +94,7 @@ export default function QuizzesIndex() {
                             const lastAttempt = q.attempts[0] ?? null;
                             const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
                             let questionCount = 0;
-                            try { questionCount = JSON.parse((q as any).questionRefs ?? "[]").length; } catch {}
+                            try { questionCount = JSON.parse(q.questionRefs ?? "[]").length; } catch {}
                             return (
                                 <div key={q.id} className="relative group">
                                     <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
@@ -134,6 +146,18 @@ export default function QuizzesIndex() {
                                 </div>
                             );
                         })}
+                    </div>
+                )}
+                {hasNextPage && !isLoading && (
+                    <div className="flex justify-center pt-4">
+                        <button
+                            type="button"
+                            onClick={() => fetchNextPage()}
+                            disabled={isFetchingNextPage}
+                            className="rounded-md border border-rule bg-card px-6 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 cursor-pointer"
+                        >
+                            {isFetchingNextPage ? "Loading…" : "Load More"}
+                        </button>
                     </div>
                 )}
             </div>

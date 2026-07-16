@@ -1,32 +1,24 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { toast } from "sonner";
 import { IconArrowLeft, IconRotate, IconCheck, IconX } from "@tabler/icons-react";
 import { parseJsonArray } from "@/lib/deserialize";
 import { GradedMargin } from "@/components/GradedMargin";
 import type { QuizResultData } from "@/types/page";
 import type { GradedAnswer } from "@/types/domain";
+import { queryKeys, fetchJson } from "@/lib/queries";
 
 export default function QuizResultsPage({ params }: { params: Promise<{ id: string; attemptId: string }> }) {
     const { id, attemptId } = use(params);
-    const [data, setData] = useState<QuizResultData | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [notFoundError, setNotFoundError] = useState(false);
 
-    useEffect(() => {
-        fetch(`/api/quizzes/${id}/results/${attemptId}`)
-            .then((res) => res.json())
-            .then((result) => {
-                if (!result.quiz) { setNotFoundError(true); return; }
-                setData(result);
-            })
-            .catch(() => { toast.error("Failed to load quiz results."); })
-            .finally(() => setLoading(false));
-    }, [id, attemptId]);
+    const { data, isLoading } = useQuery({
+        queryKey: queryKeys.quizResults(id, attemptId),
+        queryFn: () => fetchJson<QuizResultData>(`/api/quizzes/${id}/results/${attemptId}`),
+    });
 
-    if (loading) {
+    if (isLoading) {
         return (
             <main className="min-h-screen bg-paper">
                 <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 space-y-6 animate-pulse">
@@ -37,7 +29,7 @@ export default function QuizResultsPage({ params }: { params: Promise<{ id: stri
         );
     }
 
-    if (notFoundError || !data) {
+    if (!data) {
         return (
             <main className="min-h-screen bg-paper">
                 <div className="mx-auto max-w-3xl px-6 py-8 lg:py-10 text-center">

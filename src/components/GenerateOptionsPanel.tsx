@@ -63,7 +63,13 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                 }),
             });
 
-            const data = await response.json();
+            let data: { studySet?: { id: string }; error?: string };
+            try {
+                data = await response.json();
+            } catch {
+                throw new Error("Failed to generate study set.");
+            }
+
             if (!response.ok || !data.studySet?.id) {
                 throw new Error(data.error || "Failed to generate study set.");
             }

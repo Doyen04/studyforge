@@ -51,8 +51,12 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
+    const cursor = searchParams.get("cursor");
 
     const quizzes = await prisma.quiz.findMany({
+        take: 12,
+        skip: cursor ? 1 : 0,
+        cursor: cursor ? { id: cursor } : undefined,
         where: search
             ? {
                   OR: [
@@ -73,5 +77,7 @@ export async function GET(request: NextRequest) {
         },
     });
 
-    return NextResponse.json({ quizzes });
+    const nextCursor = quizzes.length === 12 ? quizzes[quizzes.length - 1].id : null;
+
+    return NextResponse.json({ quizzes, nextCursor });
 }

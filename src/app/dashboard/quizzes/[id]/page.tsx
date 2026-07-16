@@ -1,28 +1,21 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { toast } from "sonner";
 import { IconArrowLeft, IconPlayerPlay, IconHistory, IconTrophy } from "@tabler/icons-react";
 import type { QuizPageData } from "@/types/page";
+import { queryKeys, fetchJson } from "@/lib/queries";
 
 export default function QuizHistoryPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const [quiz, setQuiz] = useState<QuizPageData | null>(null);
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetch(`/api/quizzes/${id}`)
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data.quizId) throw new Error("Not found");
-                setQuiz(data);
-            })
-            .catch(() => toast.error("Failed to load quiz."))
-            .finally(() => setLoading(false));
-    }, [id]);
+    const { data: quiz, isLoading } = useQuery({
+        queryKey: queryKeys.quiz(id),
+        queryFn: () => fetchJson<QuizPageData>(`/api/quizzes/${id}`),
+    });
 
-    if (loading) {
+    if (isLoading) {
         return (
             <main className="min-h-screen bg-paper py-8">
                 <div className="mx-auto max-w-2xl px-6 animate-pulse space-y-6">

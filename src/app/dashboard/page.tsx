@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { StatsRow } from "@/components/StatsRow";
 import { ContinueStudyingCard } from "@/components/ContinueStudyingCard";
@@ -10,31 +10,27 @@ import { UploadTile } from "@/components/UploadTile";
 import { StudySetCard } from "@/components/StudySetCard";
 import { IconPlus } from "@tabler/icons-react";
 import type { DashboardStats, StudySetSummary, RecentAttempt } from "@/types/domain";
+import { queryKeys, fetchJson } from "@/lib/queries";
+
+interface DashboardData {
+    stats: DashboardStats & { documentsWithoutStudySet?: number };
+    continueStudying: StudySetSummary | null;
+    recentStudySets: StudySetSummary[];
+    recentAttempts: RecentAttempt[];
+}
 
 export default function DashboardPage() {
-    const [stats, setStats] = useState<DashboardStats | null>(null);
-    const [continueStudying, setContinueStudying] = useState<StudySetSummary | null>(null);
-    const [recentStudySets, setRecentStudySets] = useState<StudySetSummary[]>([]);
-    const [recentAttempts, setRecentAttempts] = useState<RecentAttempt[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { data, isLoading } = useQuery({
+        queryKey: queryKeys.dashboard,
+        queryFn: () => fetchJson<DashboardData>("/api/dashboard"),
+    });
 
-    useEffect(() => {
-        fetch("/api/dashboard")
-            .then((res) => res.json())
-            .then((data) => {
-                setStats({ ...data.stats, documentsWithoutStudySet: data.documentsWithoutStudySet ?? 0 });
-                setContinueStudying(data.continueStudying);
-                setRecentStudySets(data.recentStudySets);
-                setRecentAttempts(data.recentAttempts);
-            })
-            .catch(() => { toast.error("Failed to load dashboard data."); })
-            .finally(() => setLoading(false));
-    }, []);
+    const stats: DashboardStats = data?.stats
+        ? { ...data.stats, documentsWithoutStudySet: data.stats.documentsWithoutStudySet ?? 0 }
+        : { studySets: 0, questionsGenerated: 0, quizzesTaken: 0, averageScore: null };
+    const studySetCount = data?.stats?.studySets ?? data?.recentStudySets?.length ?? 0;
 
-    const safeStats: DashboardStats = stats ?? { studySets: 0, questionsGenerated: 0, quizzesTaken: 0, averageScore: null };
-    const studySetCount = stats?.studySets ?? recentStudySets.length;
-
-    if (loading) {
+    if (isLoading) {
         return (
             <main className="min-h-screen bg-paper">
                 <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8 animate-pulse">
@@ -78,13 +74,13 @@ export default function DashboardPage() {
                     <p className="text-sm text-ink-muted mt-1">Overview of your study activity.</p>
                 </div>
 
-                <StatsRow stats={safeStats} />
+                <StatsRow stats={stats} />
 
-                {continueStudying && (
+                {data?.continueStudying && (
                     <ContinueStudyingCard
-                        studySet={continueStudying}
-                        itemCounts={continueStudying.itemCounts}
-                        lastScore={continueStudying.lastScore}
+                        studySet={data.continueStudying}
+                        itemCounts={data.continueStudying.itemCounts}
+                        lastScore={data.continueStudying.lastScore}
                     />
                 )}
 
@@ -92,7 +88,7 @@ export default function DashboardPage() {
                     <h2 className="font-display text-xl font-semibold text-ink">Your study sets</h2>
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <UploadTile />
-                        {recentStudySets.map((set, i) => (
+                        {data?.recentStudySets?.map((set, i) => (
                             <StudySetCard key={set.id} set={set} index={i} />
                         ))}
                     </div>
@@ -105,7 +101,7 @@ export default function DashboardPage() {
                     )}
                 </section>
 
-                {recentAttempts.length > 0 && <RecentQuizList attempts={recentAttempts} />}
+                {data?.recentAttempts && data.recentAttempts.length > 0 && <RecentQuizList attempts={data.recentAttempts} />}
             </div>
         </main>
     );

@@ -20,17 +20,16 @@ export async function parseDocument(buffer: Buffer, originalFilename: string): P
     const fileType = EXTENSION_TO_FILETYPE[ext];
 
     if (!fileType) {
-        throw new Error(`Unsupported file type: ${ext}. Upload a .docx, .pptx, or .pdf file.`);
+        throw new Error("Unsupported file type. Upload a .docx, .pptx, or .pdf file.");
     }
-    console.log('ast', OfficeParser, '[logging]');
-    const ast = await OfficeParser.parseOffice(buffer, { fileType });
-    console.log(ast, '[logging]');
+
+    const ast = await OfficeParser.parseOffice(buffer, { fileType, ocr: fileType === "pdf" });
     const text = await ast.to('text').then(r => r.value.trim());
     const wordCount = countWords(text);
 
     if (wordCount < 30) {
         throw new Error(
-            "Couldn't find enough readable text in this file. If it's a scanned/image-only PDF, OCR isn't enabled by default."
+            "This document has very little readable text. Image-only or scanned PDFs aren't supported — try a text-based PDF, DOCX, or PPTX file instead."
         );
     }
 

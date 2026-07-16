@@ -1,11 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useQueryClient, useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { IconSearch } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { StudySetCard } from "@/components/StudySetCard";
+import { queryKeys, fetchJson } from "@/lib/queries";
 
 interface StudySetIndexItem {
     id: string;
@@ -19,35 +21,38 @@ interface StudySetIndexItem {
 
 function StudySetsIndexContent() {
     const searchParams = useSearchParams();
+    const queryClient = useQueryClient();
     const docId = searchParams.get("docId");
-    const [sets, setSets] = useState<StudySetIndexItem[]>([]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
-    const [loading, setLoading] = useState(true);
-    const [deleting, setDeleting] = useState(false);
 
-    useEffect(() => {
-        const url = `/api/study-sets?search=${encodeURIComponent(debouncedSearch)}${docId ? `&docId=${docId}` : ""}`;
-        fetch(url)
-            .then((res) => res.json())
-            .then((data) => setSets(data.studySets))
-            .catch(() => { toast.error("Failed to load study sets."); })
-            .finally(() => setLoading(false));
-    }, [debouncedSearch, docId]);
+    const queryKey = queryKeys.studySets(debouncedSearch, docId);
 
-    const handleDelete = async (id: string) => {
-        setDeleting(true);
-        try {
-            const res = await fetch(`/api/study-sets/${id}`, { method: "DELETE" });
-            if (!res.ok) throw new Error("Failed to delete");
-            setSets((prev) => prev.filter((s) => s.id !== id));
+    const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
+        queryKey,
+        queryFn: ({ pageParam }) => {
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.set("search", debouncedSearch);
+            if (docId) params.set("docId", docId);
+            if (pageParam) params.set("cursor", pageParam);
+            return fetchJson<{ studySets: StudySetIndexItem[]; nextCursor: string | null }>(
+                `/api/study-sets?${params.toString()}`
+            );
+        },
+        initialPageParam: "",
+        getNextPageParam: (last) => last.nextCursor ?? undefined,
+    });
+
+    const sets = data?.pages.flatMap((p) => p.studySets) ?? [];
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => fetchJson(`/api/study-sets/${id}`, { method: "DELETE" }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey });
             toast.success("Study set deleted");
-        } catch {
-            toast.error("Failed to delete study set");
-        } finally {
-            setDeleting(false);
-        }
-    };
+        },
+        onError: () => toast.error("Failed to delete study set"),
+    });
 
     return (
         <main className="min-h-screen bg-paper">
@@ -69,7 +74,7 @@ function StudySetsIndexContent() {
                     </div>
                 </div>
 
-                {loading ? (
+                {isLoading ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 animate-pulse">
                         {[1, 2, 3].map((i) => <div key={i} className="h-36 rounded-md bg-rule" />)}
                     </div>
@@ -95,9 +100,21 @@ function StudySetsIndexContent() {
                                 }}
                                 index={i}
                                 quizCount={set.quizCount}
-                                onDelete={deleting ? undefined : handleDelete}
+                                onDelete={deleteMutation.isPending ? undefined : (id) => deleteMutation.mutate(id)}
                             />
                         ))}
+                    </div>
+                )}
+                {hasNextPage && !isLoading && (
+                    <div className="flex justify-center pt-4">
+                        <button
+                            type="button"
+                            onClick={() => fetchNextPage()}
+                            disabled={isFetchingNextPage}
+                            className="rounded-md border border-rule bg-card px-6 py-2.5 text-sm font-semibold text-ink transition hover:bg-paper disabled:opacity-50 cursor-pointer"
+                        >
+                            {isFetchingNextPage ? "Loading…" : "Load More"}
+                        </button>
                     </div>
                 )}
             </div>
