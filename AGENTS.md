@@ -1,3 +1,8 @@
+## Preferences
+
+- **No shadows**: Do not add `shadow-*` classes to components unless explicitly asked.
+- **Ask before CLI**: Do not run any CLI commands (`npx`, `npm`, `git`, etc.) without asking for permission first.
+
 <!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 

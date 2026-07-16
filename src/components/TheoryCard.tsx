@@ -21,7 +21,6 @@ export function TheoryCard({ question, referenceAnswer, keyPoints }: TheoryCardP
                 <h3 className="font-sans text-base font-semibold text-ink leading-7">{question}</h3>
                 <span className="flex items-center gap-1 text-xs font-semibold text-ink-muted shrink-0 mt-1.5">
                     <IconChevronDown size={14} className={`transition-transform ${revealed ? "rotate-180" : ""}`} />
-                    {revealed ? "Hide" : "Reveal"}
                 </span>
             </div>
             {revealed && (
