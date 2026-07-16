@@ -7,9 +7,10 @@ interface FillInBlankCardProps {
     sentence: string;
     answer: string;
     acceptableAnswers: string[];
+    rightSlot?: React.ReactNode;
 }
 
-export function FillInBlankCard({ sentence, answer, acceptableAnswers }: FillInBlankCardProps) {
+export function FillInBlankCard({ sentence, answer, acceptableAnswers, rightSlot }: FillInBlankCardProps) {
     const [revealed, setRevealed] = useState(false);
 
     return (
@@ -19,8 +20,9 @@ export function FillInBlankCard({ sentence, answer, acceptableAnswers }: FillInB
         >
             <div className="flex items-start justify-between gap-3">
                 <h3 className="font-sans text-base font-semibold text-ink leading-7">{sentence}</h3>
-                <span className="flex items-center gap-1 text-xs font-semibold text-ink-muted shrink-0 mt-1.5">
+                <span className="flex items-center gap-2 text-xs font-semibold text-ink-muted shrink-0 mt-1.5">
                     <IconChevronDown size={14} className={`transition-transform ${revealed ? "rotate-180" : ""}`} />
+                    {rightSlot}
                 </span>
             </div>
             {revealed && (

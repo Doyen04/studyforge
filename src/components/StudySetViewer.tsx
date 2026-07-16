@@ -273,15 +273,14 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 </button>
                             </div>
                             {studySet.mcqQuestions.map((q) => (
-                                <div key={q.id} className="relative">
-                                    <DeleteQuestionButton id={q.id} type="mcq" refresh={refresh} />
-                                    <McqCard
-                                        question={q.question}
-                                        options={q.options}
-                                        correctIndex={q.correctIndex}
-                                        explanation={q.explanation}
-                                    />
-                                </div>
+                                <McqCard
+                                    key={q.id}
+                                    question={q.question}
+                                    options={q.options}
+                                    correctIndex={q.correctIndex}
+                                    explanation={q.explanation}
+                                    rightSlot={<DeleteQuestionButton id={q.id} type="mcq" refresh={refresh} />}
+                                />
                             ))}
                         </div>
                     )
@@ -306,14 +305,13 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 </button>
                             </div>
                             {studySet.fillInBlanks.map((q) => (
-                                <div key={q.id} className="relative">
-                                    <DeleteQuestionButton id={q.id} type="fillInBlank" refresh={refresh} />
-                                    <FillInBlankCard
-                                        sentence={q.sentence}
-                                        answer={q.answer}
-                                        acceptableAnswers={q.acceptableAnswers}
-                                    />
-                                </div>
+                                <FillInBlankCard
+                                    key={q.id}
+                                    sentence={q.sentence}
+                                    answer={q.answer}
+                                    acceptableAnswers={q.acceptableAnswers}
+                                    rightSlot={<DeleteQuestionButton id={q.id} type="fillInBlank" refresh={refresh} />}
+                                />
                             ))}
                         </div>
                     )
@@ -338,14 +336,13 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 </button>
                             </div>
                             {studySet.theoryQuestions.map((q) => (
-                                <div key={q.id} className="relative">
-                                    <DeleteQuestionButton id={q.id} type="theory" refresh={refresh} />
-                                    <TheoryCard
-                                        question={q.question}
-                                        referenceAnswer={q.referenceAnswer}
-                                        keyPoints={q.keyPoints}
-                                    />
-                                </div>
+                                <TheoryCard
+                                    key={q.id}
+                                    question={q.question}
+                                    referenceAnswer={q.referenceAnswer}
+                                    keyPoints={q.keyPoints}
+                                    rightSlot={<DeleteQuestionButton id={q.id} type="theory" refresh={refresh} />}
+                                />
                             ))}
                         </div>
                     )
@@ -408,6 +405,7 @@ function DeleteQuestionButton({ id, type, refresh }: { id: string; type: Questio
 
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
+        e.preventDefault();
         if (!confirm("Are you sure you want to delete this question?")) return;
         deleteMutation.mutate();
     };
@@ -416,7 +414,7 @@ function DeleteQuestionButton({ id, type, refresh }: { id: string; type: Questio
         <button
             type="button"
             onClick={handleDelete}
-            className="absolute top-2 right-2 z-10 p-1.5 rounded hover:bg-paper text-ink-muted hover:text-error transition cursor-pointer"
+            className="p-1 rounded hover:bg-paper text-ink-muted hover:text-error transition cursor-pointer"
             aria-label="Delete question"
         >
             <IconTrash size={14} />

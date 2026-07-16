@@ -8,9 +8,10 @@ interface McqCardProps {
     options: string[];
     correctIndex: number;
     explanation: string;
+    rightSlot?: React.ReactNode;
 }
 
-export function McqCard({ question, options, correctIndex, explanation }: McqCardProps) {
+export function McqCard({ question, options, correctIndex, explanation, rightSlot }: McqCardProps) {
     const [revealed, setRevealed] = useState(false);
 
     return (
@@ -20,8 +21,9 @@ export function McqCard({ question, options, correctIndex, explanation }: McqCar
         >
             <div className="flex items-start justify-between gap-3">
                 <h3 className="font-sans text-base font-semibold text-ink leading-7">{question}</h3>
-                <span className="flex items-center gap-1 text-xs font-semibold text-ink-muted shrink-0 mt-1.5">
+                <span className="flex items-center gap-2 text-xs font-semibold text-ink-muted shrink-0 mt-1.5">
                     <IconChevronDown size={14} className={`transition-transform ${revealed ? "rotate-180" : ""}`} />
+                    {rightSlot}
                 </span>
             </div>
             {revealed && (
