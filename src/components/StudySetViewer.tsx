@@ -36,7 +36,30 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
     const [activeTab, setActiveTab] = useState<"questions" | "quizzes">("questions");
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [creating, setCreating] = useState(false);
+    const [isEditingTitle, setIsEditingTitle] = useState(false);
+    const [newTitle, setNewTitle] = useState(studySet.title);
     const questionsRef = useRef<HTMLDivElement>(null);
+
+    const handleRename = async () => {
+        if (!newTitle.trim() || newTitle === studySet.title) {
+            setIsEditingTitle(false);
+            return;
+        }
+        try {
+            const res = await fetch(`/api/study-sets/${studySet.id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title: newTitle }),
+            });
+            if (!res.ok) throw new Error();
+            toast.success("Study set renamed");
+            studySet.title = newTitle; // Update local state
+        } catch {
+            toast.error("Failed to rename");
+        } finally {
+            setIsEditingTitle(false);
+        }
+    };
 
     const now = new Date();
     const dueCount = studySet.flashcards.filter((f) => {
@@ -117,7 +140,20 @@ export function StudySetViewer({ studySet }: { studySet: StudySetData }) {
                         <IconArrowLeft size={14} stroke={2} />
                         Back to study sets
                     </Link>
-                    <h1 className="font-display text-[28px] font-semibold text-ink tracking-tight mt-1">{studySet.title}</h1>
+                    {isEditingTitle ? (
+                        <input
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            onBlur={handleRename}
+                            onKeyDown={(e) => e.key === "Enter" && handleRename()}
+                            className="font-display text-[28px] font-semibold text-ink tracking-tight mt-1 w-full bg-transparent border-b border-accent outline-none"
+                            autoFocus
+                        />
+                    ) : (
+                        <h1 className="font-display text-[28px] font-semibold text-ink tracking-tight mt-1 cursor-pointer hover:text-accent transition" onClick={() => setIsEditingTitle(true)}>
+                            {studySet.title}
+                        </h1>
+                    )}
                     <p className="text-sm text-ink-muted mt-1">
                         {studySet.document.filename} · {new Date(studySet.createdAt).toLocaleDateString()}
                     </p>
