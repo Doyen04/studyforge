@@ -175,9 +175,20 @@ export default function DocumentsPage() {
                                             </div>
                                         </div>
                                         <h3 className="font-display text-[17px] font-semibold text-ink truncate mt-1">{doc.filename}</h3>
-                                        <p className="text-[12.5px] text-ink-muted mt-1">
-                                            {doc.wordCount?.toLocaleString() ?? 0} words · {doc._count?.studySets ?? 0} study set{(doc._count?.studySets ?? 0) !== 1 ? "s" : ""}
-                                        </p>
+                                        <div className="mt-2 flex items-center justify-between gap-4">
+                                            <p className="text-[12.5px] text-ink-muted">
+                                                {doc.wordCount?.toLocaleString() ?? 0} words · {doc._count?.studySets ?? 0} study set{(doc._count?.studySets ?? 0) !== 1 ? "s" : ""}
+                                            </p>
+                                            {doc._count?.studySets > 0 && (
+                                                <Link 
+                                                    href={`/dashboard/study-sets?docId=${doc.id}`}
+                                                    className="text-[11px] font-semibold text-accent hover:text-accent-hover transition cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    View sets →
+                                                </Link>
+                                            )}
+                                        </div>
                                         <p className="text-[11px] text-ink-muted mt-2">
                                             {new Date(doc.createdAt).toLocaleDateString()}
                                         </p>

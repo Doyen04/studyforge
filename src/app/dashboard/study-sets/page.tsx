@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { IconSearch } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -17,6 +18,8 @@ interface StudySetIndexItem {
 }
 
 export default function StudySetsIndex() {
+    const searchParams = useSearchParams();
+    const docId = searchParams.get("docId");
     const [sets, setSets] = useState<StudySetIndexItem[]>([]);
     const [search, setSearch] = useState("");
     const debouncedSearch = useDebounce(search);
@@ -24,12 +27,13 @@ export default function StudySetsIndex() {
     const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
-        fetch(`/api/study-sets?search=${encodeURIComponent(debouncedSearch)}`)
+        const url = `/api/study-sets?search=${encodeURIComponent(debouncedSearch)}${docId ? `&docId=${docId}` : ""}`;
+        fetch(url)
             .then((res) => res.json())
             .then((data) => setSets(data.studySets))
             .catch(() => { toast.error("Failed to load study sets."); })
             .finally(() => setLoading(false));
-    }, [debouncedSearch]);
+    }, [debouncedSearch, docId]);
 
     const handleDelete = async (id: string) => {
         setDeleting(true);

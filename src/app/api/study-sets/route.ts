@@ -94,16 +94,22 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search");
+    const docId = searchParams.get("docId");
 
     const studySets = await prisma.studySet.findMany({
-        where: search
-            ? {
-                  OR: [
-                      { title: { contains: search, mode: "insensitive" } },
-                      { document: { filename: { contains: search, mode: "insensitive" } } },
-                  ],
-              }
-            : {},
+        where: {
+            AND: [
+                search
+                    ? {
+                          OR: [
+                              { title: { contains: search, mode: "insensitive" } },
+                              { document: { filename: { contains: search, mode: "insensitive" } } },
+                          ],
+                      }
+                    : {},
+                docId ? { documentId: docId } : {},
+            ],
+        },
         orderBy: { lastAccessedAt: "desc" },
         include: {
             document: { select: { filename: true } },
