@@ -52,19 +52,17 @@ export function StatsRow({ stats }: { stats: DashboardStats }) {
             {items.map((item) => {
                 const { bg, text } = colorMap[item.color] ?? colorMap.accent;
                 return (
-                    <motion.div
-                        key={item.label}
-                        whileHover={{ y: -3 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="rounded-md border border-rule bg-card p-5  "
-                    >
-                        <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-md ${bg} ${text}`}>
-                            {item.icon}
+                    <div key={item.label} className="relative group">
+                        <div className="absolute top-1.5 left-1.5 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
+                        <div className="relative z-10 h-full rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                            <div className={`mb-3 flex h-8 w-8 items-center justify-center rounded-md ${bg} ${text}`}>
+                                {item.icon}
+                            </div>
+                            <div className="font-data text-[27px] font-semibold leading-none text-ink">{item.value}</div>
+                            <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted">{item.label}</div>
+                            <div className="mt-2 text-xs text-ink-muted">{item.caption}</div>
                         </div>
-                        <div className="font-data text-[27px] font-semibold leading-none text-ink">{item.value}</div>
-                        <div className="mt-2 text-[11px] font-semibold uppercase tracking-[0.07em] text-ink-muted">{item.label}</div>
-                        <div className="mt-2 text-xs text-ink-muted">{item.caption}</div>
-                    </motion.div>
+                    </div>
                 );
             })}
         </div>

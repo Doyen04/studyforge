@@ -126,9 +126,11 @@ export function UploadZone({ onUploadSuccess }: UploadZoneProps) {
                     uploadStage === "idle" ? "cursor-pointer hover:border-accent hover:text-accent" : ""
                 } ${
                     error
-                        ? "border-error text-error"
-                        : dragActive || uploadStage !== "idle"
-                        ? "border-accent"
+                        ? "border-error text-error bg-error/10"
+                        : dragActive
+                        ? "border-accent bg-wine-tint text-accent"
+                        : uploadStage !== "idle"
+                        ? "border-accent text-accent"
                         : "border-rule text-ink-muted"
                 }`}
             >

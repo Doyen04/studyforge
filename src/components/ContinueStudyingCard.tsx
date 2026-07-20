@@ -54,21 +54,21 @@ export function ContinueStudyingCard({
                 )}
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[12.5px] text-ink-muted">
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] uppercase tracking-[0.05em] font-semibold text-ink-muted">
                 <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-blue" />
+                    <span className="h-1.5 w-1.5 rounded-sm bg-blue" />
                     {itemCounts.flashcards} flashcards
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-mastered" />
+                    <span className="h-1.5 w-1.5 rounded-sm bg-mastered" />
                     {itemCounts.mcq} MCQ
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-review" />
+                    <span className="h-1.5 w-1.5 rounded-sm bg-review" />
                     {itemCounts.fillInBlank} fill-in-blank
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-graphite" />
+                    <span className="h-1.5 w-1.5 rounded-sm bg-graphite" />
                     {itemCounts.theory} theory
                 </span>
             </div>
