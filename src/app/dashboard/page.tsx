@@ -32,8 +32,8 @@ export default function DashboardPage() {
 
     if (isLoading) {
         return (
-            <main className="min-h-screen bg-paper">
-                <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8 animate-pulse">
+            <main>
+                <div className="mx-auto w-full max-w-7xl px-6 lg:px-10 py-8 lg:py-10 space-y-8 animate-pulse">
                     <div className="h-8 w-48 rounded bg-rule" />
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                         {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-md bg-rule" />)}
@@ -49,8 +49,8 @@ export default function DashboardPage() {
 
     if (studySetCount === 0) {
         return (
-            <main className="min-h-screen bg-paper">
-                <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
+            <main>
+                <div className="mx-auto w-full max-w-7xl px-6 lg:px-10 py-8 lg:py-10">
                     <div className="flex flex-col items-center justify-center rounded-md border-[1.5px] border-dashed border-rule p-14 text-center">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-wine-tint text-accent mb-4">
                             <IconPlus size={20} stroke={2} />
@@ -67,8 +67,8 @@ export default function DashboardPage() {
     }
 
     return (
-        <main className="min-h-screen bg-paper">
-            <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10 space-y-8">
+        <main>
+            <div className="mx-auto w-full max-w-7xl px-6 lg:px-10 py-8 lg:py-10 space-y-8">
                 <div>
                     <h1 className="font-display text-[32px] font-semibold text-ink tracking-tight">Dashboard</h1>
                     <p className="text-sm text-ink-muted mt-1">Overview of your study activity.</p>

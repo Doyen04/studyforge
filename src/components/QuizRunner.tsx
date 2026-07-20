@@ -117,7 +117,7 @@ export function QuizRunner({
                         </span>
                     </div>
 
-                    <h2 className="font-display text-[19px] font-semibold leading-8 text-ink">
+                    <h2 className="font-display text-[22px] md:text-[26px] font-semibold leading-snug tracking-tight text-ink">
                         {currentQuestion.type === "mcq"
                             ? currentQuestion.question
                             : currentQuestion.type === "fillInBlank"
@@ -132,9 +132,9 @@ export function QuizRunner({
                                 return (
                                     <label
                                         key={idx}
-                                        className={`flex cursor-pointer items-center gap-3 rounded-md border p-3.5 text-sm transition-all ${isChecked
-                                                ? "border-accent bg-wine-tint/30 font-semibold text-ink"
-                                                : "border-rule bg-card hover:bg-paper text-ink"
+                                        className={`group flex cursor-pointer items-center gap-3 rounded-md border p-4 text-sm transition-all ${isChecked
+                                            ? "border-accent bg-wine-tint font-medium text-ink ring-1 ring-accent"
+                                            : "border-rule bg-card hover:border-ink-muted hover:bg-paper text-ink"
                                             }`}
                                     >
                                         <input
@@ -170,12 +170,12 @@ export function QuizRunner({
                                 rows={5}
                                 value={answers[currentQuestion.id] ?? ""}
                                 onChange={(e) => setAnswers((prev) => ({ ...prev, [currentQuestion.id]: e.target.value }))}
-                                placeholder="Write your explanation here (2\u20135 sentences recommended)..."
+                                placeholder="Write your explanation here (2 – 5 sentences recommended)..."
                                 className="block w-full rounded-md border border-rule bg-card px-4 py-3 text-sm text-ink outline-none transition focus:border-accent focus:ring-1 focus:ring-accent"
                             />
                             <div className="flex items-center justify-between text-xs text-ink-muted">
                                 <span>{theoryWordCount} words</span>
-                                <span>2\u20135 sentences recommended</span>
+                                <span>2 – 5 sentences recommended</span>
                             </div>
                         </div>
                     )}

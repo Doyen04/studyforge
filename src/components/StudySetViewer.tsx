@@ -205,8 +205,8 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
             </div>
 
             {/* Tab bar */}
-            <div className="border-b border-rule">
-                <div className="flex items-center gap-0 overflow-x-auto">
+            <div className="sticky top-[69px] lg:top-[77px] z-40 border-b border-rule bg-paper/85 backdrop-blur-md">
+                <div className="flex items-center gap-0 overflow-x-auto px-6 lg:px-0 [&::-webkit-scrollbar]:hidden">
                     {tabs.map(({ id, label, icon: Icon }) => {
                         const count = countForTab(id);
                         return (

@@ -27,7 +27,7 @@ export function SiteHeader() {
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-rule bg-card">
-            <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 lg:px-10 py-[18px]">
+            <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 lg:px-10 py-4 lg:py-5">
                 <Link href="/" className="font-display text-xl font-semibold text-ink tracking-tight">
                     StudyForge
                 </Link>
@@ -38,10 +38,10 @@ export function SiteHeader() {
                         <Link
                             key={link.href}
                             href={link.href}
-                            className={`transition-colors pb-0.5 ${
+                            className={`transition-colors py-1 ${
                                 isActive(link.href)
                                     ? "text-ink font-medium border-b-2 border-accent"
-                                    : "text-ink-muted font-medium hover:text-ink border-b-2 border-transparent"
+                                    : "text-ink-muted font-medium hover:text-ink border-b-2 border-transparent hover:border-rule"
                             }`}
                         >
                             {link.label}
