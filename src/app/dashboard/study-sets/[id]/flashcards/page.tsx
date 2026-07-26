@@ -130,7 +130,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                     <p className="text-sm text-ink-muted">There are no flashcards available to study in this set.</p>
                     <Link
                         href={`/dashboard/study-sets/${id}`}
-                        className="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-text transition hover:bg-accent-hover"
+                        className="inline-flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold btn-accent transition hover:bg-accent-hover"
                     >
                         <IconArrowLeft size={16} />
                         Back to study set
@@ -221,7 +221,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, y: -10 }}
                                         onClick={() => setIsFlipped(true)}
-                                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-accent hover:bg-accent-hover py-3 text-sm font-semibold text-accent-text transition cursor-pointer"
+                                        className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-accent hover:bg-accent-hover py-3 text-sm font-semibold btn-accent transition cursor-pointer"
                                     >
                                         Reveal Answer
                                         <IconChevronRight size={16} />
@@ -294,7 +294,7 @@ export default function FlashcardsStudyPage({ params }: FlashcardsStudyPageProps
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                             <Link
                                 href={`/dashboard/study-sets/${id}`}
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-md bg-accent hover:bg-accent-hover px-5 py-2 text-sm font-semibold text-accent-text transition cursor-pointer"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-md bg-accent hover:bg-accent-hover px-5 py-2 text-sm font-semibold btn-accent transition cursor-pointer"
                             >
                                 <IconArrowLeft size={16} />
                                 Back to Study Set

@@ -32,7 +32,7 @@ export function ContinueStudyingCard({
                 </div>
                 <Link
                     href={`/dashboard/study-sets/${studySet.id}`}
-                    className="group flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-text transition hover:bg-accent-hover sm:self-start"
+                    className="group flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-5 py-2.5 text-sm font-semibold btn-accent transition hover:bg-accent-hover sm:self-start"
                 >
                     <span>{lastScore === null ? "Start studying" : "Quiz again"}</span>
                     <IconArrowRight size={14} stroke={2.5} className="transition-transform group-hover:translate-x-0.5" />

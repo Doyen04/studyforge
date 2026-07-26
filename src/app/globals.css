@@ -12,7 +12,6 @@
     --color-surface-2: #f7f6f1;
     --color-accent: #6e2140;
     --color-accent-hover: #521830;
-    --color-accent-text: #ffffff;
     --color-wine-tint: #f4e3ea;
     --color-mastered: #2c7a4d;
     --color-green-tint: #e4f2e9;
@@ -42,7 +41,6 @@
     --color-surface-2: #28252b;
     --color-accent: #e28ab0;
     --color-accent-hover: #c96a92;
-    --color-accent-text: #17161a;
     --color-wine-tint: #3a2430;
     --color-mastered: #7fcf9e;
     --color-green-tint: #1f3327;
@@ -75,4 +73,13 @@ body {
 a {
     text-decoration: none;
     color: inherit;
+}
+
+/* Accent button — always use explicit color, never inherit */
+.btn-accent {
+    color: #ffffff !important;
+}
+
+.dark .btn-accent {
+    color: #17161a !important;
 }
