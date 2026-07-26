@@ -10,7 +10,7 @@ export function RecentQuizList({
         id: string;
         score: number;
         completedAt: Date | null;
-        quiz: { id: string; studySet: { title: string } };
+        quiz: { id?: string; studySet: { title: string } };
     }[];
 }) {
     return (
@@ -31,10 +31,11 @@ export function RecentQuizList({
             <div className="divide-y divide-rule overflow-hidden rounded-xl border border-rule bg-card">
                 {attempts.map((attempt) => {
                     const isMastered = attempt.score >= 70;
+                    const href = attempt.quiz.id ? `/dashboard/quizzes/${attempt.quiz.id}` : "/dashboard/quizzes";
                     return (
                         <Link
                             key={attempt.id}
-                            href={`/dashboard/quizzes/${attempt.quiz.id}`}
+                            href={href}
                             className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm transition-colors hover:bg-paper-hover group"
                         >
                             <div className="flex items-center gap-3 min-w-0">
