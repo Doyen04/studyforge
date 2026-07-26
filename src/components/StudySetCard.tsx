@@ -32,9 +32,9 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
 
     return (
         <>
-            <div className="relative group pb-2 pr-2">
-                <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
-                <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+            <div className="relative group mb-2 mr-2 h-full flex flex-col">
+                <div className="absolute top-2 left-2 -bottom-2 -right-2 rounded-md border border-rule bg-surface-2 z-0" />
+                <div className="relative z-10 flex-1 flex flex-col justify-between rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                     <div className="flex items-start justify-between gap-3">
                         <div className="card-eyebrow text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Study set</div>
                         <div className="flex items-center gap-2 shrink-0">

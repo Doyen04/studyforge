@@ -144,14 +144,14 @@ export default function DocumentsPage() {
                                 return (
                                     <div
                                         key={doc.id}
-                                        className="relative group cursor-pointer pb-2 pr-2"
+                                        className="relative group cursor-pointer mb-2 mr-2 h-full flex flex-col"
                                         onClick={() => setGeneratingDocId(doc.id)}
                                         role="button"
                                         tabIndex={0}
                                         onKeyDown={(e) => e.key === "Enter" && setGeneratingDocId(doc.id)}
                                     >
-                                        <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
-                                        <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                                        <div className="absolute top-2 left-2 -bottom-2 -right-2 rounded-md border border-rule bg-surface-2 z-0" />
+                                        <div className="relative z-10 flex-1 flex flex-col justify-between rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                                             <div className="flex items-start justify-between gap-3">
                                                 <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">{fileType}</span>
                                                 <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>

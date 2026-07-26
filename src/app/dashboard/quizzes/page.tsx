@@ -95,9 +95,9 @@ export default function QuizzesIndex() {
                             let questionCount = 0;
                             try { questionCount = JSON.parse(q.questionRefs ?? "[]").length; } catch { }
                             return (
-                                <div key={q.id} className="relative group pb-2 pr-2">
-                                    <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
-                                    <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
+                                <div key={q.id} className="relative group mb-2 mr-2 h-full flex flex-col">
+                                    <div className="absolute top-2 left-2 -bottom-2 -right-2 rounded-md border border-rule bg-surface-2 z-0" />
+                                    <div className="relative z-10 flex-1 flex flex-col justify-between rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                                         <div className="flex items-start justify-between gap-3">
                                             <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz</p>
                                             <div className="relative shrink-0">
