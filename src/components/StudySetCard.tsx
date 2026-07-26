@@ -30,35 +30,21 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
 
     const catalogTag = `SF·${String(index + 1).padStart(2, "0")}`;
 
-    const scoreBadge = set.lastScore === null ? (
-        <span className="text-[11px] font-medium text-ink-muted">Not quizzed yet</span>
-    ) : set.lastScore >= 70 ? (
-        <span className="inline-flex items-center gap-1 rounded-full bg-green-tint border border-mastered/30 px-2.5 py-0.5 text-[11px] font-semibold text-mastered font-data">
-            Score {set.lastScore}% · Mastered
-        </span>
-    ) : (
-        <span className="inline-flex items-center gap-1 rounded-full bg-amber-tint border border-review/30 px-2.5 py-0.5 text-[11px] font-semibold text-review font-data">
-            Score {set.lastScore}% · Review
-        </span>
-    );
-
     return (
         <>
             <div className="relative group">
-                <div className="absolute top-2 left-2 right-0 bottom-0 rounded-lg border border-rule bg-surface-2 z-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-                <div className="relative z-10 rounded-lg border border-rule bg-card p-5 transition-all duration-200 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:border-accent/40">
+                <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
+                <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                     <div className="flex items-start justify-between gap-3">
-                        <div className="card-eyebrow text-[11px] font-semibold uppercase tracking-wider text-accent font-data">
-                            Study Set
-                        </div>
+                        <div className="card-eyebrow text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Study set</div>
                         <div className="flex items-center gap-2 shrink-0">
-                            <span className="font-data text-[11px] text-ink-muted bg-surface-2 px-1.5 py-0.5 rounded border border-rule">{catalogTag}</span>
+                            <span className="font-data text-[11px] text-ink-muted">{catalogTag}</span>
                             {onDelete && (
                                 <div className="relative">
                                     <button
                                         type="button"
                                         onClick={() => setMenuOpen((prev) => !prev)}
-                                        className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer transition"
+                                        className="flex h-6.5 w-6.5 items-center justify-center rounded-md border-none bg-transparent text-ink-muted hover:bg-paper hover:text-ink cursor-pointer"
                                         aria-label="More options"
                                     >
                                         ⋯
@@ -66,7 +52,7 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
                                     {menuOpen && (
                                         <>
                                             <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                                            <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card">
+                                            <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card  ">
                                                 <button
                                                     type="button"
                                                     onClick={() => {
@@ -85,39 +71,23 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
                         </div>
                     </div>
 
-                    <Link href={`/dashboard/study-sets/${set.id}`} className="block mt-2 group-hover:text-accent transition-colors">
-                        <h3 className="font-display text-[17px] font-semibold text-ink truncate leading-tight">{set.title}</h3>
+                    <Link href={`/dashboard/study-sets/${set.id}`} className="block mt-1">
+                        <h3 className="font-display text-[17px] font-semibold text-ink truncate">{set.title}</h3>
                     </Link>
 
-                    <p className="text-xs text-ink-muted mt-1 font-sans">
-                        {set.filename} · <span className="font-data font-semibold text-ink">{total}</span> items
+                    <p className="text-[12.5px] text-ink-muted mt-1">
+                        {set.filename} · {total} questions
                     </p>
 
-                    <div className="mt-3">
-                        {scoreBadge}
+                    <div className="text-[11px] text-ink-muted mt-2">
+                        {set.lastScore === null ? "Not quizzed yet" : `Best score ${set.lastScore}%`}
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5 mt-3.5 pt-3 border-t border-rule/60">
-                        {set.itemCounts.flashcards > 0 && (
-                            <span className="rounded-full bg-blue-tint px-2.5 py-0.5 text-[11px] font-semibold text-blue font-data">
-                                {set.itemCounts.flashcards} cards
-                            </span>
-                        )}
-                        {set.itemCounts.mcq > 0 && (
-                            <span className="rounded-full bg-green-tint px-2.5 py-0.5 text-[11px] font-semibold text-mastered font-data">
-                                {set.itemCounts.mcq} MCQ
-                            </span>
-                        )}
-                        {set.itemCounts.fillInBlank > 0 && (
-                            <span className="rounded-full bg-amber-tint px-2.5 py-0.5 text-[11px] font-semibold text-review font-data">
-                                {set.itemCounts.fillInBlank} blank
-                            </span>
-                        )}
-                        {set.itemCounts.theory > 0 && (
-                            <span className="rounded-full bg-graphite-tint px-2.5 py-0.5 text-[11px] font-semibold text-graphite font-data">
-                                {set.itemCounts.theory} theory
-                            </span>
-                        )}
+                    <div className="flex flex-wrap gap-1.5 mt-3">
+                        <span className="rounded-full bg-blue-tint px-2.5 py-1 text-[11.5px] font-semibold text-blue">{set.itemCounts.flashcards} flashcards</span>
+                        <span className="rounded-full bg-green-tint px-2.5 py-1 text-[11.5px] font-semibold text-mastered">{set.itemCounts.mcq} MCQ</span>
+                        <span className="rounded-full bg-amber-tint px-2.5 py-1 text-[11.5px] font-semibold text-review">{set.itemCounts.fillInBlank} fill-blank</span>
+                        <span className="rounded-full bg-graphite-tint px-2.5 py-1 text-[11.5px] font-semibold text-graphite">{set.itemCounts.theory} theory</span>
                     </div>
                 </div>
             </div>
@@ -137,4 +107,3 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
         </>
     );
 }
-

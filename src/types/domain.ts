@@ -128,7 +128,6 @@ export interface RecentAttempt {
     score: number;
     completedAt: Date | null;
     quiz: {
-        id?: string;
         studySet: {
             title: string;
         };

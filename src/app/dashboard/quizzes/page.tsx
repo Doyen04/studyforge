@@ -91,15 +91,15 @@ export default function QuizzesIndex() {
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {quizzes.map((q) => {
                             const lastAttempt = q.attempts[0] ?? null;
-                            const isMastered = lastAttempt && lastAttempt.score >= 70;
+                            const scoreColor = lastAttempt === null ? "" : lastAttempt.score >= 70 ? "text-mastered" : "text-review";
                             let questionCount = 0;
                             try { questionCount = JSON.parse(q.questionRefs ?? "[]").length; } catch { }
                             return (
                                 <div key={q.id} className="relative group">
-                                    <div className="absolute top-2 left-2 right-0 bottom-0 rounded-lg border border-rule bg-surface-2 z-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-                                    <div className="relative z-10 rounded-lg border border-rule bg-card p-5 transition-all duration-200 group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 group-hover:border-accent/40">
+                                    <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
+                                    <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                                         <div className="flex items-start justify-between gap-3">
-                                            <p className="text-[11px] font-semibold uppercase tracking-wider text-accent font-data">Quiz</p>
+                                            <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-accent">Quiz</p>
                                             <div className="relative shrink-0">
                                                 <button
                                                     type="button"
@@ -113,7 +113,7 @@ export default function QuizzesIndex() {
                                                 {menuOpenId === q.id && (
                                                     <>
                                                         <div className="fixed inset-0 z-10" onClick={() => setMenuOpenId(null)} />
-                                                        <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card">
+                                                        <div className="absolute right-0 top-9 z-20 min-w-35 overflow-hidden rounded-md border border-rule bg-card  ">
                                                             <button
                                                                 type="button"
                                                                 onClick={() => { setMenuOpenId(null); setConfirmDeleteId(q.id); }}
@@ -126,27 +126,21 @@ export default function QuizzesIndex() {
                                                 )}
                                             </div>
                                         </div>
-                                        <Link href={`/dashboard/quizzes/${q.id}`} className="block mt-2 group-hover:text-accent transition-colors">
-                                            <h3 className="font-display text-[17px] font-semibold text-ink truncate leading-tight">{q.title}</h3>
+                                        <Link href={`/dashboard/quizzes/${q.id}`} className="block mt-1">
+                                            <h3 className="font-display text-[17px] font-semibold text-ink truncate">{q.title}</h3>
                                         </Link>
-                                        <p className="text-xs text-ink-muted mt-1">{q.studySet.title}</p>
-                                        
-                                        <div className="mt-3 flex items-center justify-between pt-3 border-t border-rule/60">
-                                            {questionCount > 0 && (
-                                                <span className="text-[11px] font-data text-ink-muted bg-surface-2 px-2 py-0.5 rounded border border-rule">
-                                                    {questionCount} questions
-                                                </span>
-                                            )}
-                                            {lastAttempt ? (
-                                                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold font-data ${
-                                                    isMastered ? "bg-green-tint text-mastered border border-mastered/30" : "bg-amber-tint text-review border border-review/30"
-                                                }`}>
-                                                    Score: {lastAttempt.score}%
-                                                </span>
-                                            ) : (
-                                                <span className="text-[11px] font-medium text-ink-muted">No attempts yet</span>
-                                            )}
-                                        </div>
+                                        <p className="text-[12.5px] text-ink-muted mt-1">{q.studySet.title}</p>
+                                        {questionCount > 0 && (
+                                            <p className="text-[11px] text-ink-muted mt-1">{questionCount} question{questionCount !== 1 ? "s" : ""}</p>
+                                        )}
+                                        {lastAttempt && (
+                                            <p className={`text-xs font-semibold mt-2 ${scoreColor}`}>
+                                                Last score: {lastAttempt.score}%
+                                            </p>
+                                        )}
+                                        {!lastAttempt && (
+                                            <p className="text-[11px] text-ink-muted mt-2">No attempts yet</p>
+                                        )}
                                     </div>
                                 </div>
                             );
