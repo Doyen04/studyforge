@@ -32,7 +32,7 @@ export function StudySetCard({ set, index, onDelete, quizCount = 0 }: StudySetCa
 
     return (
         <>
-            <div className="relative group">
+            <div className="relative group pb-2 pr-2">
                 <div className="absolute top-2 left-2 right-0 bottom-0 rounded-md border border-rule bg-surface-2 z-0" />
                 <div className="relative z-10 rounded-md border border-rule bg-card p-5 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                     <div className="flex items-start justify-between gap-3">

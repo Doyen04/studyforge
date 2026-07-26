@@ -144,7 +144,7 @@ export default function DocumentsPage() {
                                 return (
                                     <div
                                         key={doc.id}
-                                        className="relative group cursor-pointer"
+                                        className="relative group cursor-pointer pb-2 pr-2"
                                         onClick={() => setGeneratingDocId(doc.id)}
                                         role="button"
                                         tabIndex={0}
