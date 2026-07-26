@@ -120,7 +120,7 @@ export function GenerateOptionsPanel({ documentId, onGenerationSuccess, onReset 
                     type="button"
                     onClick={handleGenerate}
                     disabled={isGenerating}
-                    className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full cursor-pointer rounded-md bg-accent hover:bg-accent-hover px-4 py-3 text-sm font-semibold text-accent-text transition disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {isGenerating ? "Generating set…" : "Generate study set"}
                 </button>

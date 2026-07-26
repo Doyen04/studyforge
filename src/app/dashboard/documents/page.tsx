@@ -105,7 +105,7 @@ export default function DocumentsPage() {
                             type="button"
                             onClick={handleUploadClick}
                             disabled={uploading}
-                            className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-text transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                         >
                             <IconUpload size={16} stroke={2} />
                             {uploading ? "Uploading…" : "Upload"}

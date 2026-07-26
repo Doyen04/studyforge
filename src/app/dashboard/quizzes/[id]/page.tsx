@@ -46,7 +46,7 @@ export default function QuizHistoryPage({ params }: { params: Promise<{ id: stri
                     </div>
                     <Link
                         href={`/dashboard/quizzes/${id}/take`}
-                        className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover"
+                        className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-accent-text transition hover:bg-accent-hover"
                     >
                         <IconPlayerPlay size={16} />
                         Take Quiz

@@ -131,7 +131,7 @@ export default function SettingsPage() {
                                     type="button"
                                     onClick={() => saveMutation.mutate(apiKey)}
                                     disabled={saveMutation.isPending || !hasChanges}
-                                    className="rounded-md bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-semibold text-white transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                                    className="rounded-md bg-accent hover:bg-accent-hover px-4 py-2 text-sm font-semibold text-accent-text transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                                 >
                                     {saveMutation.isPending ? "Saving…" : "Save"}
                                 </button>

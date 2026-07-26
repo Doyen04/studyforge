@@ -196,7 +196,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                         type="button"
                         disabled={totalQuizItems === 0 || createQuizMutation.isPending}
                         onClick={handleCreateQuizAll}
-                        className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                        className="flex items-center gap-1.5 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-text transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
                         <IconPlayerPlay size={14} stroke={2} />
                         {createQuizMutation.isPending ? "Creating..." : "Create a quiz"}
@@ -231,7 +231,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 type="button"
                                 onClick={() => handleCreateQuizFromTab(activeTab)}
                                 disabled={createQuizMutation.isPending}
-                                className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                                className="flex items-center gap-1.5 rounded-md bg-accent px-3 py-1.5 text-xs font-semibold text-accent-text transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                             >
                                 <IconPlayerPlay size={12} stroke={2} />
                                 Quiz from these
@@ -254,7 +254,7 @@ export function StudySetViewer({ studySet, refresh }: { studySet: StudySetData; 
                                 <Link
                                     href={`/dashboard/study-sets/${studySet.id}/flashcards`}
                                     className={`inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-xs font-semibold transition cursor-pointer   ${dueCount > 0
-                                            ? "bg-accent text-white hover:bg-accent-hover"
+                                            ? "bg-accent text-accent-text hover:bg-accent-hover"
                                             : "border border-rule bg-card text-ink hover:bg-paper"
                                         }`}
                                 >

@@ -201,7 +201,7 @@ export function QuizRunner({
                             else goNext();
                         }}
                         disabled={submitMutation.isPending}
-                        className="flex items-center gap-1.5 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
+                        className="flex items-center gap-1.5 rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-accent-text transition hover:bg-accent-hover disabled:opacity-50 cursor-pointer"
                     >
                         {submitMutation.isPending ? (
                             "Submitting..."
